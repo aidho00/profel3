@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- skill:chassis -->
+<style>
+/* =====================================================
+   PRESENTATION CHASSIS — style-invariant base styles
+   Fixed 1920×1080 canvas scaled to fit any viewport.
+   Customize colors, fonts, and chrome via :root tokens.
+   ===================================================== */
+
+/* ---------- Universal reset ---------- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ---------- Theme tokens (override in your deck's CSS) ---------- */
+:root {
+    color-scheme: light;
+
+    --background:      #ffffff;
+    --foreground:      #111111;
+    --card:            #f5f5f5;
+    --card-foreground: var(--foreground);
+    --accent:          #c94a3d;
+    --accent-foreground: #ffffff;
+
+    --muted-foreground: color-mix(in srgb, var(--foreground) 55%, transparent);
+    --border:           color-mix(in srgb, var(--foreground) 12%, transparent);
+
+    --font-display: Georgia, serif;
+    --font-body: -apple-system, system-ui, sans-serif;
+    --font-mono: ui-monospace, monospace;
+
+    /* Reveal animation */
+    --reveal-duration: 0.8s;
+    --reveal-ease:     cubic-bezier(0.16, 1, 0.3, 1);
+    --reveal-distance: 28px;
+
+    /* Chrome (nav dots, keyboard hint) */
+    --nav-dot-size: 9px;
+    --nav-dot-radius: 50%;
+    --nav-dot-color: var(--foreground);
+    --nav-dot-active-color: var(--accent);
+    --nav-dot-opacity: 0.4;
+}
+
+/* ---------- Viewport lock + scroll snap ---------- */
+html, body { height: 100%; overflow-x: hidden; }
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+html, body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+/* ---------- Type scale ----------
+   Fixed px sizes on a 1920×1080 canvas. The canvas is scaled to fit
+   any viewport via transform, so these sizes are absolute within the
+   design surface — no responsive units needed. */
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    font-size: 36px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1 { font-size: 120px; line-height: 1.05; letter-spacing: -0.02em; }
+h2 { font-size: 64px; line-height: 1.1; letter-spacing: -0.01em; }
+h3 { font-size: 44px; line-height: 1.2; }
+.eyebrow {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.3;
+}
+
+ul, ol { padding-left: 48px; display: flex; flex-direction: column; gap: 24px; }
+li::marker { color: var(--accent); }
+
+/* ---------- Slide structure ----------
+   .slide is the authored 1920×1080 artboard.
+   The chassis wraps it in viewport + scale layers at runtime. */
+.slide-viewport {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: block;
+    position: relative;
+    background: var(--background);
+    isolation: isolate;
+    z-index: 1;
+}
+
+.slide-scale {
+    width: 1920px;
+    height: 1080px;
+    transform: translate(-50%, -50%) scale(var(--slide-scale, 1));
+    transform-origin: center center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+}
+
+.slide {
+    width: 1920px;
+    height: 1080px;
+    padding: 80px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 60px;
+    position: relative;
+    background: transparent;
+}
+
+
+/* ---------- Image defaults ---------- */
+img, .image-container {
+    max-width: 100%;
+    max-height: 540px;
+    object-fit: contain;
+}
+
+/* ---------- Reveal primitives ----------
+   Driven by chassis.js via the Web Animations API, not CSS transitions.
+   Put .reveal* or .step on ANY element — author CSS on the same element
+   (opacity, transform, transition, filter) never conflicts, because
+   WAAPI animations live in the animation cascade origin and win over
+   normal author declarations. The .dN stagger classes below still apply
+   to theme-authored CSS animations via animation-delay.
+
+   Variants: .reveal (fade + up), .reveal-left, .reveal-right,
+   .reveal-scale, .reveal-blur. .step stays hidden until the user
+   advances forward. Don't combine .step with .reveal* on the same
+   element. */
+
+/* FOUC guard: hide reveals until chassis.js marks the document ready. */
+:root:not(.reveals-ready) .reveal,
+:root:not(.reveals-ready) .reveal-left,
+:root:not(.reveals-ready) .reveal-right,
+:root:not(.reveals-ready) .reveal-scale,
+:root:not(.reveals-ready) .reveal-blur,
+:root:not(.reveals-ready) .step {
+    opacity: 0;
+}
+:root:not(.reveals-ready) .reveal-blur { filter: blur(10px); }
+
+/* ---------- Stagger delays (.d1 … .d8) ---------- */
+.slide.visible .d1 { transition-delay: 0.10s; animation-delay: 0.10s; }
+.slide.visible .d2 { transition-delay: 0.25s; animation-delay: 0.25s; }
+.slide.visible .d3 { transition-delay: 0.40s; animation-delay: 0.40s; }
+.slide.visible .d4 { transition-delay: 0.55s; animation-delay: 0.55s; }
+.slide.visible .d5 { transition-delay: 0.70s; animation-delay: 0.70s; }
+.slide.visible .d6 { transition-delay: 0.85s; animation-delay: 0.85s; }
+.slide.visible .d7 { transition-delay: 1.00s; animation-delay: 1.00s; }
+.slide.visible .d8 { transition-delay: 1.15s; animation-delay: 1.15s; }
+
+/* ---------- Nav dots ----------
+   Default: right-center (vertical stack on right edge).
+   Override with <body data-nav="bottom | top-right | hidden">. */
+.nav-dots {
+    position: fixed;
+    right: clamp(0.6rem, 1.5vw, 1.4rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1vh, 0.8rem);
+    z-index: 50;
+}
+
+body[data-nav="bottom"] .nav-dots {
+    right: auto;
+    top: auto;
+    bottom: clamp(1rem, 2.5vh, 2rem);
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+}
+
+body[data-nav="top-right"] .nav-dots {
+    right: clamp(1rem, 2.5vw, 2rem);
+    top: clamp(1rem, 2.5vh, 2rem);
+    transform: none;
+    flex-direction: row;
+}
+
+body[data-nav="hidden"] .nav-dots { display: none; }
+
+body[data-nav="bottom"] .keyboard-hint {
+    left: clamp(1rem, 2vw, 1.5rem);
+    transform: none;
+}
+
+.nav-dots button {
+    width: var(--nav-dot-size);
+    height: var(--nav-dot-size);
+    border-radius: var(--nav-dot-radius);
+    border: 1.5px solid var(--nav-dot-color);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+    opacity: var(--nav-dot-opacity);
+}
+.nav-dots button:hover { opacity: 0.85; transform: scale(1.15); }
+.nav-dots button:focus-visible {
+    outline: 2px solid var(--nav-dot-active-color);
+    outline-offset: 3px;
+    opacity: 1;
+}
+.nav-dots button.active {
+    background: var(--nav-dot-active-color);
+    border-color: var(--nav-dot-active-color);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* ---------- Keyboard hint ---------- */
+.keyboard-hint {
+    position: fixed;
+    bottom: clamp(0.6rem, 1.2vh, 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted-foreground);
+    z-index: 50;
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+.keyboard-hint kbd {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.9em;
+    padding: 0.05em 0.4em;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--background);
+    margin: 0 0.15em;
+}
+
+/* ---------- Credit line ---------- */
+.chassis-credit {
+    position: fixed;
+    bottom: clamp(0.6rem, 1.2vh, 1rem);
+    left: clamp(1rem, 2vw, 1.5rem);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted-foreground);
+    letter-spacing: 0.02em;
+    z-index: 50;
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+.chassis-credit .chassis-credit-emoji {
+    font-style: normal;
+    margin: 0 0.15em;
+}
+
+body[data-nav="bottom"] .chassis-credit {
+    left: auto;
+    right: clamp(1rem, 2vw, 1.5rem);
+}
+
+/* ---------- Custom cursor ---------- */
+.chassis-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: var(--accent);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    will-change: transform;
+}
+.chassis-cursor.visible { opacity: 1; }
+body.artifact-editor-editing .chassis-cursor { display: none; }
+
+@media (hover: none) {
+    .chassis-cursor { display: none; }
+}
+
+body.chassis-cursor-active:not(.artifact-editor-editing),
+body.chassis-cursor-active:not(.artifact-editor-editing) * { cursor: none; }
+
+/* ---------- Opt-outs ---------- */
+body[data-no-chrome] .nav-dots,
+body[data-no-chrome] .keyboard-hint,
+body[data-no-chrome] .chassis-credit,
+body[data-no-chrome] .chassis-cursor,
+body[data-no-chrome] .artifact-editor-toggle { display: none; }
+
+:fullscreen .keyboard-hint,
+:fullscreen .chassis-credit,
+:fullscreen .artifact-editor-toggle { display: none; }
+
+@media (hover: none) {
+    .keyboard-hint,
+    .chassis-credit { display: none; }
+}
+
+@media (max-width: 900px), (max-height: 560px) {
+    .nav-dots,
+    .keyboard-hint,
+    .chassis-credit,
+    .chassis-cursor { display: none; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ---------- Print (PDF export) ---------- */
+@media print {
+    .nav-dots, .keyboard-hint, .chassis-credit, .chassis-cursor { display: none !important; }
+    html, body { height: auto; overflow: visible; }
+    html { scroll-snap-type: none; }
+    .slide-viewport {
+        page-break-after: always;
+        break-after: page;
+        height: 100vh;
+    }
+    .slide-scale {
+        position: static !important;
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+    .slide {
+        width: 100% !important;
+        height: auto !important;
+    }
+}
+
+</style>
+<script>
+/* =====================================================
+   PRESENTATION CHASSIS — slide controller
+   Auto-initializes on DOMContentLoaded.
+   Exposes window.slides for programmatic control.
+   ===================================================== */
+(function () {
+    'use strict';
+
+    const REVEAL_SELECTOR = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur';
+    const STEP_SELECTOR = '.step';
+    const ALL_REVEAL_SELECTOR = REVEAL_SELECTOR + ', ' + STEP_SELECTOR;
+    const VIEWPORT_CLASS = 'slide-viewport';
+    const SCALE_CLASS = 'slide-scale';
+
+    function _detectLang() {
+        const param = new URLSearchParams(location.search).get('lang');
+        return (param || navigator.language || 'en').slice(0, 2).toLowerCase();
+    }
+
+    class SlidePresentation {
+        constructor() {
+            this.slides = Array.from(document.querySelectorAll('.slide'));
+            if (this.slides.length === 0) return;
+
+            // Ensure every slide has an id so hashes + anchor links work.
+            // Author-defined ids are preserved; the rest get slide-N (1-indexed).
+            this.slides.forEach((slide, idx) => {
+                if (!slide.id) slide.id = `slide-${idx + 1}`;
+            });
+            this.viewports = this._setupViewports();
+            this.scales = this.viewports.map((viewport) => viewport.querySelector(`.${SCALE_CLASS}`));
+
+            // Hide every reveal element BEFORE lifting the CSS FOUC guard.
+            // After this, .reveals-ready is on <html>, so CSS no longer hides
+            // reveals — inline styles keep them hidden until JS animates them.
+            this._setupReveals();
+
+            this.navDotsContainer = this._ensureNavDots();
+            this.keyboardHint = this._ensureKeyboardHint();
+            this.credit = this._ensureCredit();
+
+            this._setupCanvasScale();
+            this._setupIntersectionObserver();
+            this._setupKeyboardNav();
+            this._setupWheelNav();
+            this._setupTouchNav();
+            this._setupViewportSync();
+            this._buildNavDots();
+            this._setupHashNav();
+            this._setupCursor();
+            this._setupPrintSettling();
+
+            // If URL has a matching hash, start there; otherwise start at slide 0.
+            const initial = this._slideIndexFromHash(location.hash);
+            this.currentSlide = initial >= 0 ? initial : 0;
+            if (this.currentSlide !== 0) {
+                this._scrollToSlide(this.currentSlide, 'auto');
+            }
+            // Reveal initial slide immediately (observer may miss it on load).
+            const first = this.slides[this.currentSlide];
+            first.classList.add('visible');
+            this._playSlideReveals(first);
+            this._updateNavDots();
+        }
+
+        /* ---------- Viewport scaffolding ----------
+           Authors write .slide as the 1920×1080 artboard. The chassis wraps
+           that authored section in viewport and scale layers. */
+        _setupViewports() {
+            return this.slides.map((slide) => {
+                const existingScale = slide.parentElement?.classList.contains(SCALE_CLASS)
+                    ? slide.parentElement
+                    : null;
+                const existingViewport = existingScale?.parentElement?.classList.contains(VIEWPORT_CLASS)
+                    ? existingScale.parentElement
+                    : null;
+                if (existingViewport) {
+                    this._syncViewportBackground(slide, existingViewport);
+                    return existingViewport;
+                }
+
+                const viewport = document.createElement('div');
+                viewport.className = VIEWPORT_CLASS;
+                const scale = document.createElement('div');
+                scale.className = SCALE_CLASS;
+
+                slide.parentNode.insertBefore(viewport, slide);
+                viewport.appendChild(scale);
+                scale.appendChild(slide);
+                this._syncViewportBackground(slide, viewport);
+
+                return viewport;
+            });
+        }
+
+        _syncViewportBackground(slide, viewport) {
+            const style = getComputedStyle(slide);
+            const hasBackgroundImage = style.backgroundImage && style.backgroundImage !== 'none';
+            const hasBackgroundColor = !['rgba(0, 0, 0, 0)', 'transparent'].includes(style.backgroundColor);
+            if (hasBackgroundImage || hasBackgroundColor) {
+                viewport.style.background = style.background;
+            } else {
+                viewport.style.background = '';
+            }
+            slide.style.background = 'transparent';
+        }
+
+        /* ---------- DOM scaffolding (auto-inserted if missing) ---------- */
+        _ensureNavDots() {
+            let el = document.getElementById('navDots');
+            if (!el) {
+                el = document.createElement('nav');
+                el.id = 'navDots';
+                el.className = 'nav-dots';
+                el.setAttribute('aria-label', 'Slide navigation');
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        _ensureKeyboardHint() {
+            let el = document.querySelector('.keyboard-hint');
+            if (!el) {
+                const i18n = {
+                    en: { navigate: 'navigate', restart: 'restart', fullscreen: 'fullscreen' },
+                    es: { navigate: 'navegar',   restart: 'inicio',   fullscreen: 'fullscreen' },
+                    fr: { navigate: 'naviguer',  restart: 'début',    fullscreen: 'fullscreen' },
+                    de: { navigate: 'blättern',  restart: 'anfang',   fullscreen: 'vollbild' },
+                    pt: { navigate: 'navegar',   restart: 'início',   fullscreen: 'fullscreen' },
+                    ja: { navigate: '移動',      restart: '先頭',      fullscreen: '全画面' },
+                    ko: { navigate: '이동',      restart: '처음',      fullscreen: '전체화면' },
+                    zh: { navigate: '翻页',      restart: '重置',      fullscreen: '全屏' },
+                    it: { navigate: 'navigare',  restart: 'inizio',   fullscreen: 'fullscreen' },
+                    nl: { navigate: 'bladeren',  restart: 'begin',    fullscreen: 'vollscherm' },
+                };
+                const t = i18n[_detectLang()] || i18n.en;
+                el = document.createElement('div');
+                el.className = 'keyboard-hint';
+                el.innerHTML = `<kbd>←</kbd> <kbd>→</kbd> ${t.navigate} &middot; <kbd>R</kbd> ${t.restart} &middot; <kbd>F</kbd> ${t.fullscreen}`;
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        _ensureCredit() {
+            let el = document.querySelector('.chassis-credit');
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'chassis-credit';
+                el.setAttribute('aria-hidden', 'true');
+                el.innerHTML = 'Dave Bryan J. Beatingo';
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        /* ---------- Reveal engine ----------
+           Reveals are driven by the Web Animations API instead of CSS
+           transitions. This lets authors put .reveal* / .step on any
+           element: animation values live in the animation cascade origin
+           and win over normal author declarations, so no wrapper element
+           is required to isolate the chassis from author CSS.
+
+           State per slide:
+           - "hidden":  inline opacity/transform/filter from the 'from'
+                        keyframe of the variant. Set on init and on
+                        forward re-entry.
+           - "played":  animation is running or has run; the class
+                        `reveals-played` on the slide makes playback
+                        idempotent so observer re-fires (resize,
+                        fullscreen) don't restart the animation.
+           - "settled": animation canceled, inline styles cleared. Used
+                        for backward entries (we skip the animation and
+                        show the final state instantly) and for print. */
+
+        _setupReveals() {
+            // Lift the CSS FOUC guard first so getComputedStyle reads each
+            // element's natural opacity, not the guard's blanket opacity: 0.
+            // No paint occurs mid-task — inline hidden styles are applied
+            // before the browser yields, so there is no visible flash.
+            document.documentElement.classList.add('reveals-ready');
+            this.slides.forEach((slide) => {
+                slide.querySelectorAll(ALL_REVEAL_SELECTOR).forEach((el) => {
+                    el._targetOpacity = parseFloat(getComputedStyle(el).opacity);
+                    this._applyHiddenStyle(el);
+                });
+            });
+        }
+
+        _setupPrintSettling() {
+            // Browsers snapshot the document for print/PDF export. WAAPI
+            // animations don't necessarily complete in that snapshot, so
+            // settle every slide to its final state first. After printing,
+            // reset — but only for slides that haven't already been viewed,
+            // so the audience experience picks up where it left off.
+            window.addEventListener('beforeprint', () => {
+                this.slides.forEach((slide) => this._settleSlide(slide));
+            });
+        }
+
+        _readTokens() {
+            const cs = getComputedStyle(document.documentElement);
+            const rawDuration = parseFloat(cs.getPropertyValue('--reveal-duration'));
+            const duration = Number.isFinite(rawDuration) ? rawDuration * 1000 : 800;
+            const ease = cs.getPropertyValue('--reveal-ease').trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
+            const distance = cs.getPropertyValue('--reveal-distance').trim() || '28px';
+            const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            return {
+                duration: reducedMotion ? 1 : duration,
+                ease,
+                distance,
+            };
+        }
+
+        _getRevealDelay(el) {
+            // Use getAttribute('class') rather than el.className: on SVG
+            // elements, `.className` is an SVGAnimatedString (not a string)
+            // and calling .match on it throws. getAttribute is uniform
+            // across HTML and SVG.
+            const classes = el.getAttribute('class') || '';
+            const m = classes.match(/\bd([1-8])\b/);
+            if (!m) return 0;
+            // Matches CSS .dN: d1 = 100ms, d2 = 250ms, +150ms per step.
+            return 100 + (parseInt(m[1], 10) - 1) * 150;
+        }
+
+        _getRevealKeyframes(el, distance) {
+            const to = el._targetOpacity ?? 1;
+            if (el.classList.contains('reveal-left')) {
+                return [
+                    { opacity: 0, transform: `translateX(calc(-1 * ${distance}))` },
+                    { opacity: to, transform: 'translateX(0)' },
+                ];
+            }
+            if (el.classList.contains('reveal-right')) {
+                return [
+                    { opacity: 0, transform: `translateX(${distance})` },
+                    { opacity: to, transform: 'translateX(0)' },
+                ];
+            }
+            if (el.classList.contains('reveal-scale')) {
+                return [
+                    { opacity: 0, transform: 'scale(0.88)' },
+                    { opacity: to, transform: 'scale(1)' },
+                ];
+            }
+            if (el.classList.contains('reveal-blur')) {
+                return [
+                    { opacity: 0, filter: 'blur(10px)' },
+                    { opacity: to, filter: 'blur(0)' },
+                ];
+            }
+            // Default: .reveal or .step (slide up + fade)
+            return [
+                { opacity: 0, transform: `translateY(${distance})` },
+                { opacity: to, transform: 'translateY(0)' },
+            ];
+        }
+
+        _applyHiddenStyle(el) {
+            const { distance } = this._readTokens();
+            const from = this._getRevealKeyframes(el, distance)[0];
+            if ('opacity' in from) el.style.opacity = from.opacity;
+            if ('transform' in from) el.style.transform = from.transform;
+            if ('filter' in from) el.style.filter = from.filter;
+        }
+
+        _clearHiddenStyle(el) {
+            el.style.opacity = '';
+            el.style.transform = '';
+            el.style.filter = '';
+        }
+
+        _cancelReveal(el) {
+            if (el._revealAnim) {
+                el._revealAnim.cancel();
+                el._revealAnim = null;
+            }
+        }
+
+        _playReveal(el, delayOverride) {
+            this._cancelReveal(el);
+            const { duration, ease, distance } = this._readTokens();
+            const delay = typeof delayOverride === 'number' ? delayOverride : this._getRevealDelay(el);
+            const keyframes = this._getRevealKeyframes(el, distance);
+            // fill: 'backwards' applies the 'from' keyframe during the
+            // stagger delay so the element stays hidden until its turn,
+            // without pinning the 'to' keyframe after the animation ends.
+            // This lets co-existing author CSS (e.g. a `.pulse` CSS
+            // animation on the same element) take over naturally once the
+            // entrance completes — otherwise our fill would mask anything
+            // the author wanted to happen post-reveal.
+            const anim = el.animate(keyframes, {
+                duration,
+                delay,
+                easing: ease,
+                fill: 'backwards',
+            });
+            el._revealAnim = anim;
+            // Safe to clear inline 'from' styles now — the animation's
+            // backwards-fill holds the element at the 'from' keyframe for
+            // the duration of any stagger delay.
+            this._clearHiddenStyle(el);
+        }
+
+        _playSlideReveals(slide) {
+            if (slide.classList.contains('reveals-played')) return;
+            slide.classList.add('reveals-played');
+            slide.querySelectorAll(REVEAL_SELECTOR).forEach((el) => this._playReveal(el));
+            // .step elements stay hidden until the user advances.
+        }
+
+        _resetSlideReveals(slide) {
+            // Forward re-entry: cancel in-flight animations, re-hide
+            // everything, and reset step state so the slide replays cleanly
+            // when the observer next adds .visible.
+            slide.classList.remove('reveals-played');
+            slide.querySelectorAll(ALL_REVEAL_SELECTOR).forEach((el) => {
+                this._cancelReveal(el);
+                this._applyHiddenStyle(el);
+            });
+            slide.querySelectorAll('.step.step-shown').forEach((el) => el.classList.remove('step-shown'));
+        }
+
+        _settleSlide(slide) {
+            // Print / PDF export: jump to the final state with everything
+            // shown, so every step appears in the exported document.
+            slide.classList.add('reveals-played');
+            slide.querySelectorAll(ALL_REVEAL_SELECTOR).forEach((el) => {
+                this._cancelReveal(el);
+                this._clearHiddenStyle(el);
+            });
+            slide.querySelectorAll('.step').forEach((el) => el.classList.add('step-shown'));
+        }
+
+        _rewindSlide(slide) {
+            // Backward re-entry: show reveals instantly (no replay — the
+            // viewer already saw the intro) but hide every step, so the
+            // slide is positioned at the start of its stepped content and
+            // can be stepped through again.
+            slide.classList.add('reveals-played');
+            slide.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
+                this._cancelReveal(el);
+                this._clearHiddenStyle(el);
+            });
+            slide.querySelectorAll('.step').forEach((el) => {
+                el.classList.remove('step-shown');
+                this._cancelReveal(el);
+                this._applyHiddenStyle(el);
+            });
+        }
+
+        /* ---------- Navigation ----------
+           goTo scrolls to the target. Both forward-replay and backward-
+           rewind need to mutate the target BEFORE scrolling — while it's
+           still offscreen — so the viewer never sees the old state flash
+           into view. Resetting after the slide is in view causes a visible
+           "show then hide" blink; the IntersectionObserver fires too late
+           (80% threshold) to catch it. */
+        goTo(index) {
+            const clamped = Math.max(0, Math.min(this.slides.length - 1, index));
+            if (clamped === this.currentSlide) return;
+
+            const target = this.slides[clamped];
+            const goingForward = clamped > this.currentSlide;
+
+            if (target.classList.contains('visible')) {
+                if (goingForward) {
+                    // Forward replay: full reset so the observer can play reveals fresh.
+                    target.classList.remove('visible');
+                    this._resetSlideReveals(target);
+                } else {
+                    // Backward rewind: hide any shown steps so the slide
+                    // scrolls back in at the start of its stepped content.
+                    this._rewindSlide(target);
+                }
+            }
+
+            this._scrollToSlide(clamped, 'smooth');
+        }
+
+        _scrollToSlide(index, behavior) {
+            this.viewports[index]?.scrollIntoView({ behavior, block: 'start' });
+        }
+
+        _slideIndexFromHash(hash) {
+            if (!hash) return -1;
+            return this.slides.findIndex((s) => '#' + s.id === hash);
+        }
+
+        _syncHash() {
+            const slide = this.slides[this.currentSlide];
+            if (!slide || !slide.id) return;
+            const newHash = '#' + slide.id;
+            if (location.hash !== newHash) {
+                // replaceState — keeps the URL in sync without polluting history,
+                // so the browser back button exits the deck instead of stepping through slides.
+                try {
+                    history.replaceState(null, '', newHash);
+                } catch {
+                    // Sandboxed iframes (opaque origin, about:srcdoc) reject URL
+                    // mutation with a SecurityError. Hash sync is a nicety — an
+                    // unguarded throw here kills the observer callback before it
+                    // marks the slide visible and plays its reveals.
+                }
+            }
+        }
+
+        _setupHashNav() {
+            // React to external hash changes (anchor link clicks, back/forward if user uses pushState manually)
+            window.addEventListener('hashchange', () => {
+                const idx = this._slideIndexFromHash(location.hash);
+                if (idx >= 0 && idx !== this.currentSlide) this.goTo(idx);
+            });
+        }
+
+        /* ---------- Custom cursor ----------
+           Accent disc that follows the pointer, hidden after idle. */
+        _setupCursor() {
+            if (!matchMedia('(hover: hover)').matches) return;
+
+            const cursor = document.createElement('div');
+            cursor.className = 'chassis-cursor';
+            cursor.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(cursor);
+            document.body.classList.add('chassis-cursor-active');
+
+            const half = 16;  // matches width/height / 2 in CSS
+            const IDLE_MS = 2500;
+            let idleTimer = null;
+
+            const show = () => {
+                cursor.classList.add('visible');
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(() => {
+                    cursor.classList.remove('visible');
+                }, IDLE_MS);
+            };
+            const hide = () => {
+                clearTimeout(idleTimer);
+                cursor.classList.remove('visible');
+            };
+
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.transform = `translate3d(${e.clientX - half}px, ${e.clientY - half}px, 0)`;
+                show();
+            });
+            document.addEventListener('mouseleave', hide);
+            document.addEventListener('mouseenter', show);
+        }
+
+        /* ---------- Fullscreen ---------- */
+        toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen?.().catch(() => {});
+            } else {
+                document.exitFullscreen?.();
+            }
+        }
+
+        next() { this.goTo(this.currentSlide + 1); }
+        prev() { this.goTo(this.currentSlide - 1); }
+        first() { this.goTo(0); }
+        last() { this.goTo(this.slides.length - 1); }
+
+        /* ---------- Step-aware advance / retreat ----------
+           advance() reveals the next .step on the current slide (if any),
+           otherwise advances to the next slide. retreat() hides the last
+           revealed step, otherwise goes back to the previous slide. */
+        advance() {
+            const current = this.slides[this.currentSlide];
+            const nextStep = current?.querySelector('.step:not(.step-shown)');
+            if (nextStep) {
+                nextStep.classList.add('step-shown');
+                // No stagger on click-reveal — the user's gesture is the trigger.
+                this._playReveal(nextStep, 0);
+                return;
+            }
+            this.next();
+        }
+        retreat() {
+            const current = this.slides[this.currentSlide];
+            const shown = current?.querySelectorAll('.step.step-shown');
+            if (shown && shown.length > 0) {
+                const last = shown[shown.length - 1];
+                last.classList.remove('step-shown');
+                this._cancelReveal(last);
+                this._applyHiddenStyle(last);
+                return;
+            }
+            this.prev();
+        }
+
+        /* ---------- Intersection observer ----------
+           Fire late (>= 80% in view) so reveals play on a settled slide.
+           This is the single source of truth for active-slide state.
+
+           Forward:  add .visible, play reveals. (goTo() has already reset
+                     the target to pre-reveal state if this is a re-visit,
+                     so the animation is fresh either way.)
+           Backward: add .visible, rewind to the start of the stepped
+                     content — reveals are shown instantly (no replay) and
+                     every step is hidden again so the viewer can step
+                     through it fresh. */
+        _setupIntersectionObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    const idx = this.viewports.indexOf(entry.target);
+                    if (idx < 0) return;
+                    const slide = this.slides[idx];
+
+                    if (idx === this.currentSlide) {
+                        // Same-slide re-fire (initial load, resize, fullscreen).
+                        if (!slide.classList.contains('visible')) {
+                            slide.classList.add('visible');
+                        }
+                        // Idempotent: only plays if not already marked played.
+                        this._playSlideReveals(slide);
+                        return;
+                    }
+
+                    const goingForward = idx > this.currentSlide;
+                    this.currentSlide = idx;
+                    this._updateNavDots();
+                    this._syncHash();
+
+                    slide.classList.add('visible');
+                    if (goingForward) {
+                        this._playSlideReveals(slide);
+                    } else {
+                        this._rewindSlide(slide);
+                    }
+                });
+            }, { threshold: 0.8 });
+
+            this.viewports.forEach((viewport) => observer.observe(viewport));
+        }
+
+        /* ---------- Keyboard ---------- */
+        _setupKeyboardNav() {
+            document.addEventListener('keydown', (e) => {
+                // Skip when user is editing text
+                if (e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+
+                switch (e.key) {
+                    // Step-aware: consume steps first, then advance slides
+                    case 'ArrowDown':
+                    case 'ArrowRight':
+                    case ' ':
+                        e.preventDefault(); this.advance(); break;
+                    case 'ArrowUp':
+                    case 'ArrowLeft':
+                        e.preventDefault(); this.retreat(); break;
+                    // Slide-level: always skip past steps
+                    case 'PageDown':
+                        e.preventDefault(); this.next(); break;
+                    case 'PageUp':
+                        e.preventDefault(); this.prev(); break;
+                    case 'Home':
+                        e.preventDefault(); this.first(); break;
+                    case 'End':
+                        e.preventDefault(); this.last(); break;
+                    case 'f':
+                    case 'F':
+                        e.preventDefault(); this.toggleFullscreen(); break;
+                    case 'r':
+                    case 'R':
+                        e.preventDefault(); this.first(); break;
+                }
+            });
+        }
+
+        /* ---------- Wheel / trackpad ----------
+           ALWAYS preventDefault — letting any native wheel scroll through
+           races against scrollIntoView + mandatory snap, and blocks macOS
+           two-finger horizontal swipes from triggering browser back/forward.
+           Whichever axis has the larger magnitude wins, so vertical scroll
+           and horizontal trackpad swipes both drive advance/retreat. Lock
+           briefly after a gesture so trackpad inertia (continuous small
+           deltas) can't spam next(). */
+        _setupWheelNav() {
+            let locked = false;
+            window.addEventListener('wheel', (e) => {
+                if (e.ctrlKey) return;                // preserve browser pinch-zoom (ctrl+wheel)
+                e.preventDefault();                   // block native scroll + horizontal back-swipe
+                if (locked) return;
+                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                if (Math.abs(delta) < 20) return;     // ignore tiny flicks
+                locked = true;
+                if (delta > 0) this.advance(); else this.retreat();
+                setTimeout(() => { locked = false; }, 500);
+            }, { passive: false });
+        }
+
+        /* ---------- Touch / swipe ----------
+           Horizontal swipes advance / retreat slides; left = next, right =
+           prev (matches stories / carousel conventions). Dominantly
+           vertical swipes fall through to native scroll-snap so the
+           existing top/bottom behavior keeps working. A time budget
+           rejects slow pans that were really aborted scrolls. */
+        _setupTouchNav() {
+            const MIN_DISTANCE = 50;     // px — below this is a tap or jitter
+            const MAX_TIME = 600;        // ms — slower than this is a pan, not a swipe
+            const DOMINANCE = 1.2;       // horizontal must beat vertical by this factor
+
+            let startX = 0, startY = 0, startTime = 0;
+            let tracking = false;
+
+            window.addEventListener('touchstart', (e) => {
+                if (document.body.classList.contains('artifact-editor-editing')) { tracking = false; return; }
+                if (e.touches.length !== 1) { tracking = false; return; }
+                const t = e.touches[0];
+                startX = t.clientX;
+                startY = t.clientY;
+                startTime = performance.now();
+                tracking = true;
+            }, { passive: true });
+
+            window.addEventListener('touchend', (e) => {
+                if (!tracking) return;
+                tracking = false;
+                const t = e.changedTouches[0];
+                const dx = t.clientX - startX;
+                const dy = t.clientY - startY;
+                const ax = Math.abs(dx), ay = Math.abs(dy);
+                if (ax < MIN_DISTANCE) return;
+                if (ax < ay * DOMINANCE) return;
+                if (performance.now() - startTime > MAX_TIME) return;
+                if (dx < 0) this.advance(); else this.retreat();
+            }, { passive: true });
+
+            window.addEventListener('touchcancel', () => { tracking = false; }, { passive: true });
+        }
+
+        /* ---------- Canvas scaling ----------
+           Each scaler holds a fixed 1920×1080 slide. Compute the
+           scale factor that fits it inside the viewport and apply via
+           CSS custom property. Runs on init, resize, and fullscreen. */
+        _setupCanvasScale() {
+            const CANVAS_W = 1920;
+            const CANVAS_H = 1080;
+            const scales = this.scales;
+
+            const update = () => {
+                const scale = Math.min(
+                    window.innerWidth / CANVAS_W,
+                    window.innerHeight / CANVAS_H
+                );
+                scales.forEach((el) => {
+                    el?.style.setProperty('--slide-scale', scale);
+                });
+            };
+
+            update();
+            window.addEventListener('resize', update);
+            document.addEventListener('fullscreenchange', () => {
+                requestAnimationFrame(update);
+            });
+        }
+
+        /* ---------- Viewport sync ----------
+           Resize / fullscreenchange → realign current slide. Each slide is
+           100vh, so a viewport height change leaves the existing scroll
+           position out of alignment with the slide top; scroll-snap doesn't
+           re-snap on its own. */
+        _setupViewportSync() {
+            const realign = () => {
+                requestAnimationFrame(() => {
+                    this._scrollToSlide(this.currentSlide, 'auto');
+                });
+            };
+            window.addEventListener('resize', realign);
+            document.addEventListener('fullscreenchange', realign);
+        }
+
+        /* ---------- Nav dots ---------- */
+        _buildNavDots() {
+            // Clear first — prevents duplicates when DOM is re-serialized/re-opened
+            this.navDotsContainer.innerHTML = '';
+            this.slides.forEach((slide, idx) => {
+                const dot = document.createElement('button');
+                dot.setAttribute('aria-label', `Go to slide ${idx + 1}`);
+                if (idx === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => this.goTo(idx));
+                this.navDotsContainer.appendChild(dot);
+            });
+        }
+
+        _updateNavDots() {
+            const dots = this.navDotsContainer.querySelectorAll('button');
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === this.currentSlide);
+            });
+        }
+    }
+
+    /* ---------- Auto-init ---------- */
+    function init() {
+        // Each slide canvas is its own editable host for the inline editor.
+        document.querySelectorAll('.slide').forEach(function (el) {
+            el.classList.add('artifact-editable');
+        });
+        window.slides = new SlidePresentation();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+</script>
+<!-- /skill:chassis -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Relational Model | Student Edition</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <style>
+        :root{--background:#f0f4f8;--foreground:#0a0a0a;--accent:#1565C0;--accent-light:#1E88E5;--accent-dark:#0D47A1;--accent-foreground:#ffffff;--card:#1565C0;--card-foreground:#ffffff;--muted:#e3eaf2;--border:rgba(21,101,192,0.15);--font-display:'Archivo Black',sans-serif;--font-body:'Space Grotesk',sans-serif;--bg-gradient:linear-gradient(135deg,#f0f4f8 0%,#e1ecf7 50%,#f0f4f8 100%);--card-gradient:linear-gradient(135deg,#1565C0 0%,#1E88E5 100%)}
+        body{font-family:var(--font-body);background:var(--background)}h1,h2,h3{font-family:var(--font-display);letter-spacing:-0.02em}
+        .slide{background:var(--bg-gradient);padding:80px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+        .section-num{font-family:var(--font-display);font-size:280px;color:rgba(21,101,192,0.06);position:absolute;top:-40px;right:60px;line-height:1;pointer-events:none}
+        .blue-card{background:var(--card-gradient);color:var(--card-foreground);border-radius:24px;padding:60px;position:relative;overflow:hidden}.blue-card::after{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);border-radius:50%;pointer-events:none}.blue-card h2,.blue-card h3{color:#fff}.blue-card p,.blue-card li{color:rgba(255,255,255,0.92);font-size:28px;line-height:1.5}
+        .eyebrow{font-family:var(--font-body);font-size:24px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px}.blue-card .eyebrow{color:rgba(255,255,255,0.7)}
+        p{font-size:32px;line-height:1.5;color:#333;max-width:800px}h2{font-size:64px;line-height:1.1;color:var(--foreground);margin-bottom:24px}h3{font-size:44px;line-height:1.2;color:var(--foreground);margin-bottom:16px}
+        ul,ol{list-style:none;padding:0;margin:0}li{font-size:30px;line-height:1.5;color:#333;padding:8px 0;padding-left:32px;position:relative}li::before{content:'';position:absolute;left:0;top:18px;width:12px;height:12px;background:var(--accent);border-radius:3px}.blue-card li::before{background:rgba(255,255,255,0.6)}
+        table{width:100%;border-collapse:collapse;font-size:26px;margin-top:24px}th{background:var(--accent);color:white;padding:16px 24px;text-align:left;font-weight:600}td{padding:14px 24px;border-bottom:1px solid var(--border);color:#333}tr:nth-child(even) td{background:rgba(21,101,192,0.04)}
+        .hero{justify-content:space-between;background:linear-gradient(135deg,#0D47A1 0%,#1565C0 40%,#1E88E5 100%)}.hero *{color:white}.hero h1{font-size:96px;line-height:1.05}.hero p{color:rgba(255,255,255,0.8);font-size:32px}
+        .pause-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#E3F2FD 0%,#BBDEFB 50%,#E3F2FD 100%)}.pause-slide h2{font-size:72px;color:var(--accent-dark)}.pause-slide p{font-size:36px;color:var(--accent);text-align:center}.pause-icon{font-size:80px;margin-bottom:24px}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:32px}.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-top:32px}
+        .grid-card{background:white;border-radius:16px;padding:32px;border:2px solid var(--border);box-shadow:0 4px 20px rgba(21,101,192,0.06)}.grid-card h3{font-size:28px;margin-bottom:12px}.grid-card p{font-size:24px;color:#555}
+        .transition-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#0D47A1 0%,#1565C0 60%,#1976D2 100%)}.transition-slide h2{color:white;font-size:80px}.transition-slide p{color:rgba(255,255,255,0.7);font-size:32px;text-align:center}
+        .end-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#1565C0 0%,#0D47A1 100%)}.end-slide h1{color:white;font-size:96px}.end-slide p{color:rgba(255,255,255,0.8);font-size:32px;text-align:center}
+        .code-block{background:#1a1a2e;color:#e0e0e0;border-radius:16px;padding:32px;font-family:'Courier New',monospace;font-size:24px;line-height:1.6;margin-top:24px}.code-block .keyword{color:#4fc3f7}.code-block .string{color:#ce93d8}.code-block .comment{color:#666}
+        #particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+        .highlight-cell{background:rgba(21,101,192,0.1);font-weight:700}
+        .term-def{display:flex;gap:16px;align-items:baseline;margin-bottom:16px}.term-def .term{font-weight:700;color:var(--accent);font-size:28px;min-width:200px}.term-def .def{font-size:26px;color:#444}
+    </style>
+    <style>
+        /* Embedded DB folder presentation theme. */
+        :root {
+            color-scheme: dark;
+            --background: #0a0e1a;
+            --foreground: #e2e8f0;
+            --card: rgba(15, 23, 42, 0.80);
+            --card-foreground: #e2e8f0;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --accent-dark: #1d4ed8;
+            --accent-foreground: #ffffff;
+            --muted: #94a3b8;
+            --muted-foreground: rgba(148, 163, 184, 0.72);
+            --border: rgba(59, 130, 246, 0.30);
+            --font-display: 'Archivo Black', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
+            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #0a0e1a 100%);
+            --card-gradient: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+            --code-bg: rgba(2, 6, 23, 0.90);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --nav-dot-color: #3b82f6;
+            --nav-dot-active-color: #60a5fa;
+        }
+
+        html, body { background: var(--background) !important; }
+        body { color: var(--foreground) !important; font-family: var(--font-body) !important; }
+        #particles { opacity: 0.35 !important; }
+        .slide-viewport { background: var(--background) !important; }
+
+        .slide {
+            background: var(--bg-gradient) !important;
+            color: var(--foreground) !important;
+            font-family: var(--font-body) !important;
+            padding: 80px !important;
+            gap: 28px !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        .slide::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(125deg, rgba(59, 130, 246, 0.10), transparent 45%);
+        }
+        .slide > * { position: relative; z-index: 1; }
+
+        h1, h2, h3 {
+            color: #ffffff !important;
+            font-family: var(--font-display) !important;
+            letter-spacing: 0 !important;
+        }
+        h1, .hero h1, .end-slide h1 { font-size: 88px !important; line-height: 1.05 !important; }
+        h2, .transition-slide h2, .pause-slide h2 { font-size: 52px !important; line-height: 1.12 !important; margin-bottom: 10px !important; }
+        h3 { font-size: 38px !important; line-height: 1.2 !important; margin-bottom: 12px !important; }
+
+        p {
+            color: #cbd5e1 !important;
+            font-family: var(--font-body) !important;
+            font-size: 26px !important;
+            line-height: 1.55 !important;
+            max-width: 900px !important;
+        }
+        strong { color: #f8fafc !important; }
+
+        .eyebrow {
+            color: var(--accent-light) !important;
+            font-family: var(--font-body) !important;
+            font-size: 22px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.14em !important;
+            text-transform: uppercase !important;
+            margin-bottom: 4px !important;
+        }
+
+        .section-num, .section-number {
+            color: rgba(59, 130, 246, 0.08) !important;
+            font-family: var(--font-display) !important;
+            font-size: 180px !important;
+            line-height: 1 !important;
+            position: absolute !important;
+            top: 40px !important;
+            right: 80px !important;
+            pointer-events: none !important;
+            opacity: 1 !important;
+        }
+
+        .hero, .transition-slide, .end-slide, .pause-slide {
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            gap: 22px !important;
+            background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
+        }
+        .hero::before, .transition-slide::before, .end-slide::before, .pause-slide::before {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), transparent 56%) !important;
+        }
+        .hero p, .transition-slide p, .end-slide p, .pause-slide p {
+            color: var(--muted-foreground) !important;
+            text-align: center !important;
+        }
+
+        .blue-card, .grid-card, .card, .dark-card, .quote-card, .info-card, .example-card {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            box-shadow: none !important;
+            color: var(--card-foreground) !important;
+            padding: 32px 36px !important;
+            backdrop-filter: blur(8px);
+        }
+        .blue-card {
+            background: var(--card-gradient) !important;
+            border-color: rgba(96, 165, 250, 0.36) !important;
+            padding: 42px 48px !important;
+        }
+        .blue-card::after { display: none !important; }
+        .blue-card h2, .blue-card h3, .grid-card h3, .card h3, .dark-card h3 { color: #ffffff !important; }
+        .blue-card p, .blue-card li { color: rgba(255, 255, 255, 0.92) !important; }
+        .grid-card p, .card p, .dark-card p { color: #94a3b8 !important; font-size: 20px !important; }
+
+        .grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
+        .grid-3 { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; }
+
+        ul, ol { list-style: none !important; padding: 0 !important; margin: 0 !important; gap: 16px !important; }
+        li {
+            color: #cbd5e1 !important;
+            font-family: var(--font-body) !important;
+            font-size: 26px !important;
+            line-height: 1.5 !important;
+            padding: 8px 0 8px 28px !important;
+            position: relative !important;
+        }
+        li::before {
+            content: ">" !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 8px !important;
+            width: auto !important;
+            height: auto !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+            color: var(--accent-light) !important;
+            font-weight: 700 !important;
+        }
+        .blue-card li::before { color: #bfdbfe !important; }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            font-family: var(--font-body) !important;
+            font-size: 21px !important;
+            margin-top: 18px !important;
+        }
+        th {
+            background: rgba(59, 130, 246, 0.15) !important;
+            border-bottom: 2px solid var(--border) !important;
+            color: #93c5fd !important;
+            font-weight: 600 !important;
+            padding: 12px 16px !important;
+            text-align: left !important;
+        }
+        td {
+            background: transparent !important;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.10) !important;
+            color: #cbd5e1 !important;
+            padding: 10px 16px !important;
+        }
+        tr:nth-child(even) td { background: rgba(59, 130, 246, 0.04) !important; }
+
+        pre, .code-block {
+            background: var(--code-bg) !important;
+            border: 1px solid rgba(59, 130, 246, 0.20) !important;
+            border-radius: 12px !important;
+            box-shadow: none !important;
+            color: #e2e8f0 !important;
+            font-family: var(--font-mono) !important;
+            font-size: 19px !important;
+            line-height: 1.6 !important;
+            padding: 24px 28px !important;
+            overflow-x: auto !important;
+        }
+        .code-block .keyword, .kw { color: #93c5fd !important; font-weight: 500 !important; }
+        .code-block .string, .str { color: #86efac !important; }
+        .code-block .comment, .cm { color: #64748b !important; font-style: italic !important; }
+        .code-block .number, .num { color: #fbbf24 !important; }
+        .fn, .code-block .function { color: #c4b5fd !important; }
+
+        .quote-slide { align-items: center !important; justify-content: center !important; text-align: center !important; }
+        .quote-text { color: #e2e8f0 !important; font-size: 30px !important; max-width: 940px !important; }
+        .quote-attr, .accent, .highlight { color: var(--accent-light) !important; }
+        .bright { color: #ffffff !important; }
+        .highlight-green { color: var(--success) !important; }
+        .highlight-orange { color: var(--warning) !important; }
+        .highlight-red { color: var(--danger) !important; }
+        .stat-num { color: var(--accent-light) !important; font-size: 120px !important; }
+        .stat-label { color: var(--muted-foreground) !important; font-size: 22px !important; }
+
+        .venn-left { background: rgba(59, 130, 246, 0.18) !important; border-color: var(--accent) !important; }
+        .venn-right { background: rgba(16, 185, 129, 0.14) !important; border-color: var(--success) !important; }
+        .venn-label { color: #cbd5e1 !important; }
+
+        [style*="color:#333"], [style*="color: #333"],
+        [style*="color:#555"], [style*="color: #555"],
+        [style*="color:#666"], [style*="color: #666"],
+        [style*="color:var(--muted)"], [style*="color: var(--muted)"] {
+            color: var(--muted-foreground) !important;
+        }
+        [style*="color:var(--accent)"], [style*="color: var(--accent)"],
+        [style*="color:var(--accent-light)"], [style*="color: var(--accent-light)"] {
+            color: var(--accent-light) !important;
+        }
+        [style*="color:#c62828"], [style*="color: #c62828"],
+        [style*="color:#ef4444"], [style*="color: #ef4444"] {
+            color: var(--danger) !important;
+        }
+        [style*="background:var(--muted)"], [style*="background: var(--muted)"] {
+            background: rgba(15, 23, 42, 0.86) !important;
+            border: 1px solid var(--border) !important;
+        }
+        [style*="background:var(--card-gradient)"], [style*="background: var(--card-gradient)"] {
+            background: var(--card-gradient) !important;
+        }
+    
+/* Title-slide cleanup: match the plain centered title layout. */
+.title-slide {
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 22px !important;
+    background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
+}
+.title-slide::before {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 56%) !important;
+}
+.title-slide .eyebrow,
+.title-slide .section-num,
+.title-slide .section-number {
+    display: none !important;
+}
+.title-slide h1,
+.title-slide h1 *,
+.title-slide .highlight,
+.title-slide .accent {
+    color: #ffffff !important;
+}
+.title-slide h1 {
+    font-size: 88px !important;
+    line-height: 1.05 !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+.title-slide p {
+    color: var(--muted-foreground, var(--muted, #94a3b8)) !important;
+    font-size: 26px !important;
+    line-height: 1.45 !important;
+    max-width: 900px !important;
+    margin: 0 !important;
+    text-align: center !important;
+}</style>
+
+
+
+<style data-db-session-upgrade>
+  .slide { gap:0 !important; }
+  .slide:not([style*="padding-top"]) { padding-top:70px !important; padding-bottom:70px !important; }
+  .slide.practice-slide { padding-top:25px !important; padding-bottom:25px !important; }
+  .db-subject-watermark { position:absolute; top:18px; right:30px; z-index:60; color:var(--muted-foreground,var(--muted,#64748b)); font:600 14px/1.2 var(--font-body,sans-serif); letter-spacing:.02em; opacity:.72; white-space:nowrap; pointer-events:none; user-select:none; }
+  .db-reference-layout { display:grid; grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr); gap:30px; align-items:stretch; margin-top:18px; }
+  .db-reference-copy { min-height:560px; display:flex; flex-direction:column; justify-content:center; gap:18px; }
+  .db-reference-copy h3 { margin:0; font-size:28px; color:var(--accent,var(--accent-light)); }
+  .db-reference-copy ul { margin:0; }
+  .db-reference-copy li { font-size:20px; line-height:1.45; margin-bottom:12px; }
+  .db-reference-frame { min-height:560px; padding:14px; display:flex; flex-direction:column; justify-content:center; background:rgba(255,255,255,.06); border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; overflow:hidden; }
+  .db-reference-frame img { width:100%; max-height:505px; object-fit:contain; border-radius:10px; background:#fff; }
+  .db-reference-caption { margin-top:10px; font-size:14px; line-height:1.35; color:var(--muted-foreground,var(--muted,#94a3b8)); text-align:center; }
+  .db-concept-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:28px; }
+  .db-concept-card { min-height:300px; padding:30px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; background:var(--card-gradient,var(--card,#172033)); }
+  .db-concept-card h3 { margin:0 0 14px; font-size:28px; color:var(--accent,var(--accent-light)); }
+  .db-concept-card p { margin:0; font-size:21px; line-height:1.45; }
+  .db-flow { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:30px; }
+  .db-flow-step { position:relative; min-height:150px; display:flex; align-items:center; justify-content:center; padding:24px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:16px; background:var(--card-gradient,var(--card,#172033)); color:var(--foreground); font-family:var(--font-body); font-size:22px; font-weight:700; text-align:center; }
+  .db-flow-step:not(:last-child)::after { content:'→'; position:absolute; right:-20px; top:50%; z-index:2; transform:translateY(-50%); color:var(--accent,var(--accent-light)); font-size:30px; }
+  .db-compare { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:26px; }
+  .db-compare > div { padding:24px 28px; border-radius:16px; background:rgba(255,255,255,.055); }
+  .db-compare strong { display:block; margin-bottom:8px; color:var(--accent,var(--accent-light)); font-family:var(--font-body); font-size:20px; text-transform:uppercase; letter-spacing:.08em; }
+  .db-compare p { font-size:19px; line-height:1.4; }
+  .mock-phone,.phone-mockup,.browser-frame,.screenshot-frame,.ui-reference,.ui-web-frame,.dashboard-mockup,.app-window,.terminal-window { box-sizing:border-box; overflow:hidden; max-width:100%; }
+  .slide img { max-width:100%; }
+</style>
+<style data-image-lightbox-styles>
+  .slide img[data-lightbox-ready] { cursor:zoom-in; transition:filter .18s ease,transform .18s ease; }
+  .slide img[data-lightbox-ready]:hover { filter:brightness(1.06); }
+  .slide img[data-lightbox-ready]:focus-visible { outline:4px solid var(--accent,var(--accent-light)); outline-offset:5px; }
+  body.image-lightbox-open { overflow:hidden !important; }
+  .image-lightbox { position:fixed; inset:0; z-index:2147483647; display:grid; place-items:center; padding:58px 46px 38px; background:rgba(3,5,12,.94); backdrop-filter:blur(12px); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .2s ease,visibility .2s ease; }
+  .image-lightbox.is-open { opacity:1; visibility:visible; pointer-events:auto; }
+  .image-lightbox__figure { width:min(94vw,1800px); height:min(88vh,980px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; margin:0; }
+  .image-lightbox__image { display:block; width:auto !important; height:auto !important; max-width:94vw !important; max-height:80vh !important; object-fit:contain !important; border-radius:12px; background:#fff; box-shadow:0 28px 80px rgba(0,0,0,.55); }
+  .image-lightbox__caption { max-width:1100px; color:rgba(255,255,255,.85); font:500 17px/1.4 var(--font-body,sans-serif); text-align:center; }
+  .image-lightbox__close { position:fixed; top:18px; right:24px; width:52px; height:52px; display:grid; place-items:center; padding:0; border:1px solid rgba(255,255,255,.25); border-radius:50%; background:rgba(18,22,32,.9); color:#fff; font:300 36px/1 sans-serif; cursor:pointer; }
+</style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+
+    <section class="slide title-slide hero"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1">Week 3 · Session 1</span>
+        <h1 class="reveal d2">The Relational<br>Model</h1>
+        <p class="reveal d3">Formal definitions, terminology, and properties</p>
+    <p class="reveal d4" style="font-size:22px;color:var(--accent,var(--accent-light));margin-top:20px;">Student Edition - expanded lesson explanations</p></section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Recap</span>
+        <h2 class="reveal d2">What We Know So Far</h2>
+        <ul>
+            <li class="step">Data models: Hierarchical, Network, Relational, NoSQL</li>
+            <li class="step">Relational model: tables with rows and columns</li>
+            <li class="step">Proposed by E.F. Codd in 1970</li>
+            <li class="step">Most widely used model in the industry</li>
+        </ul>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Today</span>
+        <h2 class="reveal d2">Going Deeper</h2>
+        <ul>
+            <li class="step">Formal relational terminology</li>
+            <li class="step">Domains, attributes, tuples, relations</li>
+            <li class="step">Properties of relations</li>
+            <li class="step">Relational notation</li>
+            <li class="step">Introduction to Relational Algebra</li>
+        </ul>
+    </section>
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 01</span>
+        <h2 class="reveal d2">Formal Terminology</h2>
+        <p class="reveal d3">The precise language of relational databases</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Two Languages</span>
+        <h2 class="reveal d2">Informal vs. Formal Terms</h2>
+        <table class="reveal d3">
+            <thead><tr><th>Informal (Common)</th><th>Formal (Academic)</th><th>SQL Term</th></tr></thead>
+            <tbody>
+                <tr><td>Table</td><td><strong>Relation</strong></td><td>TABLE</td></tr>
+                <tr><td>Row</td><td><strong>Tuple</strong></td><td>ROW / RECORD</td></tr>
+                <tr><td>Column</td><td><strong>Attribute</strong></td><td>COLUMN / FIELD</td></tr>
+                <tr><td>Data type</td><td><strong>Domain</strong></td><td>DATA TYPE</td></tr>
+                <tr><td>Table definition</td><td><strong>Relation Schema</strong></td><td>CREATE TABLE</td></tr>
+                <tr><td>Number of columns</td><td><strong>Degree</strong></td><td>—</td></tr>
+                <tr><td>Number of rows</td><td><strong>Cardinality</strong></td><td>COUNT(*)</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Visual Mapping</span>
+        <h2 class="reveal d2">Anatomy of a Relation</h2>
+        <p class="reveal d3" style="font-size:24px; color:var(--accent); font-weight:700;">STUDENTS (Relation Name / Table Name)</p>
+        <table class="reveal d3" style="margin-top:8px;">
+            <thead><tr><th>StudentID</th><th>Name</th><th>Course</th><th>GPA</th></tr></thead>
+            <tbody>
+                <tr><td>2024-001</td><td>Maria Santos</td><td>BSIS</td><td>1.50</td></tr>
+                <tr><td>2024-002</td><td>Juan Cruz</td><td>BSIT</td><td>1.75</td></tr>
+                <tr><td>2024-003</td><td>Ana Reyes</td><td>BSIS</td><td>1.25</td></tr>
+            </tbody>
+        </table>
+        <ul style="margin-top:20px;">
+            <li class="step">← <strong>Attributes</strong> (columns): StudentID, Name, Course, GPA — Degree = 4</li>
+            <li class="step">← <strong>Tuples</strong> (rows): 3 student records — Cardinality = 3</li>
+        </ul>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Domain</span>
+        <h2 class="reveal d2">What is a Domain?</h2>
+        <p class="reveal d3">A <strong>domain</strong> is the set of all possible valid values for an attribute. Think of it as a "value pool."</p>
+        <table class="step">
+            <thead><tr><th>Attribute</th><th>Domain</th><th>Example Values</th></tr></thead>
+            <tbody>
+                <tr><td>StudentID</td><td>Format: YYYY-NNN</td><td>2024-001, 2024-002</td></tr>
+                <tr><td>Name</td><td>Strings up to 100 chars</td><td>"Maria Santos"</td></tr>
+                <tr><td>Course</td><td>{"BSIS", "BSIT", "BSCS"}</td><td>"BSIS"</td></tr>
+                <tr><td>GPA</td><td>Decimal 1.00 to 5.00</td><td>1.50, 2.00</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Domain Rules</span>
+        <h2 class="reveal d2">Domain Constraints</h2>
+        <ul>
+            <li class="step"><strong>Atomic:</strong> Each domain value must be indivisible (no lists, no sets)</li>
+            <li class="step"><strong>Typed:</strong> All values in a domain share the same data type</li>
+            <li class="step"><strong>Named:</strong> Domains should be meaningful (not just "VARCHAR")</li>
+            <li class="step"><strong>Comparable:</strong> Only attributes from the same domain can be meaningfully compared</li>
+        </ul>
+        <p class="step" style="margin-top:16px; font-size:26px; color:var(--accent);">Example: Comparing StudentID with GPA makes no sense — different domains!</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Relation Schema</span>
+        <h2 class="reveal d2">Relation Schema (Blueprint)</h2>
+        <p class="reveal d3">A relation schema defines the NAME and ATTRIBUTES of a relation. Written as:</p>
+        <div class="code-block step" style="font-size:28px;">
+            STUDENTS(<span class="keyword">StudentID</span>, Name, Course, GPA)
+        </div>
+        <ul style="margin-top:24px;">
+            <li class="step"><strong>Relation name:</strong> STUDENTS</li>
+            <li class="step"><strong>Attributes:</strong> StudentID, Name, Course, GPA</li>
+            <li class="step"><strong>Primary key:</strong> underlined (StudentID)</li>
+            <li class="step"><strong>Degree:</strong> 4 (four attributes)</li>
+        </ul>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Multiple Schemas</span>
+        <h2 class="reveal d2">Database Schema Example</h2>
+        <div class="code-block reveal d3" style="font-size:24px;">
+            <span class="comment">-- Database Schema for a School System</span><br><br>
+            STUDENTS(<span class="keyword">StudentID</span>, Name, Course, GPA)<br>
+            COURSES(<span class="keyword">CourseCode</span>, CourseName, Units, Department)<br>
+            ENROLLMENTS(<span class="keyword">EnrollID</span>, StudentID, CourseCode, Semester, Grade)<br>
+            FACULTY(<span class="keyword">FacultyID</span>, Name, Department, Rank)
+        </div>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">The underlined attribute is the primary key. Multiple schemas together form a database schema.</p>
+    </section>
+
+    
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 02</span>
+        <h2 class="reveal d2">Properties of<br>Relations</h2>
+        <p class="reveal d3">Rules that every valid relation must follow</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Property 1</span>
+        <h2 class="reveal d2">Each Tuple is Unique</h2>
+        <p class="reveal d3">No two rows can be identical. Every row must be distinguishable through its primary key.</p>
+        <div class="grid-2 step">
+            <div class="grid-card">
+                <h3>✅ Valid</h3>
+                <table style="font-size:20px;"><thead><tr><th>ID</th><th>Name</th></tr></thead><tbody><tr><td>001</td><td>Maria</td></tr><tr><td>002</td><td>Maria</td></tr></tbody></table>
+                <p style="margin-top:8px;">Same name but different ID = OK</p>
+            </div>
+            <div class="grid-card">
+                <h3>❌ Invalid</h3>
+                <table style="font-size:20px;"><thead><tr><th>ID</th><th>Name</th></tr></thead><tbody><tr><td>001</td><td>Maria</td></tr><tr><td>001</td><td>Maria</td></tr></tbody></table>
+                <p style="margin-top:8px;">Duplicate ID = VIOLATION</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Property 2</span>
+        <h2 class="reveal d2">Attribute Values are Atomic</h2>
+        <p class="reveal d3">Each cell contains ONE and ONLY ONE value. No lists, no arrays, no nested structures.</p>
+        <div class="grid-2 step">
+            <div class="grid-card">
+                <h3>✅ Atomic</h3>
+                <table style="font-size:20px;"><thead><tr><th>ID</th><th>Phone</th></tr></thead><tbody><tr><td>001</td><td>09171234567</td></tr><tr><td>001</td><td>09281234567</td></tr></tbody></table>
+                <p style="margin-top:8px;">Separate rows for each phone</p>
+            </div>
+            <div class="grid-card">
+                <h3>❌ Not Atomic</h3>
+                <table style="font-size:20px;"><thead><tr><th>ID</th><th>Phone</th></tr></thead><tbody><tr><td>001</td><td>0917..., 0928...</td></tr></tbody></table>
+                <p style="margin-top:8px;">Multiple values in one cell</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Property 3</span>
+        <h2 class="reveal d2">Tuple Order is Irrelevant</h2>
+        <p class="reveal d3">Rows have no inherent order. The same data in any row arrangement is the same relation.</p>
+        <div class="blue-card step" style="margin-top:24px;">
+            <p style="font-size:28px;">These two are THE SAME relation:</p>
+            <p style="font-size:24px; margin-top:12px;">{Maria, Juan, Ana} = {Ana, Maria, Juan} = {Juan, Ana, Maria}</p>
+            <p style="font-size:22px; margin-top:12px; opacity:0.8;">If you need a specific order, use ORDER BY in SQL. The table itself has no order.</p>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Property 4</span>
+        <h2 class="reveal d2">Attribute Order is Irrelevant</h2>
+        <p class="reveal d3">Columns have no inherent order. You reference them by NAME, not position.</p>
+        <div class="grid-2 step">
+            <div class="grid-card">
+                <h3>Same Relation</h3>
+                <table style="font-size:18px;"><thead><tr><th>ID</th><th>Name</th><th>GPA</th></tr></thead><tbody><tr><td>001</td><td>Maria</td><td>1.5</td></tr></tbody></table>
+            </div>
+            <div class="grid-card">
+                <h3>Also Same Relation</h3>
+                <table style="font-size:18px;"><thead><tr><th>Name</th><th>GPA</th><th>ID</th></tr></thead><tbody><tr><td>Maria</td><td>1.5</td><td>001</td></tr></tbody></table>
+            </div>
+        </div>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">In SQL: SELECT Name, GPA, ID produces the same data as SELECT ID, Name, GPA.</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Property 5</span>
+        <h2 class="reveal d2">Attribute Names are Unique</h2>
+        <p class="reveal d3">Within a relation, no two attributes can have the same name. Each column must be distinguishable.</p>
+        <div class="grid-2 step">
+            <div class="grid-card">
+                <h3>✅ Valid</h3>
+                <p>StudentName, FatherName, MotherName</p>
+            </div>
+            <div class="grid-card">
+                <h3>❌ Invalid</h3>
+                <p>Name, Name, Name (ambiguous!)</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Summary</span>
+        <h2 class="reveal d2">5 Properties of Relations</h2>
+        <ul>
+            <li class="step"><strong>1.</strong> Each tuple is unique (no duplicate rows)</li>
+            <li class="step"><strong>2.</strong> Attribute values are atomic (one value per cell)</li>
+            <li class="step"><strong>3.</strong> Tuple order is irrelevant (rows have no sequence)</li>
+            <li class="step"><strong>4.</strong> Attribute order is irrelevant (columns by name, not position)</li>
+            <li class="step"><strong>5.</strong> Attribute names are unique (no duplicate column names)</li>
+        </ul>
+    </section>
+
+    
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 03</span>
+        <h2 class="reveal d2">NULL Values</h2>
+        <p class="reveal d3">The meaning of "unknown" in databases</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">03</span>
+        <span class="eyebrow reveal d1">NULL</span>
+        <h2 class="reveal d2">What is NULL?</h2>
+        <p class="reveal d3">NULL represents a missing, unknown, or not applicable value. It is NOT zero. It is NOT an empty string.</p>
+        <table class="step">
+            <thead><tr><th>Value</th><th>Meaning</th><th>Example</th></tr></thead>
+            <tbody>
+                <tr><td><strong>NULL</strong></td><td>Unknown / Not applicable</td><td>Student hasn't taken the exam yet</td></tr>
+                <tr><td><strong>0</strong></td><td>A real numeric value</td><td>Student scored zero on the exam</td></tr>
+                <tr><td><strong>""</strong></td><td>An empty string value</td><td>Student left the field blank</td></tr>
+            </tbody>
+        </table>
+        <p class="step" style="margin-top:16px; font-size:26px; color:var(--accent);">NULL ≠ 0 ≠ "" — these are THREE different things!</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">03</span>
+        <span class="eyebrow reveal d1">Types of NULL</span>
+        <h2 class="reveal d2">Three Types of NULL</h2>
+        <div class="grid-3 reveal d3">
+            <div class="grid-card">
+                <h3>Unknown</h3>
+                <p>Value exists but we don't know it yet. (Student's final grade before exam)</p>
+            </div>
+            <div class="grid-card">
+                <h3>Not Applicable</h3>
+                <p>The attribute doesn't apply. (Maiden name for a male student)</p>
+            </div>
+            <div class="grid-card">
+                <h3>Withheld</h3>
+                <p>Value exists but user chose not to provide. (Phone number declined)</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">03</span>
+        <span class="eyebrow reveal d1">NULL Problems</span>
+        <h2 class="reveal d2">Why NULL is Tricky</h2>
+        <ul>
+            <li class="step">NULL = NULL is <strong>NOT true</strong> (even two unknowns can't be compared)</li>
+            <li class="step">NULL + 5 = <strong>NULL</strong> (any math with NULL = NULL)</li>
+            <li class="step">WHERE column = NULL <strong>doesn't work</strong> (use IS NULL instead)</li>
+            <li class="step">COUNT(*) counts NULLs, COUNT(column) <strong>skips</strong> NULLs</li>
+        </ul>
+        <p class="step" style="margin-top:16px; font-size:26px; color:#666;">We'll deal with NULLs a LOT when writing SQL. For now, just understand the concept.</p>
+    </section>
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 04</span>
+        <h2 class="reveal d2">Relational Algebra</h2>
+        <p class="reveal d3">The mathematical foundation of SQL</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">What Is It?</span>
+        <h2 class="reveal d2">Relational Algebra</h2>
+        <p class="reveal d3">A set of mathematical operations on relations (tables) that produce new relations. It's the THEORY behind SQL.</p>
+        <div class="blue-card step" style="margin-top:24px;">
+            <p style="font-size:28px;"><strong>Think of it this way:</strong></p>
+            <p style="font-size:26px; margin-top:12px;">Relational Algebra = the math theory<br>SQL = the practical language based on that theory</p>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Operations</span>
+        <h2 class="reveal d2">Core Operations</h2>
+        <table class="reveal d3">
+            <thead><tr><th>Operation</th><th>Symbol</th><th>What It Does</th><th>SQL Equivalent</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Selection</strong></td><td>σ (sigma)</td><td>Filter rows</td><td>WHERE</td></tr>
+                <tr><td><strong>Projection</strong></td><td>π (pi)</td><td>Pick columns</td><td>SELECT columns</td></tr>
+                <tr><td><strong>Union</strong></td><td>∪</td><td>Combine two tables</td><td>UNION</td></tr>
+                <tr><td><strong>Difference</strong></td><td>−</td><td>Rows in A not in B</td><td>EXCEPT</td></tr>
+                <tr><td><strong>Cartesian Product</strong></td><td>×</td><td>All combinations</td><td>CROSS JOIN</td></tr>
+                <tr><td><strong>Join</strong></td><td>⋈</td><td>Match rows from 2 tables</td><td>JOIN</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Selection σ</span>
+        <h2 class="reveal d2">Selection (σ): Filter Rows</h2>
+        <p class="reveal d3">Picks rows that satisfy a condition. Like WHERE in SQL.</p>
+        <div class="code-block step" style="font-size:24px;">
+            <span class="comment">-- Relational Algebra:</span><br>
+            σ<sub>Course='BSIS'</sub>(STUDENTS)<br><br>
+            <span class="comment">-- SQL equivalent:</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> STUDENTS <span class="keyword">WHERE</span> Course = <span class="string">'BSIS'</span>;
+        </div>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">Result: Only rows where Course = 'BSIS'</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Projection π</span>
+        <h2 class="reveal d2">Projection (π): Pick Columns</h2>
+        <p class="reveal d3">Selects specific columns from a relation. Like listing columns in SELECT.</p>
+        <div class="code-block step" style="font-size:24px;">
+            <span class="comment">-- Relational Algebra:</span><br>
+            π<sub>Name, GPA</sub>(STUDENTS)<br><br>
+            <span class="comment">-- SQL equivalent:</span><br>
+            <span class="keyword">SELECT</span> Name, GPA <span class="keyword">FROM</span> STUDENTS;
+        </div>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">Result: Only the Name and GPA columns (removes duplicates in formal algebra)</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Combined</span>
+        <h2 class="reveal d2">Combining Selection + Projection</h2>
+        <p class="reveal d3">Get names of BSIS students with GPA better than 1.50:</p>
+        <div class="code-block step" style="font-size:22px;">
+            <span class="comment">-- Relational Algebra:</span><br>
+            π<sub>Name</sub>(σ<sub>Course='BSIS' AND GPA&lt;1.50</sub>(STUDENTS))<br><br>
+            <span class="comment">-- SQL equivalent:</span><br>
+            <span class="keyword">SELECT</span> Name<br>
+            <span class="keyword">FROM</span> STUDENTS<br>
+            <span class="keyword">WHERE</span> Course = <span class="string">'BSIS'</span> <span class="keyword">AND</span> GPA &lt; 1.50;
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Join ⋈</span>
+        <h2 class="reveal d2">Join (⋈): Combine Tables</h2>
+        <p class="reveal d3">Combines rows from two tables based on a matching condition (shared key).</p>
+        <div class="code-block step" style="font-size:22px;">
+            <span class="comment">-- Relational Algebra:</span><br>
+            STUDENTS ⋈<sub>STUDENTS.CourseCode=COURSES.CourseCode</sub> COURSES<br><br>
+            <span class="comment">-- SQL equivalent:</span><br>
+            <span class="keyword">SELECT</span> *<br>
+            <span class="keyword">FROM</span> STUDENTS<br>
+            <span class="keyword">JOIN</span> COURSES <span class="keyword">ON</span> STUDENTS.CourseCode = COURSES.CourseCode;
+        </div>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">We'll master JOINs in Week 7. For now, understand the concept.</p>
+    </section>
+
+    
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 05</span>
+        <h2 class="reveal d2">Relation State &<br>Notation</h2>
+        <p class="reveal d3">How we document and describe relations</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">05</span>
+        <span class="eyebrow reveal d1">Schema vs State</span>
+        <h2 class="reveal d2">Schema vs. State (Instance)</h2>
+        <div class="grid-2 reveal d3">
+            <div class="grid-card">
+                <h3>Schema (Structure)</h3>
+                <p>The DEFINITION. Doesn't change often. Like a form template.</p>
+                <p style="margin-top:8px; font-family:monospace; font-size:18px;">STUDENTS(ID, Name, GPA)</p>
+            </div>
+            <div class="grid-card">
+                <h3>State (Instance)</h3>
+                <p>The CURRENT DATA. Changes with every insert/update/delete.</p>
+                <p style="margin-top:8px; font-family:monospace; font-size:18px;">{(001,"Maria",1.5), (002,"Juan",1.75)}</p>
+            </div>
+        </div>
+        <p class="step" style="margin-top:24px; font-size:26px; color:#666;">Schema = blueprint (rarely changes). State = current contents (always changing).</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">05</span>
+        <span class="eyebrow reveal d1">Notation</span>
+        <h2 class="reveal d2">How to Write Relation Schemas</h2>
+        <div class="code-block reveal d3" style="font-size:24px;">
+            <span class="comment">-- Standard notation (primary key underlined):</span><br><br>
+            STUDENTS(<span class="keyword" style="text-decoration:underline;">StudentID</span>, Name, Course, GPA)<br><br>
+            COURSES(<span class="keyword" style="text-decoration:underline;">CourseCode</span>, CourseName, Units)<br><br>
+            ENROLLMENTS(<span class="keyword" style="text-decoration:underline;">EnrollID</span>, <span class="string">StudentID</span>, <span class="string">CourseCode</span>, Grade)<br><br>
+            <span class="comment">-- Underlined = Primary Key</span><br>
+            <span class="comment">-- Italic/colored = Foreign Key (references another table)</span>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">05</span>
+        <span class="eyebrow reveal d1">Formal Notation</span>
+        <h2 class="reveal d2">Formal Mathematical Notation</h2>
+        <ul>
+            <li class="step"><strong>R(A₁, A₂, ..., Aₙ)</strong> — Relation R with n attributes</li>
+            <li class="step"><strong>r(R)</strong> — Current state (instance) of relation R</li>
+            <li class="step"><strong>t ∈ r(R)</strong> — Tuple t is a member of relation state r</li>
+            <li class="step"><strong>t[Aᵢ]</strong> — Value of attribute Aᵢ in tuple t</li>
+            <li class="step"><strong>dom(Aᵢ)</strong> — Domain of attribute Aᵢ</li>
+        </ul>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">You won't use this daily, but textbooks and exams use it. Know what it means.</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">05</span>
+        <span class="eyebrow reveal d1">Example</span>
+        <h2 class="reveal d2">Reading Formal Notation</h2>
+        <div class="blue-card reveal d3">
+            <p style="font-size:26px;"><strong>Given:</strong> STUDENTS(StudentID, Name, Course, GPA)</p>
+            <p style="font-size:26px; margin-top:16px;"><strong>t = (2024-001, "Maria Santos", "BSIS", 1.50)</strong></p>
+            <ul style="margin-top:16px;">
+                <li>t[Name] = "Maria Santos"</li>
+                <li>t[GPA] = 1.50</li>
+                <li>dom(GPA) = {x | 1.00 ≤ x ≤ 5.00}</li>
+                <li>Degree of STUDENTS = 4</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">05</span>
+        <span class="eyebrow reveal d1">Recap</span>
+        <h2 class="reveal d2">Session Recap</h2>
+        <ul>
+            <li class="step">✅ Formal terminology: Relation, Tuple, Attribute, Domain, Degree, Cardinality</li>
+            <li class="step">✅ 5 Properties: uniqueness, atomicity, no row/column order, unique names</li>
+            <li class="step">✅ NULL: unknown/not-applicable/withheld (NOT zero or empty)</li>
+            <li class="step">✅ Relational Algebra: Selection (σ), Projection (π), Join (⋈)</li>
+            <li class="step">✅ Schema vs State, formal notation</li>
+        </ul>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">05</span>
+        <span class="eyebrow reveal d1">Next</span>
+        <h2 class="reveal d2">Next Session: Keys & Constraints</h2>
+        <p class="reveal d3">We'll learn about:</p>
+        <ul>
+            <li class="step">Primary Keys, Candidate Keys, Super Keys</li>
+            <li class="step">Foreign Keys and referential integrity</li>
+            <li class="step">Entity integrity and domain constraints</li>
+            <li class="step">How MySQL enforces these rules</li>
+        </ul>
+    </section>
+
+    
+
+    
+
+<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Concept Model</span><h2 class="reveal d2">How The Relational Model fits together</h2><div class="db-concept-grid reveal d3"><div class="db-concept-card"><h3>Relation</h3><p>A table-shaped set of tuples that share the same attributes.</p></div><div class="db-concept-card"><h3>Tuple</h3><p>One row describing one occurrence of the relation.</p></div><div class="db-concept-card"><h3>Attribute</h3><p>A named column with a defined domain of allowed values.</p></div></div></section>
+<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">System View</span><h2 class="reveal d2">Trace the logic from start to finish</h2><div class="db-flow reveal d3"><div class="db-flow-step">Business entity</div><div class="db-flow-step">Relation heading</div><div class="db-flow-step">Valid tuples</div><div class="db-flow-step">Relational operations</div></div><div class="db-compare reveal d4"><div><strong>Common failure</strong><p>Relying on row order or duplicate rows violates the set-based meaning of a relation.</p></div><div><strong>Better approach</strong><p>Use keys for identity and explicit ORDER BY when presentation order matters.</p></div></div></section>
+<!-- DB OFFICIAL REFERENCE: W03S01 -->
+<section class="slide db-reference-slide" data-db-reference="w03s01"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Official Reference</span><h2 class="reveal d2">Table basics</h2><div class="db-reference-layout reveal d3"><div class="db-reference-copy"><h3>What to notice</h3><ul><li><strong>Relation:</strong> A table-shaped set of tuples that share the same attributes.</li><li><strong>Tuple:</strong> One row describing one occurrence of the relation.</li><li><strong>Attribute:</strong> A named column with a defined domain of allowed values.</li></ul><p style="font-size:18px;line-height:1.45;color:var(--muted-foreground,var(--muted));">Use the labels, syntax, and navigation shown here to connect the lesson to the actual database tool or documentation.</p></div><div class="db-reference-frame"><img src="assets/student-visuals/w03s01-reference.png" alt="Official PostgreSQL Documentation reference for The Relational Model"><div class="db-reference-caption">PostgreSQL Documentation · Table basics</div></div></div></section>
+<section class="slide end-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <h1 class="reveal d1">See You Next<br>Session! 📐</h1>
+        <p class="reveal d2">Week 3 · Session 1 Complete<br>Next: Keys, Constraints & Integrity</p>
+    </section>
+
+    
+
+
+
+
+
+
+
+<div class="image-lightbox" data-image-lightbox aria-hidden="true"><button class="image-lightbox__close" type="button" aria-label="Close fullscreen image">×</button><figure class="image-lightbox__figure"><img class="image-lightbox__image" alt=""><figcaption class="image-lightbox__caption"></figcaption></figure></div>
+<script data-image-lightbox-script>
+(()=>{const box=document.querySelector('[data-image-lightbox]');if(!box)return;const full=box.querySelector('.image-lightbox__image'),cap=box.querySelector('.image-lightbox__caption'),close=box.querySelector('.image-lightbox__close');let previous=null;const hide=()=>{box.classList.remove('is-open');box.setAttribute('aria-hidden','true');document.body.classList.remove('image-lightbox-open');if(previous)previous.focus();};const show=img=>{previous=img;full.src=img.currentSrc||img.src;full.alt=img.alt||'';cap.textContent=img.alt||'';box.classList.add('is-open');box.setAttribute('aria-hidden','false');document.body.classList.add('image-lightbox-open');close.focus();};document.querySelectorAll('.slide img').forEach(img=>{img.setAttribute('data-lightbox-ready','');img.setAttribute('role','button');img.setAttribute('tabindex','0');img.setAttribute('aria-label','Open image fullscreen: '+(img.alt||'presentation image'));img.addEventListener('click',()=>show(img));img.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(img);}});});close.addEventListener('click',hide);box.addEventListener('click',e=>{if(e.target===box)hide();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('is-open'))hide();});})();
+</script>
+</body>
+</html>

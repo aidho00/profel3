@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- skill:chassis -->
+<style>
+/* =====================================================
+   PRESENTATION CHASSIS — style-invariant base styles
+   Fixed 1920×1080 canvas scaled to fit any viewport.
+   Customize colors, fonts, and chrome via :root tokens.
+   ===================================================== */
+
+/* ---------- Universal reset ---------- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ---------- Theme tokens (override in your deck's CSS) ---------- */
+:root {
+    color-scheme: light;
+
+    --background:      #ffffff;
+    --foreground:      #111111;
+    --card:            #f5f5f5;
+    --card-foreground: var(--foreground);
+    --accent:          #c94a3d;
+    --accent-foreground: #ffffff;
+
+    --muted-foreground: color-mix(in srgb, var(--foreground) 55%, transparent);
+    --border:           color-mix(in srgb, var(--foreground) 12%, transparent);
+
+    --font-display: Georgia, serif;
+    --font-body: -apple-system, system-ui, sans-serif;
+    --font-mono: ui-monospace, monospace;
+
+    /* Reveal animation */
+    --reveal-duration: 0.8s;
+    --reveal-ease:     cubic-bezier(0.16, 1, 0.3, 1);
+    --reveal-distance: 28px;
+
+    /* Chrome (nav dots, keyboard hint) */
+    --nav-dot-size: 9px;
+    --nav-dot-radius: 50%;
+    --nav-dot-color: var(--foreground);
+    --nav-dot-active-color: var(--accent);
+    --nav-dot-opacity: 0.4;
+}
+
+/* ---------- Viewport lock + scroll snap ---------- */
+html, body { height: 100%; overflow-x: hidden; }
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+html, body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+/* ---------- Type scale ----------
+   Fixed px sizes on a 1920×1080 canvas. The canvas is scaled to fit
+   any viewport via transform, so these sizes are absolute within the
+   design surface — no responsive units needed. */
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    font-size: 36px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1 { font-size: 120px; line-height: 1.05; letter-spacing: -0.02em; }
+h2 { font-size: 64px; line-height: 1.1; letter-spacing: -0.01em; }
+h3 { font-size: 44px; line-height: 1.2; }
+.eyebrow {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.3;
+}
+
+ul, ol { padding-left: 48px; display: flex; flex-direction: column; gap: 24px; }
+li::marker { color: var(--accent); }
+
+/* ---------- Slide structure ----------
+   .slide is the authored 1920×1080 artboard.
+   The chassis wraps it in viewport + scale layers at runtime. */
+.slide-viewport {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: block;
+    position: relative;
+    background: var(--background);
+    isolation: isolate;
+    z-index: 1;
+}
+
+.slide-scale {
+    width: 1920px;
+    height: 1080px;
+    transform: translate(-50%, -50%) scale(var(--slide-scale, 1));
+    transform-origin: center center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+}
+
+.slide {
+    width: 1920px;
+    height: 1080px;
+    padding: 80px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 60px;
+    position: relative;
+    background: transparent;
+}
+
+
+/* ---------- Image defaults ---------- */
+img, .image-container {
+    max-width: 100%;
+    max-height: 540px;
+    object-fit: contain;
+}
+
+/* ---------- Reveal primitives ----------
+   Driven by chassis.js via the Web Animations API, not CSS transitions.
+   Put .reveal* or .step on ANY element — author CSS on the same element
+   (opacity, transform, transition, filter) never conflicts, because
+   WAAPI animations live in the animation cascade origin and win over
+   normal author declarations. The .dN stagger classes below still apply
+   to theme-authored CSS animations via animation-delay.
+
+   Variants: .reveal (fade + up), .reveal-left, .reveal-right,
+   .reveal-scale, .reveal-blur. .step stays hidden until the user
+   advances forward. Don't combine .step with .reveal* on the same
+   element. */
+
+/* FOUC guard: hide reveals until chassis.js marks the document ready. */
+:root:not(.reveals-ready) .reveal,
+:root:not(.reveals-ready) .reveal-left,
+:root:not(.reveals-ready) .reveal-right,
+:root:not(.reveals-ready) .reveal-scale,
+:root:not(.reveals-ready) .reveal-blur,
+:root:not(.reveals-ready) .step {
+    opacity: 0;
+}
+:root:not(.reveals-ready) .reveal-blur { filter: blur(10px); }
+
+/* ---------- Stagger delays (.d1 … .d8) ---------- */
+.slide.visible .d1 { transition-delay: 0.10s; animation-delay: 0.10s; }
+.slide.visible .d2 { transition-delay: 0.25s; animation-delay: 0.25s; }
+.slide.visible .d3 { transition-delay: 0.40s; animation-delay: 0.40s; }
+.slide.visible .d4 { transition-delay: 0.55s; animation-delay: 0.55s; }
+.slide.visible .d5 { transition-delay: 0.70s; animation-delay: 0.70s; }
+.slide.visible .d6 { transition-delay: 0.85s; animation-delay: 0.85s; }
+.slide.visible .d7 { transition-delay: 1.00s; animation-delay: 1.00s; }
+.slide.visible .d8 { transition-delay: 1.15s; animation-delay: 1.15s; }
+
+/* ---------- Nav dots ----------
+   Default: right-center (vertical stack on right edge).
+   Override with <body data-nav="bottom | top-right | hidden">. */
+.nav-dots {
+    position: fixed;
+    right: clamp(0.6rem, 1.5vw, 1.4rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1vh, 0.8rem);
+    z-index: 50;
+}
+
+body[data-nav="bottom"] .nav-dots {
+    right: auto;
+    top: auto;
+    bottom: clamp(1rem, 2.5vh, 2rem);
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+}
+
+body[data-nav="top-right"] .nav-dots {
+    right: clamp(1rem, 2.5vw, 2rem);
+    top: clamp(1rem, 2.5vh, 2rem);
+    transform: none;
+    flex-direction: row;
+}
+
+body[data-nav="hidden"] .nav-dots { display: none; }
+
+body[data-nav="bottom"] .keyboard-hint {
+    left: clamp(1rem, 2vw, 1.5rem);
+    transform: none;
+}
+
+.nav-dots button {
+    width: var(--nav-dot-size);
+    height: var(--nav-dot-size);
+    border-radius: var(--nav-dot-radius);
+    border: 1.5px solid var(--nav-dot-color);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+    opacity: var(--nav-dot-opacity);
+}
+.nav-dots button:hover { opacity: 0.85; transform: scale(1.15); }
+.nav-dots button:focus-visible {
+    outline: 2px solid var(--nav-dot-active-color);
+    outline-offset: 3px;
+    opacity: 1;
+}
+.nav-dots button.active {
+    background: var(--nav-dot-active-color);
+    border-color: var(--nav-dot-active-color);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* ---------- Keyboard hint ---------- */
+.keyboard-hint {
+    position: fixed;
+    bottom: clamp(0.6rem, 1.2vh, 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted-foreground);
+    z-index: 50;
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+.keyboard-hint kbd {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.9em;
+    padding: 0.05em 0.4em;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--background);
+    margin: 0 0.15em;
+}
+
+/* ---------- Credit line ---------- */
+.chassis-credit {
+    position: fixed;
+    bottom: clamp(0.6rem, 1.2vh, 1rem);
+    left: clamp(1rem, 2vw, 1.5rem);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--muted-foreground);
+    letter-spacing: 0.02em;
+    z-index: 50;
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+.chassis-credit .chassis-credit-emoji {
+    font-style: normal;
+    margin: 0 0.15em;
+}
+
+body[data-nav="bottom"] .chassis-credit {
+    left: auto;
+    right: clamp(1rem, 2vw, 1.5rem);
+}
+
+/* ---------- Custom cursor ---------- */
+.chassis-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: var(--accent);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    will-change: transform;
+}
+.chassis-cursor.visible { opacity: 1; }
+body.artifact-editor-editing .chassis-cursor { display: none; }
+
+@media (hover: none) {
+    .chassis-cursor { display: none; }
+}
+
+body.chassis-cursor-active:not(.artifact-editor-editing),
+body.chassis-cursor-active:not(.artifact-editor-editing) * { cursor: none; }
+
+/* ---------- Opt-outs ---------- */
+body[data-no-chrome] .nav-dots,
+body[data-no-chrome] .keyboard-hint,
+body[data-no-chrome] .chassis-credit,
+body[data-no-chrome] .chassis-cursor,
+body[data-no-chrome] .artifact-editor-toggle { display: none; }
+
+:fullscreen .keyboard-hint,
+:fullscreen .chassis-credit,
+:fullscreen .artifact-editor-toggle { display: none; }
+
+@media (hover: none) {
+    .keyboard-hint,
+    .chassis-credit { display: none; }
+}
+
+@media (max-width: 900px), (max-height: 560px) {
+    .nav-dots,
+    .keyboard-hint,
+    .chassis-credit,
+    .chassis-cursor { display: none; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ---------- Print (PDF export) ---------- */
+@media print {
+    .nav-dots, .keyboard-hint, .chassis-credit, .chassis-cursor { display: none !important; }
+    html, body { height: auto; overflow: visible; }
+    html { scroll-snap-type: none; }
+    .slide-viewport {
+        page-break-after: always;
+        break-after: page;
+        height: 100vh;
+    }
+    .slide-scale {
+        position: static !important;
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+    .slide {
+        width: 100% !important;
+        height: auto !important;
+    }
+}
+
+</style>
+<script>
+/* =====================================================
+   PRESENTATION CHASSIS — slide controller
+   Auto-initializes on DOMContentLoaded.
+   Exposes window.slides for programmatic control.
+   ===================================================== */
+(function () {
+    'use strict';
+
+    const REVEAL_SELECTOR = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur';
+    const STEP_SELECTOR = '.step';
+    const ALL_REVEAL_SELECTOR = REVEAL_SELECTOR + ', ' + STEP_SELECTOR;
+    const VIEWPORT_CLASS = 'slide-viewport';
+    const SCALE_CLASS = 'slide-scale';
+
+    function _detectLang() {
+        const param = new URLSearchParams(location.search).get('lang');
+        return (param || navigator.language || 'en').slice(0, 2).toLowerCase();
+    }
+
+    class SlidePresentation {
+        constructor() {
+            this.slides = Array.from(document.querySelectorAll('.slide'));
+            if (this.slides.length === 0) return;
+
+            // Ensure every slide has an id so hashes + anchor links work.
+            // Author-defined ids are preserved; the rest get slide-N (1-indexed).
+            this.slides.forEach((slide, idx) => {
+                if (!slide.id) slide.id = `slide-${idx + 1}`;
+            });
+            this.viewports = this._setupViewports();
+            this.scales = this.viewports.map((viewport) => viewport.querySelector(`.${SCALE_CLASS}`));
+
+            // Hide every reveal element BEFORE lifting the CSS FOUC guard.
+            // After this, .reveals-ready is on <html>, so CSS no longer hides
+            // reveals — inline styles keep them hidden until JS animates them.
+            this._setupReveals();
+
+            this.navDotsContainer = this._ensureNavDots();
+            this.keyboardHint = this._ensureKeyboardHint();
+            this.credit = this._ensureCredit();
+
+            this._setupCanvasScale();
+            this._setupIntersectionObserver();
+            this._setupKeyboardNav();
+            this._setupWheelNav();
+            this._setupTouchNav();
+            this._setupViewportSync();
+            this._buildNavDots();
+            this._setupHashNav();
+            this._setupCursor();
+            this._setupPrintSettling();
+
+            // If URL has a matching hash, start there; otherwise start at slide 0.
+            const initial = this._slideIndexFromHash(location.hash);
+            this.currentSlide = initial >= 0 ? initial : 0;
+            if (this.currentSlide !== 0) {
+                this._scrollToSlide(this.currentSlide, 'auto');
+            }
+            // Reveal initial slide immediately (observer may miss it on load).
+            const first = this.slides[this.currentSlide];
+            first.classList.add('visible');
+            this._playSlideReveals(first);
+            this._updateNavDots();
+        }
+
+        /* ---------- Viewport scaffolding ----------
+           Authors write .slide as the 1920×1080 artboard. The chassis wraps
+           that authored section in viewport and scale layers. */
+        _setupViewports() {
+            return this.slides.map((slide) => {
+                const existingScale = slide.parentElement?.classList.contains(SCALE_CLASS)
+                    ? slide.parentElement
+                    : null;
+                const existingViewport = existingScale?.parentElement?.classList.contains(VIEWPORT_CLASS)
+                    ? existingScale.parentElement
+                    : null;
+                if (existingViewport) {
+                    this._syncViewportBackground(slide, existingViewport);
+                    return existingViewport;
+                }
+
+                const viewport = document.createElement('div');
+                viewport.className = VIEWPORT_CLASS;
+                const scale = document.createElement('div');
+                scale.className = SCALE_CLASS;
+
+                slide.parentNode.insertBefore(viewport, slide);
+                viewport.appendChild(scale);
+                scale.appendChild(slide);
+                this._syncViewportBackground(slide, viewport);
+
+                return viewport;
+            });
+        }
+
+        _syncViewportBackground(slide, viewport) {
+            const style = getComputedStyle(slide);
+            const hasBackgroundImage = style.backgroundImage && style.backgroundImage !== 'none';
+            const hasBackgroundColor = !['rgba(0, 0, 0, 0)', 'transparent'].includes(style.backgroundColor);
+            if (hasBackgroundImage || hasBackgroundColor) {
+                viewport.style.background = style.background;
+            } else {
+                viewport.style.background = '';
+            }
+            slide.style.background = 'transparent';
+        }
+
+        /* ---------- DOM scaffolding (auto-inserted if missing) ---------- */
+        _ensureNavDots() {
+            let el = document.getElementById('navDots');
+            if (!el) {
+                el = document.createElement('nav');
+                el.id = 'navDots';
+                el.className = 'nav-dots';
+                el.setAttribute('aria-label', 'Slide navigation');
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        _ensureKeyboardHint() {
+            let el = document.querySelector('.keyboard-hint');
+            if (!el) {
+                const i18n = {
+                    en: { navigate: 'navigate', restart: 'restart', fullscreen: 'fullscreen' },
+                    es: { navigate: 'navegar',   restart: 'inicio',   fullscreen: 'fullscreen' },
+                    fr: { navigate: 'naviguer',  restart: 'début',    fullscreen: 'fullscreen' },
+                    de: { navigate: 'blättern',  restart: 'anfang',   fullscreen: 'vollbild' },
+                    pt: { navigate: 'navegar',   restart: 'início',   fullscreen: 'fullscreen' },
+                    ja: { navigate: '移動',      restart: '先頭',      fullscreen: '全画面' },
+                    ko: { navigate: '이동',      restart: '처음',      fullscreen: '전체화면' },
+                    zh: { navigate: '翻页',      restart: '重置',      fullscreen: '全屏' },
+                    it: { navigate: 'navigare',  restart: 'inizio',   fullscreen: 'fullscreen' },
+                    nl: { navigate: 'bladeren',  restart: 'begin',    fullscreen: 'vollscherm' },
+                };
+                const t = i18n[_detectLang()] || i18n.en;
+                el = document.createElement('div');
+                el.className = 'keyboard-hint';
+                el.innerHTML = `<kbd>←</kbd> <kbd>→</kbd> ${t.navigate} &middot; <kbd>R</kbd> ${t.restart} &middot; <kbd>F</kbd> ${t.fullscreen}`;
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        _ensureCredit() {
+            let el = document.querySelector('.chassis-credit');
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'chassis-credit';
+                el.setAttribute('aria-hidden', 'true');
+                el.innerHTML = 'Dave Bryan J. Beatingo';
+                document.body.appendChild(el);
+            }
+            return el;
+        }
+
+        /* ---------- Reveal engine ----------
+           Reveals are driven by the Web Animations API instead of CSS
+           transitions. This lets authors put .reveal* / .step on any
+           element: animation values live in the animation cascade origin
+           and win over normal author declarations, so no wrapper element
+           is required to isolate the chassis from author CSS.
+
+           State per slide:
+           - "hidden":  inline opacity/transform/filter from the 'from'
+                        keyframe of the variant. Set on init and on
+                        forward re-entry.
+           - "played":  animation is running or has run; the class
+                        `reveals-played` on the slide makes playback
+                        idempotent so observer re-fires (resize,
+                        fullscreen) don't restart the animation.
+           - "settled": animation canceled, inline styles cleared. Used
+                        for backward entries (we skip the animation and
+                        show the final state instantly) and for print. */
+
+        _setupReveals() {
+            // Lift the CSS FOUC guard first so getComputedStyle reads each
+            // element's natural opacity, not the guard's blanket opacity: 0.
+            // No paint occurs mid-task — inline hidden styles are applied
+            // before the browser yields, so there is no visible flash.
+            document.documentElement.classList.add('reveals-ready');
+            this.slides.forEach((slide) => {
+                slide.querySelectorAll(ALL_REVEAL_SELECTOR).forEach((el) => {
+                    el._targetOpacity = parseFloat(getComputedStyle(el).opacity);
+                    this._applyHiddenStyle(el);
+                });
+            });
+        }
+
+        _setupPrintSettling() {
+            // Browsers snapshot the document for print/PDF export. WAAPI
+            // animations don't necessarily complete in that snapshot, so
+            // settle every slide to its final state first. After printing,
+            // reset — but only for slides that haven't already been viewed,
+            // so the audience experience picks up where it left off.
+            window.addEventListener('beforeprint', () => {
+                this.slides.forEach((slide) => this._settleSlide(slide));
+            });
+        }
+
+        _readTokens() {
+            const cs = getComputedStyle(document.documentElement);
+            const rawDuration = parseFloat(cs.getPropertyValue('--reveal-duration'));
+            const duration = Number.isFinite(rawDuration) ? rawDuration * 1000 : 800;
+            const ease = cs.getPropertyValue('--reveal-ease').trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
+            const distance = cs.getPropertyValue('--reveal-distance').trim() || '28px';
+            const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            return {
+                duration: reducedMotion ? 1 : duration,
+                ease,
+                distance,
+            };
+        }
+
+        _getRevealDelay(el) {
+            // Use getAttribute('class') rather than el.className: on SVG
+            // elements, `.className` is an SVGAnimatedString (not a string)
+            // and calling .match on it throws. getAttribute is uniform
+            // across HTML and SVG.
+            const classes = el.getAttribute('class') || '';
+            const m = classes.match(/\bd([1-8])\b/);
+            if (!m) return 0;
+            // Matches CSS .dN: d1 = 100ms, d2 = 250ms, +150ms per step.
+            return 100 + (parseInt(m[1], 10) - 1) * 150;
+        }
+
+        _getRevealKeyframes(el, distance) {
+            const to = el._targetOpacity ?? 1;
+            if (el.classList.contains('reveal-left')) {
+                return [
+                    { opacity: 0, transform: `translateX(calc(-1 * ${distance}))` },
+                    { opacity: to, transform: 'translateX(0)' },
+                ];
+            }
+            if (el.classList.contains('reveal-right')) {
+                return [
+                    { opacity: 0, transform: `translateX(${distance})` },
+                    { opacity: to, transform: 'translateX(0)' },
+                ];
+            }
+            if (el.classList.contains('reveal-scale')) {
+                return [
+                    { opacity: 0, transform: 'scale(0.88)' },
+                    { opacity: to, transform: 'scale(1)' },
+                ];
+            }
+            if (el.classList.contains('reveal-blur')) {
+                return [
+                    { opacity: 0, filter: 'blur(10px)' },
+                    { opacity: to, filter: 'blur(0)' },
+                ];
+            }
+            // Default: .reveal or .step (slide up + fade)
+            return [
+                { opacity: 0, transform: `translateY(${distance})` },
+                { opacity: to, transform: 'translateY(0)' },
+            ];
+        }
+
+        _applyHiddenStyle(el) {
+            const { distance } = this._readTokens();
+            const from = this._getRevealKeyframes(el, distance)[0];
+            if ('opacity' in from) el.style.opacity = from.opacity;
+            if ('transform' in from) el.style.transform = from.transform;
+            if ('filter' in from) el.style.filter = from.filter;
+        }
+
+        _clearHiddenStyle(el) {
+            el.style.opacity = '';
+            el.style.transform = '';
+            el.style.filter = '';
+        }
+
+        _cancelReveal(el) {
+            if (el._revealAnim) {
+                el._revealAnim.cancel();
+                el._revealAnim = null;
+            }
+        }
+
+        _playReveal(el, delayOverride) {
+            this._cancelReveal(el);
+            const { duration, ease, distance } = this._readTokens();
+            const delay = typeof delayOverride === 'number' ? delayOverride : this._getRevealDelay(el);
+            const keyframes = this._getRevealKeyframes(el, distance);
+            // fill: 'backwards' applies the 'from' keyframe during the
+            // stagger delay so the element stays hidden until its turn,
+            // without pinning the 'to' keyframe after the animation ends.
+            // This lets co-existing author CSS (e.g. a `.pulse` CSS
+            // animation on the same element) take over naturally once the
+            // entrance completes — otherwise our fill would mask anything
+            // the author wanted to happen post-reveal.
+            const anim = el.animate(keyframes, {
+                duration,
+                delay,
+                easing: ease,
+                fill: 'backwards',
+            });
+            el._revealAnim = anim;
+            // Safe to clear inline 'from' styles now — the animation's
+            // backwards-fill holds the element at the 'from' keyframe for
+            // the duration of any stagger delay.
+            this._clearHiddenStyle(el);
+        }
+
+        _playSlideReveals(slide) {
+            if (slide.classList.contains('reveals-played')) return;
+            slide.classList.add('reveals-played');
+            slide.querySelectorAll(REVEAL_SELECTOR).forEach((el) => this._playReveal(el));
+            // .step elements stay hidden until the user advances.
+        }
+
+        _resetSlideReveals(slide) {
+            // Forward re-entry: cancel in-flight animations, re-hide
+            // everything, and reset step state so the slide replays cleanly
+            // when the observer next adds .visible.
+            slide.classList.remove('reveals-played');
+            slide.querySelectorAll(ALL_REVEAL_SELECTOR).forEach((el) => {
+                this._cancelReveal(el);
+                this._applyHiddenStyle(el);
+            });
+            slide.querySelectorAll('.step.step-shown').forEach((el) => el.classList.remove('step-shown'));
+        }
+
+        _settleSlide(slide) {
+            // Print / PDF export: jump to the final state with everything
+            // shown, so every step appears in the exported document.
+            slide.classList.add('reveals-played');
+            slide.querySelectorAll(ALL_REVEAL_SELECTOR).forEach((el) => {
+                this._cancelReveal(el);
+                this._clearHiddenStyle(el);
+            });
+            slide.querySelectorAll('.step').forEach((el) => el.classList.add('step-shown'));
+        }
+
+        _rewindSlide(slide) {
+            // Backward re-entry: show reveals instantly (no replay — the
+            // viewer already saw the intro) but hide every step, so the
+            // slide is positioned at the start of its stepped content and
+            // can be stepped through again.
+            slide.classList.add('reveals-played');
+            slide.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
+                this._cancelReveal(el);
+                this._clearHiddenStyle(el);
+            });
+            slide.querySelectorAll('.step').forEach((el) => {
+                el.classList.remove('step-shown');
+                this._cancelReveal(el);
+                this._applyHiddenStyle(el);
+            });
+        }
+
+        /* ---------- Navigation ----------
+           goTo scrolls to the target. Both forward-replay and backward-
+           rewind need to mutate the target BEFORE scrolling — while it's
+           still offscreen — so the viewer never sees the old state flash
+           into view. Resetting after the slide is in view causes a visible
+           "show then hide" blink; the IntersectionObserver fires too late
+           (80% threshold) to catch it. */
+        goTo(index) {
+            const clamped = Math.max(0, Math.min(this.slides.length - 1, index));
+            if (clamped === this.currentSlide) return;
+
+            const target = this.slides[clamped];
+            const goingForward = clamped > this.currentSlide;
+
+            if (target.classList.contains('visible')) {
+                if (goingForward) {
+                    // Forward replay: full reset so the observer can play reveals fresh.
+                    target.classList.remove('visible');
+                    this._resetSlideReveals(target);
+                } else {
+                    // Backward rewind: hide any shown steps so the slide
+                    // scrolls back in at the start of its stepped content.
+                    this._rewindSlide(target);
+                }
+            }
+
+            this._scrollToSlide(clamped, 'smooth');
+        }
+
+        _scrollToSlide(index, behavior) {
+            this.viewports[index]?.scrollIntoView({ behavior, block: 'start' });
+        }
+
+        _slideIndexFromHash(hash) {
+            if (!hash) return -1;
+            return this.slides.findIndex((s) => '#' + s.id === hash);
+        }
+
+        _syncHash() {
+            const slide = this.slides[this.currentSlide];
+            if (!slide || !slide.id) return;
+            const newHash = '#' + slide.id;
+            if (location.hash !== newHash) {
+                // replaceState — keeps the URL in sync without polluting history,
+                // so the browser back button exits the deck instead of stepping through slides.
+                try {
+                    history.replaceState(null, '', newHash);
+                } catch {
+                    // Sandboxed iframes (opaque origin, about:srcdoc) reject URL
+                    // mutation with a SecurityError. Hash sync is a nicety — an
+                    // unguarded throw here kills the observer callback before it
+                    // marks the slide visible and plays its reveals.
+                }
+            }
+        }
+
+        _setupHashNav() {
+            // React to external hash changes (anchor link clicks, back/forward if user uses pushState manually)
+            window.addEventListener('hashchange', () => {
+                const idx = this._slideIndexFromHash(location.hash);
+                if (idx >= 0 && idx !== this.currentSlide) this.goTo(idx);
+            });
+        }
+
+        /* ---------- Custom cursor ----------
+           Accent disc that follows the pointer, hidden after idle. */
+        _setupCursor() {
+            if (!matchMedia('(hover: hover)').matches) return;
+
+            const cursor = document.createElement('div');
+            cursor.className = 'chassis-cursor';
+            cursor.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(cursor);
+            document.body.classList.add('chassis-cursor-active');
+
+            const half = 16;  // matches width/height / 2 in CSS
+            const IDLE_MS = 2500;
+            let idleTimer = null;
+
+            const show = () => {
+                cursor.classList.add('visible');
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(() => {
+                    cursor.classList.remove('visible');
+                }, IDLE_MS);
+            };
+            const hide = () => {
+                clearTimeout(idleTimer);
+                cursor.classList.remove('visible');
+            };
+
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.transform = `translate3d(${e.clientX - half}px, ${e.clientY - half}px, 0)`;
+                show();
+            });
+            document.addEventListener('mouseleave', hide);
+            document.addEventListener('mouseenter', show);
+        }
+
+        /* ---------- Fullscreen ---------- */
+        toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen?.().catch(() => {});
+            } else {
+                document.exitFullscreen?.();
+            }
+        }
+
+        next() { this.goTo(this.currentSlide + 1); }
+        prev() { this.goTo(this.currentSlide - 1); }
+        first() { this.goTo(0); }
+        last() { this.goTo(this.slides.length - 1); }
+
+        /* ---------- Step-aware advance / retreat ----------
+           advance() reveals the next .step on the current slide (if any),
+           otherwise advances to the next slide. retreat() hides the last
+           revealed step, otherwise goes back to the previous slide. */
+        advance() {
+            const current = this.slides[this.currentSlide];
+            const nextStep = current?.querySelector('.step:not(.step-shown)');
+            if (nextStep) {
+                nextStep.classList.add('step-shown');
+                // No stagger on click-reveal — the user's gesture is the trigger.
+                this._playReveal(nextStep, 0);
+                return;
+            }
+            this.next();
+        }
+        retreat() {
+            const current = this.slides[this.currentSlide];
+            const shown = current?.querySelectorAll('.step.step-shown');
+            if (shown && shown.length > 0) {
+                const last = shown[shown.length - 1];
+                last.classList.remove('step-shown');
+                this._cancelReveal(last);
+                this._applyHiddenStyle(last);
+                return;
+            }
+            this.prev();
+        }
+
+        /* ---------- Intersection observer ----------
+           Fire late (>= 80% in view) so reveals play on a settled slide.
+           This is the single source of truth for active-slide state.
+
+           Forward:  add .visible, play reveals. (goTo() has already reset
+                     the target to pre-reveal state if this is a re-visit,
+                     so the animation is fresh either way.)
+           Backward: add .visible, rewind to the start of the stepped
+                     content — reveals are shown instantly (no replay) and
+                     every step is hidden again so the viewer can step
+                     through it fresh. */
+        _setupIntersectionObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    const idx = this.viewports.indexOf(entry.target);
+                    if (idx < 0) return;
+                    const slide = this.slides[idx];
+
+                    if (idx === this.currentSlide) {
+                        // Same-slide re-fire (initial load, resize, fullscreen).
+                        if (!slide.classList.contains('visible')) {
+                            slide.classList.add('visible');
+                        }
+                        // Idempotent: only plays if not already marked played.
+                        this._playSlideReveals(slide);
+                        return;
+                    }
+
+                    const goingForward = idx > this.currentSlide;
+                    this.currentSlide = idx;
+                    this._updateNavDots();
+                    this._syncHash();
+
+                    slide.classList.add('visible');
+                    if (goingForward) {
+                        this._playSlideReveals(slide);
+                    } else {
+                        this._rewindSlide(slide);
+                    }
+                });
+            }, { threshold: 0.8 });
+
+            this.viewports.forEach((viewport) => observer.observe(viewport));
+        }
+
+        /* ---------- Keyboard ---------- */
+        _setupKeyboardNav() {
+            document.addEventListener('keydown', (e) => {
+                // Skip when user is editing text
+                if (e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+
+                switch (e.key) {
+                    // Step-aware: consume steps first, then advance slides
+                    case 'ArrowDown':
+                    case 'ArrowRight':
+                    case ' ':
+                        e.preventDefault(); this.advance(); break;
+                    case 'ArrowUp':
+                    case 'ArrowLeft':
+                        e.preventDefault(); this.retreat(); break;
+                    // Slide-level: always skip past steps
+                    case 'PageDown':
+                        e.preventDefault(); this.next(); break;
+                    case 'PageUp':
+                        e.preventDefault(); this.prev(); break;
+                    case 'Home':
+                        e.preventDefault(); this.first(); break;
+                    case 'End':
+                        e.preventDefault(); this.last(); break;
+                    case 'f':
+                    case 'F':
+                        e.preventDefault(); this.toggleFullscreen(); break;
+                    case 'r':
+                    case 'R':
+                        e.preventDefault(); this.first(); break;
+                }
+            });
+        }
+
+        /* ---------- Wheel / trackpad ----------
+           ALWAYS preventDefault — letting any native wheel scroll through
+           races against scrollIntoView + mandatory snap, and blocks macOS
+           two-finger horizontal swipes from triggering browser back/forward.
+           Whichever axis has the larger magnitude wins, so vertical scroll
+           and horizontal trackpad swipes both drive advance/retreat. Lock
+           briefly after a gesture so trackpad inertia (continuous small
+           deltas) can't spam next(). */
+        _setupWheelNav() {
+            let locked = false;
+            window.addEventListener('wheel', (e) => {
+                if (e.ctrlKey) return;                // preserve browser pinch-zoom (ctrl+wheel)
+                e.preventDefault();                   // block native scroll + horizontal back-swipe
+                if (locked) return;
+                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                if (Math.abs(delta) < 20) return;     // ignore tiny flicks
+                locked = true;
+                if (delta > 0) this.advance(); else this.retreat();
+                setTimeout(() => { locked = false; }, 500);
+            }, { passive: false });
+        }
+
+        /* ---------- Touch / swipe ----------
+           Horizontal swipes advance / retreat slides; left = next, right =
+           prev (matches stories / carousel conventions). Dominantly
+           vertical swipes fall through to native scroll-snap so the
+           existing top/bottom behavior keeps working. A time budget
+           rejects slow pans that were really aborted scrolls. */
+        _setupTouchNav() {
+            const MIN_DISTANCE = 50;     // px — below this is a tap or jitter
+            const MAX_TIME = 600;        // ms — slower than this is a pan, not a swipe
+            const DOMINANCE = 1.2;       // horizontal must beat vertical by this factor
+
+            let startX = 0, startY = 0, startTime = 0;
+            let tracking = false;
+
+            window.addEventListener('touchstart', (e) => {
+                if (document.body.classList.contains('artifact-editor-editing')) { tracking = false; return; }
+                if (e.touches.length !== 1) { tracking = false; return; }
+                const t = e.touches[0];
+                startX = t.clientX;
+                startY = t.clientY;
+                startTime = performance.now();
+                tracking = true;
+            }, { passive: true });
+
+            window.addEventListener('touchend', (e) => {
+                if (!tracking) return;
+                tracking = false;
+                const t = e.changedTouches[0];
+                const dx = t.clientX - startX;
+                const dy = t.clientY - startY;
+                const ax = Math.abs(dx), ay = Math.abs(dy);
+                if (ax < MIN_DISTANCE) return;
+                if (ax < ay * DOMINANCE) return;
+                if (performance.now() - startTime > MAX_TIME) return;
+                if (dx < 0) this.advance(); else this.retreat();
+            }, { passive: true });
+
+            window.addEventListener('touchcancel', () => { tracking = false; }, { passive: true });
+        }
+
+        /* ---------- Canvas scaling ----------
+           Each scaler holds a fixed 1920×1080 slide. Compute the
+           scale factor that fits it inside the viewport and apply via
+           CSS custom property. Runs on init, resize, and fullscreen. */
+        _setupCanvasScale() {
+            const CANVAS_W = 1920;
+            const CANVAS_H = 1080;
+            const scales = this.scales;
+
+            const update = () => {
+                const scale = Math.min(
+                    window.innerWidth / CANVAS_W,
+                    window.innerHeight / CANVAS_H
+                );
+                scales.forEach((el) => {
+                    el?.style.setProperty('--slide-scale', scale);
+                });
+            };
+
+            update();
+            window.addEventListener('resize', update);
+            document.addEventListener('fullscreenchange', () => {
+                requestAnimationFrame(update);
+            });
+        }
+
+        /* ---------- Viewport sync ----------
+           Resize / fullscreenchange → realign current slide. Each slide is
+           100vh, so a viewport height change leaves the existing scroll
+           position out of alignment with the slide top; scroll-snap doesn't
+           re-snap on its own. */
+        _setupViewportSync() {
+            const realign = () => {
+                requestAnimationFrame(() => {
+                    this._scrollToSlide(this.currentSlide, 'auto');
+                });
+            };
+            window.addEventListener('resize', realign);
+            document.addEventListener('fullscreenchange', realign);
+        }
+
+        /* ---------- Nav dots ---------- */
+        _buildNavDots() {
+            // Clear first — prevents duplicates when DOM is re-serialized/re-opened
+            this.navDotsContainer.innerHTML = '';
+            this.slides.forEach((slide, idx) => {
+                const dot = document.createElement('button');
+                dot.setAttribute('aria-label', `Go to slide ${idx + 1}`);
+                if (idx === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => this.goTo(idx));
+                this.navDotsContainer.appendChild(dot);
+            });
+        }
+
+        _updateNavDots() {
+            const dots = this.navDotsContainer.querySelectorAll('button');
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === this.currentSlide);
+            });
+        }
+    }
+
+    /* ---------- Auto-init ---------- */
+    function init() {
+        // Each slide canvas is its own editable host for the inline editor.
+        document.querySelectorAll('.slide').forEach(function (el) {
+            el.classList.add('artifact-editable');
+        });
+        window.slides = new SlidePresentation();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+</script>
+<!-- /skill:chassis -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creating Your First Database &amp; Tables | Student Edition</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <style>
+        :root{--background:#f0f4f8;--foreground:#0a0a0a;--accent:#1565C0;--accent-light:#1E88E5;--accent-dark:#0D47A1;--accent-foreground:#fff;--card:#1565C0;--card-foreground:#fff;--muted:#e3eaf2;--border:rgba(21,101,192,0.15);--font-display:'Archivo Black',sans-serif;--font-body:'Space Grotesk',sans-serif;--bg-gradient:linear-gradient(135deg,#f0f4f8 0%,#e1ecf7 50%,#f0f4f8 100%);--card-gradient:linear-gradient(135deg,#1565C0 0%,#1E88E5 100%)}
+        body{font-family:var(--font-body);background:var(--background)}h1,h2,h3{font-family:var(--font-display);letter-spacing:-0.02em}
+        .slide{background:var(--bg-gradient);padding:80px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+        .section-num{font-family:var(--font-display);font-size:280px;color:rgba(21,101,192,0.06);position:absolute;top:-40px;right:60px;line-height:1;pointer-events:none}
+        .blue-card{background:var(--card-gradient);color:var(--card-foreground);border-radius:24px;padding:60px;position:relative;overflow:hidden}.blue-card::after{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);border-radius:50%;pointer-events:none}.blue-card h2,.blue-card h3{color:#fff}.blue-card p,.blue-card li{color:rgba(255,255,255,0.92);font-size:28px;line-height:1.5}
+        .eyebrow{font-family:var(--font-body);font-size:24px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px}.blue-card .eyebrow{color:rgba(255,255,255,0.7)}
+        p{font-size:32px;line-height:1.5;color:#333;max-width:800px}h2{font-size:64px;line-height:1.1;color:var(--foreground);margin-bottom:24px}h3{font-size:44px;line-height:1.2;color:var(--foreground);margin-bottom:16px}
+        ul,ol{list-style:none;padding:0;margin:0}li{font-size:30px;line-height:1.5;color:#333;padding:8px 0;padding-left:32px;position:relative}li::before{content:'';position:absolute;left:0;top:18px;width:12px;height:12px;background:var(--accent);border-radius:3px}.blue-card li::before{background:rgba(255,255,255,0.6)}
+        table{width:100%;border-collapse:collapse;font-size:26px;margin-top:24px}th{background:var(--accent);color:white;padding:16px 24px;text-align:left;font-weight:600}td{padding:14px 24px;border-bottom:1px solid var(--border);color:#333}tr:nth-child(even) td{background:rgba(21,101,192,0.04)}
+        .hero{justify-content:space-between;background:linear-gradient(135deg,#0D47A1 0%,#1565C0 40%,#1E88E5 100%)}.hero *{color:white}.hero h1{font-size:96px;line-height:1.05}.hero p{color:rgba(255,255,255,0.8);font-size:32px}
+        .pause-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#E3F2FD 0%,#BBDEFB 50%,#E3F2FD 100%)}.pause-slide h2{font-size:72px;color:var(--accent-dark)}.pause-slide p{font-size:36px;color:var(--accent);text-align:center}.pause-icon{font-size:80px;margin-bottom:24px}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:32px}
+        .grid-card{background:white;border-radius:16px;padding:32px;border:2px solid var(--border);box-shadow:0 4px 20px rgba(21,101,192,0.06)}.grid-card h3{font-size:28px;margin-bottom:12px}.grid-card p{font-size:24px;color:#555}
+        .transition-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#0D47A1 0%,#1565C0 60%,#1976D2 100%)}.transition-slide h2{color:white;font-size:80px}.transition-slide p{color:rgba(255,255,255,0.7);font-size:32px;text-align:center}
+        .end-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#1565C0 0%,#0D47A1 100%)}.end-slide h1{color:white;font-size:96px}.end-slide p{color:rgba(255,255,255,0.8);font-size:32px;text-align:center}
+        .code-block{background:#1a1a2e;color:#e0e0e0;border-radius:16px;padding:32px;font-family:'Courier New',monospace;font-size:24px;line-height:1.6;margin-top:24px}.code-block .keyword{color:#4fc3f7}.code-block .string{color:#ce93d8}.code-block .comment{color:#666}
+        #particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+    </style>
+    <style>
+        /* Embedded DB folder presentation theme. */
+        :root {
+            color-scheme: dark;
+            --background: #0a0e1a;
+            --foreground: #e2e8f0;
+            --card: rgba(15, 23, 42, 0.80);
+            --card-foreground: #e2e8f0;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --accent-dark: #1d4ed8;
+            --accent-foreground: #ffffff;
+            --muted: #94a3b8;
+            --muted-foreground: rgba(148, 163, 184, 0.72);
+            --border: rgba(59, 130, 246, 0.30);
+            --font-display: 'Archivo Black', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
+            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #0a0e1a 100%);
+            --card-gradient: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+            --code-bg: rgba(2, 6, 23, 0.90);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --nav-dot-color: #3b82f6;
+            --nav-dot-active-color: #60a5fa;
+        }
+
+        html, body { background: var(--background) !important; }
+        body { color: var(--foreground) !important; font-family: var(--font-body) !important; }
+        #particles { opacity: 0.35 !important; }
+        .slide-viewport { background: var(--background) !important; }
+
+        .slide {
+            background: var(--bg-gradient) !important;
+            color: var(--foreground) !important;
+            font-family: var(--font-body) !important;
+            padding: 80px !important;
+            gap: 28px !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        .slide::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(125deg, rgba(59, 130, 246, 0.10), transparent 45%);
+        }
+        .slide > * { position: relative; z-index: 1; }
+
+        h1, h2, h3 {
+            color: #ffffff !important;
+            font-family: var(--font-display) !important;
+            letter-spacing: 0 !important;
+        }
+        h1, .hero h1, .end-slide h1 { font-size: 88px !important; line-height: 1.05 !important; }
+        h2, .transition-slide h2, .pause-slide h2 { font-size: 52px !important; line-height: 1.12 !important; margin-bottom: 10px !important; }
+        h3 { font-size: 38px !important; line-height: 1.2 !important; margin-bottom: 12px !important; }
+
+        p {
+            color: #cbd5e1 !important;
+            font-family: var(--font-body) !important;
+            font-size: 26px !important;
+            line-height: 1.55 !important;
+            max-width: 900px !important;
+        }
+        strong { color: #f8fafc !important; }
+
+        .eyebrow {
+            color: var(--accent-light) !important;
+            font-family: var(--font-body) !important;
+            font-size: 22px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.14em !important;
+            text-transform: uppercase !important;
+            margin-bottom: 4px !important;
+        }
+
+        .section-num, .section-number {
+            color: rgba(59, 130, 246, 0.08) !important;
+            font-family: var(--font-display) !important;
+            font-size: 180px !important;
+            line-height: 1 !important;
+            position: absolute !important;
+            top: 40px !important;
+            right: 80px !important;
+            pointer-events: none !important;
+            opacity: 1 !important;
+        }
+
+        .hero, .transition-slide, .end-slide, .pause-slide {
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            gap: 22px !important;
+            background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
+        }
+        .hero::before, .transition-slide::before, .end-slide::before, .pause-slide::before {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), transparent 56%) !important;
+        }
+        .hero p, .transition-slide p, .end-slide p, .pause-slide p {
+            color: var(--muted-foreground) !important;
+            text-align: center !important;
+        }
+
+        .blue-card, .grid-card, .card, .dark-card, .quote-card, .info-card, .example-card {
+            background: var(--card) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            box-shadow: none !important;
+            color: var(--card-foreground) !important;
+            padding: 32px 36px !important;
+            backdrop-filter: blur(8px);
+        }
+        .blue-card {
+            background: var(--card-gradient) !important;
+            border-color: rgba(96, 165, 250, 0.36) !important;
+            padding: 42px 48px !important;
+        }
+        .blue-card::after { display: none !important; }
+        .blue-card h2, .blue-card h3, .grid-card h3, .card h3, .dark-card h3 { color: #ffffff !important; }
+        .blue-card p, .blue-card li { color: rgba(255, 255, 255, 0.92) !important; }
+        .grid-card p, .card p, .dark-card p { color: #94a3b8 !important; font-size: 20px !important; }
+
+        .grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
+        .grid-3 { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; }
+
+        ul, ol { list-style: none !important; padding: 0 !important; margin: 0 !important; gap: 16px !important; }
+        li {
+            color: #cbd5e1 !important;
+            font-family: var(--font-body) !important;
+            font-size: 26px !important;
+            line-height: 1.5 !important;
+            padding: 8px 0 8px 28px !important;
+            position: relative !important;
+        }
+        li::before {
+            content: ">" !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 8px !important;
+            width: auto !important;
+            height: auto !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+            color: var(--accent-light) !important;
+            font-weight: 700 !important;
+        }
+        .blue-card li::before { color: #bfdbfe !important; }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            font-family: var(--font-body) !important;
+            font-size: 21px !important;
+            margin-top: 18px !important;
+        }
+        th {
+            background: rgba(59, 130, 246, 0.15) !important;
+            border-bottom: 2px solid var(--border) !important;
+            color: #93c5fd !important;
+            font-weight: 600 !important;
+            padding: 12px 16px !important;
+            text-align: left !important;
+        }
+        td {
+            background: transparent !important;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.10) !important;
+            color: #cbd5e1 !important;
+            padding: 10px 16px !important;
+        }
+        tr:nth-child(even) td { background: rgba(59, 130, 246, 0.04) !important; }
+
+        pre, .code-block {
+            background: var(--code-bg) !important;
+            border: 1px solid rgba(59, 130, 246, 0.20) !important;
+            border-radius: 12px !important;
+            box-shadow: none !important;
+            color: #e2e8f0 !important;
+            font-family: var(--font-mono) !important;
+            font-size: 19px !important;
+            line-height: 1.6 !important;
+            padding: 24px 28px !important;
+            overflow-x: auto !important;
+        }
+        .code-block .keyword, .kw { color: #93c5fd !important; font-weight: 500 !important; }
+        .code-block .string, .str { color: #86efac !important; }
+        .code-block .comment, .cm { color: #64748b !important; font-style: italic !important; }
+        .code-block .number, .num { color: #fbbf24 !important; }
+        .fn, .code-block .function { color: #c4b5fd !important; }
+
+        .quote-slide { align-items: center !important; justify-content: center !important; text-align: center !important; }
+        .quote-text { color: #e2e8f0 !important; font-size: 30px !important; max-width: 940px !important; }
+        .quote-attr, .accent, .highlight { color: var(--accent-light) !important; }
+        .bright { color: #ffffff !important; }
+        .highlight-green { color: var(--success) !important; }
+        .highlight-orange { color: var(--warning) !important; }
+        .highlight-red { color: var(--danger) !important; }
+        .stat-num { color: var(--accent-light) !important; font-size: 120px !important; }
+        .stat-label { color: var(--muted-foreground) !important; font-size: 22px !important; }
+
+        .venn-left { background: rgba(59, 130, 246, 0.18) !important; border-color: var(--accent) !important; }
+        .venn-right { background: rgba(16, 185, 129, 0.14) !important; border-color: var(--success) !important; }
+        .venn-label { color: #cbd5e1 !important; }
+
+        [style*="color:#333"], [style*="color: #333"],
+        [style*="color:#555"], [style*="color: #555"],
+        [style*="color:#666"], [style*="color: #666"],
+        [style*="color:var(--muted)"], [style*="color: var(--muted)"] {
+            color: var(--muted-foreground) !important;
+        }
+        [style*="color:var(--accent)"], [style*="color: var(--accent)"],
+        [style*="color:var(--accent-light)"], [style*="color: var(--accent-light)"] {
+            color: var(--accent-light) !important;
+        }
+        [style*="color:#c62828"], [style*="color: #c62828"],
+        [style*="color:#ef4444"], [style*="color: #ef4444"] {
+            color: var(--danger) !important;
+        }
+        [style*="background:var(--muted)"], [style*="background: var(--muted)"] {
+            background: rgba(15, 23, 42, 0.86) !important;
+            border: 1px solid var(--border) !important;
+        }
+        [style*="background:var(--card-gradient)"], [style*="background: var(--card-gradient)"] {
+            background: var(--card-gradient) !important;
+        }
+    
+/* Title-slide cleanup: match the plain centered title layout. */
+.title-slide {
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 22px !important;
+    background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
+}
+.title-slide::before {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 56%) !important;
+}
+.title-slide .eyebrow,
+.title-slide .section-num,
+.title-slide .section-number {
+    display: none !important;
+}
+.title-slide h1,
+.title-slide h1 *,
+.title-slide .highlight,
+.title-slide .accent {
+    color: #ffffff !important;
+}
+.title-slide h1 {
+    font-size: 88px !important;
+    line-height: 1.05 !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+.title-slide p {
+    color: var(--muted-foreground, var(--muted, #94a3b8)) !important;
+    font-size: 26px !important;
+    line-height: 1.45 !important;
+    max-width: 900px !important;
+    margin: 0 !important;
+    text-align: center !important;
+}</style>
+
+
+
+<style data-db-session-upgrade>
+  .slide { gap:0 !important; }
+  .slide:not([style*="padding-top"]) { padding-top:70px !important; padding-bottom:70px !important; }
+  .slide.practice-slide { padding-top:25px !important; padding-bottom:25px !important; }
+  .db-subject-watermark { position:absolute; top:18px; right:30px; z-index:60; color:var(--muted-foreground,var(--muted,#64748b)); font:600 14px/1.2 var(--font-body,sans-serif); letter-spacing:.02em; opacity:.72; white-space:nowrap; pointer-events:none; user-select:none; }
+  .db-reference-layout { display:grid; grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr); gap:30px; align-items:stretch; margin-top:18px; }
+  .db-reference-copy { min-height:560px; display:flex; flex-direction:column; justify-content:center; gap:18px; }
+  .db-reference-copy h3 { margin:0; font-size:28px; color:var(--accent,var(--accent-light)); }
+  .db-reference-copy ul { margin:0; }
+  .db-reference-copy li { font-size:20px; line-height:1.45; margin-bottom:12px; }
+  .db-reference-frame { min-height:560px; padding:14px; display:flex; flex-direction:column; justify-content:center; background:rgba(255,255,255,.06); border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; overflow:hidden; }
+  .db-reference-frame img { width:100%; max-height:505px; object-fit:contain; border-radius:10px; background:#fff; }
+  .db-reference-caption { margin-top:10px; font-size:14px; line-height:1.35; color:var(--muted-foreground,var(--muted,#94a3b8)); text-align:center; }
+  .db-concept-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:28px; }
+  .db-concept-card { min-height:300px; padding:30px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; background:var(--card-gradient,var(--card,#172033)); }
+  .db-concept-card h3 { margin:0 0 14px; font-size:28px; color:var(--accent,var(--accent-light)); }
+  .db-concept-card p { margin:0; font-size:21px; line-height:1.45; }
+  .db-flow { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:30px; }
+  .db-flow-step { position:relative; min-height:150px; display:flex; align-items:center; justify-content:center; padding:24px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:16px; background:var(--card-gradient,var(--card,#172033)); color:var(--foreground); font-family:var(--font-body); font-size:22px; font-weight:700; text-align:center; }
+  .db-flow-step:not(:last-child)::after { content:'→'; position:absolute; right:-20px; top:50%; z-index:2; transform:translateY(-50%); color:var(--accent,var(--accent-light)); font-size:30px; }
+  .db-compare { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:26px; }
+  .db-compare > div { padding:24px 28px; border-radius:16px; background:rgba(255,255,255,.055); }
+  .db-compare strong { display:block; margin-bottom:8px; color:var(--accent,var(--accent-light)); font-family:var(--font-body); font-size:20px; text-transform:uppercase; letter-spacing:.08em; }
+  .db-compare p { font-size:19px; line-height:1.4; }
+  .mock-phone,.phone-mockup,.browser-frame,.screenshot-frame,.ui-reference,.ui-web-frame,.dashboard-mockup,.app-window,.terminal-window { box-sizing:border-box; overflow:hidden; max-width:100%; }
+  .slide img { max-width:100%; }
+</style>
+<style data-image-lightbox-styles>
+  .slide img[data-lightbox-ready] { cursor:zoom-in; transition:filter .18s ease,transform .18s ease; }
+  .slide img[data-lightbox-ready]:hover { filter:brightness(1.06); }
+  .slide img[data-lightbox-ready]:focus-visible { outline:4px solid var(--accent,var(--accent-light)); outline-offset:5px; }
+  body.image-lightbox-open { overflow:hidden !important; }
+  .image-lightbox { position:fixed; inset:0; z-index:2147483647; display:grid; place-items:center; padding:58px 46px 38px; background:rgba(3,5,12,.94); backdrop-filter:blur(12px); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .2s ease,visibility .2s ease; }
+  .image-lightbox.is-open { opacity:1; visibility:visible; pointer-events:auto; }
+  .image-lightbox__figure { width:min(94vw,1800px); height:min(88vh,980px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; margin:0; }
+  .image-lightbox__image { display:block; width:auto !important; height:auto !important; max-width:94vw !important; max-height:80vh !important; object-fit:contain !important; border-radius:12px; background:#fff; box-shadow:0 28px 80px rgba(0,0,0,.55); }
+  .image-lightbox__caption { max-width:1100px; color:rgba(255,255,255,.85); font:500 17px/1.4 var(--font-body,sans-serif); text-align:center; }
+  .image-lightbox__close { position:fixed; top:18px; right:24px; width:52px; height:52px; display:grid; place-items:center; padding:0; border:1px solid rgba(255,255,255,.25); border-radius:50%; background:rgba(18,22,32,.9); color:#fff; font:300 36px/1 sans-serif; cursor:pointer; }
+</style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+
+    <section class="slide title-slide hero"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1">Week 4 · Session 2</span>
+        <h1 class="reveal d2">Creating Your First<br>Database & Tables</h1>
+        <p class="reveal d3">DDL in action: BUILD your database from scratch</p>
+    <p class="reveal d4" style="font-size:22px;color:var(--accent,var(--accent-light));margin-top:20px;">Student Edition - expanded lesson explanations</p></section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Today's Goal</span>
+        <h2 class="reveal d2">By End of Session, You'll Have:</h2>
+        <ul>
+            <li class="step">A working "school_db" database with 3 tables</li>
+            <li class="step">Tables with proper data types and constraints</li>
+            <li class="step">Foreign key relationships between tables</li>
+            <li class="step">Real data inserted into your tables</li>
+            <li class="step">Your first SELECT queries returning results</li>
+        </ul>
+    </section>
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 01</span>
+        <h2 class="reveal d2">MySQL Data Types</h2>
+        <p class="reveal d3">Choosing the right container for your data</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Why Types Matter</span>
+        <h2 class="reveal d2">Data Types = Storage Rules</h2>
+        <p class="reveal d3">Every column needs a data type that tells MySQL what kind of values it will hold. The right type = better performance + better validation.</p>
+        <div class="grid-2 step">
+            <div class="grid-card">
+                <h3>Good Type Choice</h3>
+                <p>Age as INT (small number), GPA as DECIMAL(3,2) (precise), Name as VARCHAR(100) (flexible text)</p>
+            </div>
+            <div class="grid-card">
+                <h3>Bad Type Choice</h3>
+                <p>Age as TEXT (wastes space), GPA as VARCHAR (loses precision), Phone as INT (loses leading zeros)</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Numeric Types</span>
+        <h2 class="reveal d2">Numeric Data Types</h2>
+        <table class="reveal d3">
+            <thead><tr><th>Type</th><th>Range</th><th>Use For</th></tr></thead>
+            <tbody>
+                <tr><td><strong>INT</strong></td><td>-2 billion to 2 billion</td><td>IDs, counts, age</td></tr>
+                <tr><td><strong>SMALLINT</strong></td><td>-32,768 to 32,767</td><td>Small numbers (year, quantity)</td></tr>
+                <tr><td><strong>BIGINT</strong></td><td>Huge range</td><td>Very large numbers</td></tr>
+                <tr><td><strong>DECIMAL(p,s)</strong></td><td>Exact precision</td><td>Money, GPA (DECIMAL(3,2) = 1.75)</td></tr>
+                <tr><td><strong>FLOAT/DOUBLE</strong></td><td>Approximate</td><td>Scientific calculations</td></tr>
+            </tbody>
+        </table>
+        <p class="step" style="margin-top:16px; font-size:24px; color:var(--accent);"><strong>Rule:</strong> Use INT for IDs, DECIMAL for money/grades, avoid FLOAT for precision.</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Text Types</span>
+        <h2 class="reveal d2">Text/String Data Types</h2>
+        <table class="reveal d3">
+            <thead><tr><th>Type</th><th>Max Length</th><th>Use For</th></tr></thead>
+            <tbody>
+                <tr><td><strong>CHAR(n)</strong></td><td>Fixed n characters</td><td>Fixed-length codes (gender: M/F, country: PH)</td></tr>
+                <tr><td><strong>VARCHAR(n)</strong></td><td>Variable, up to n</td><td>Names, emails, addresses (most common)</td></tr>
+                <tr><td><strong>TEXT</strong></td><td>65,535 characters</td><td>Long text (descriptions, comments)</td></tr>
+                <tr><td><strong>ENUM('a','b','c')</strong></td><td>One of listed values</td><td>Status, category (fixed options)</td></tr>
+            </tbody>
+        </table>
+        <p class="step" style="margin-top:16px; font-size:24px; color:var(--accent);"><strong>Rule:</strong> VARCHAR for most text. ENUM for fixed choices. TEXT only for long content.</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Date Types</span>
+        <h2 class="reveal d2">Date & Time Data Types</h2>
+        <table class="reveal d3">
+            <thead><tr><th>Type</th><th>Format</th><th>Use For</th></tr></thead>
+            <tbody>
+                <tr><td><strong>DATE</strong></td><td>YYYY-MM-DD</td><td>Birthdays, enrollment dates</td></tr>
+                <tr><td><strong>DATETIME</strong></td><td>YYYY-MM-DD HH:MM:SS</td><td>Timestamps with specific time</td></tr>
+                <tr><td><strong>TIMESTAMP</strong></td><td>YYYY-MM-DD HH:MM:SS</td><td>Auto-updated (created_at, updated_at)</td></tr>
+                <tr><td><strong>TIME</strong></td><td>HH:MM:SS</td><td>Duration, schedule time</td></tr>
+                <tr><td><strong>YEAR</strong></td><td>YYYY</td><td>Year only</td></tr>
+            </tbody>
+        </table>
+        <p class="step" style="margin-top:16px; font-size:24px; color:var(--accent);"><strong>Rule:</strong> DATE for dates, DATETIME for timestamps, TIMESTAMP for auto-tracking.</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">01</span>
+        <span class="eyebrow reveal d1">Cheat Sheet</span>
+        <h2 class="reveal d2">Common Column → Type Cheat Sheet</h2>
+        <table class="reveal d3" style="font-size:24px;">
+            <thead><tr><th>Column</th><th>Best Type</th><th>Why</th></tr></thead>
+            <tbody>
+                <tr><td>student_id</td><td>INT AUTO_INCREMENT</td><td>Numeric, auto-generated</td></tr>
+                <tr><td>name</td><td>VARCHAR(100)</td><td>Variable length text</td></tr>
+                <tr><td>email</td><td>VARCHAR(255)</td><td>Emails can be long</td></tr>
+                <tr><td>gpa</td><td>DECIMAL(3,2)</td><td>Exact: 1.00 to 5.00</td></tr>
+                <tr><td>phone</td><td>VARCHAR(15)</td><td>Preserves leading zeros, formatting</td></tr>
+                <tr><td>birthday</td><td>DATE</td><td>Only need year-month-day</td></tr>
+                <tr><td>status</td><td>ENUM('Active','Inactive','Graduated')</td><td>Fixed set of choices</td></tr>
+                <tr><td>created_at</td><td>TIMESTAMP DEFAULT CURRENT_TIMESTAMP</td><td>Auto-records creation time</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 02</span>
+        <h2 class="reveal d2">CREATE TABLE</h2>
+        <p class="reveal d3">Building your first tables</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Syntax</span>
+        <h2 class="reveal d2">CREATE TABLE Syntax</h2>
+        <div class="code-block reveal d3" style="font-size:22px;">
+            <span class="keyword">CREATE TABLE</span> table_name (<br>
+            &nbsp;&nbsp;column1 <span class="keyword">datatype</span> constraints,<br>
+            &nbsp;&nbsp;column2 <span class="keyword">datatype</span> constraints,<br>
+            &nbsp;&nbsp;column3 <span class="keyword">datatype</span> constraints,<br>
+            &nbsp;&nbsp;...<br>
+            &nbsp;&nbsp;<span class="keyword">PRIMARY KEY</span> (column1),<br>
+            &nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (columnX) <span class="keyword">REFERENCES</span> other_table(column)<br>
+            ) <span class="keyword">ENGINE</span>=InnoDB;
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Table 1</span>
+        <h2 class="reveal d2">Let's Build: students Table</h2>
+        <div class="code-block reveal d3" style="font-size:20px;">
+            <span class="keyword">USE</span> school_db;<br><br>
+            <span class="keyword">CREATE TABLE</span> students (<br>
+            &nbsp;&nbsp;student_id <span class="keyword">INT AUTO_INCREMENT</span>,<br>
+            &nbsp;&nbsp;first_name <span class="keyword">VARCHAR</span>(50) <span class="keyword">NOT NULL</span>,<br>
+            &nbsp;&nbsp;last_name <span class="keyword">VARCHAR</span>(50) <span class="keyword">NOT NULL</span>,<br>
+            &nbsp;&nbsp;email <span class="keyword">VARCHAR</span>(100) <span class="keyword">NOT NULL UNIQUE</span>,<br>
+            &nbsp;&nbsp;date_of_birth <span class="keyword">DATE</span>,<br>
+            &nbsp;&nbsp;course <span class="keyword">ENUM</span>(<span class="string">'BSIS'</span>,<span class="string">'BSIT'</span>,<span class="string">'BSCS'</span>) <span class="keyword">NOT NULL</span>,<br>
+            &nbsp;&nbsp;year_level <span class="keyword">INT</span> <span class="keyword">CHECK</span>(year_level >= 1 <span class="keyword">AND</span> year_level <= 5),<br>
+            &nbsp;&nbsp;gpa <span class="keyword">DECIMAL</span>(3,2) <span class="keyword">CHECK</span>(gpa >= 1.00 <span class="keyword">AND</span> gpa <= 5.00),<br>
+            &nbsp;&nbsp;status <span class="keyword">ENUM</span>(<span class="string">'Active'</span>,<span class="string">'Inactive'</span>,<span class="string">'Graduated'</span>) <span class="keyword">DEFAULT</span> <span class="string">'Active'</span>,<br>
+            &nbsp;&nbsp;created_at <span class="keyword">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>,<br>
+            &nbsp;&nbsp;<span class="keyword">PRIMARY KEY</span> (student_id)<br>
+            ) <span class="keyword">ENGINE</span>=InnoDB;
+        </div>
+    </section>
+
+    
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Table 2</span>
+        <h2 class="reveal d2">Let's Build: courses Table</h2>
+        <div class="code-block reveal d3" style="font-size:22px;">
+            <span class="keyword">CREATE TABLE</span> courses (<br>
+            &nbsp;&nbsp;course_code <span class="keyword">VARCHAR</span>(10),<br>
+            &nbsp;&nbsp;course_name <span class="keyword">VARCHAR</span>(100) <span class="keyword">NOT NULL</span>,<br>
+            &nbsp;&nbsp;units <span class="keyword">INT NOT NULL CHECK</span>(units >= 1 <span class="keyword">AND</span> units <= 6),<br>
+            &nbsp;&nbsp;description <span class="keyword">TEXT</span>,<br>
+            &nbsp;&nbsp;semester <span class="keyword">ENUM</span>(<span class="string">'1st'</span>,<span class="string">'2nd'</span>,<span class="string">'Summer'</span>) <span class="keyword">NOT NULL</span>,<br>
+            &nbsp;&nbsp;<span class="keyword">PRIMARY KEY</span> (course_code)<br>
+            ) <span class="keyword">ENGINE</span>=InnoDB;
+        </div>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">Note: course_code is a NATURAL key (VARCHAR), not auto-increment. It's meaningful.</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Table 3</span>
+        <h2 class="reveal d2">Let's Build: enrollments Table</h2>
+        <div class="code-block reveal d3" style="font-size:20px;">
+            <span class="keyword">CREATE TABLE</span> enrollments (<br>
+            &nbsp;&nbsp;enroll_id <span class="keyword">INT AUTO_INCREMENT</span>,<br>
+            &nbsp;&nbsp;student_id <span class="keyword">INT NOT NULL</span>,<br>
+            &nbsp;&nbsp;course_code <span class="keyword">VARCHAR</span>(10) <span class="keyword">NOT NULL</span>,<br>
+            &nbsp;&nbsp;school_year <span class="keyword">VARCHAR</span>(9) <span class="keyword">NOT NULL</span>, <span class="comment">-- e.g., '2024-2025'</span><br>
+            &nbsp;&nbsp;grade <span class="keyword">DECIMAL</span>(3,2),<br>
+            &nbsp;&nbsp;enrolled_at <span class="keyword">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>,<br>
+            &nbsp;&nbsp;<span class="keyword">PRIMARY KEY</span> (enroll_id),<br>
+            &nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (student_id) <span class="keyword">REFERENCES</span> students(student_id)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">ON DELETE CASCADE</span>,<br>
+            &nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (course_code) <span class="keyword">REFERENCES</span> courses(course_code)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">ON DELETE RESTRICT</span><br>
+            ) <span class="keyword">ENGINE</span>=InnoDB;
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">02</span>
+        <span class="eyebrow reveal d1">Verify</span>
+        <h2 class="reveal d2">Verify Your Tables</h2>
+        <div class="code-block reveal d3">
+            <span class="comment">-- Show all tables in school_db</span><br>
+            <span class="keyword">SHOW TABLES</span>;<br><br>
+            <span class="comment">-- Show structure of students table</span><br>
+            <span class="keyword">DESCRIBE</span> students;<br><br>
+            <span class="comment">-- Show the CREATE statement used</span><br>
+            <span class="keyword">SHOW CREATE TABLE</span> students;
+        </div>
+        <p class="step" style="margin-top:16px; font-size:26px; color:var(--accent);">DESCRIBE shows columns, types, and constraints. Use it to verify your work!</p>
+    </section>
+
+    
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 03</span>
+        <h2 class="reveal d2">INSERT Data</h2>
+        <p class="reveal d3">Populating your tables with records</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">03</span>
+        <span class="eyebrow reveal d1">INSERT Syntax</span>
+        <h2 class="reveal d2">INSERT INTO Syntax</h2>
+        <div class="code-block reveal d3">
+            <span class="comment">-- Method 1: Specify columns</span><br>
+            <span class="keyword">INSERT INTO</span> table_name (col1, col2, col3)<br>
+            <span class="keyword">VALUES</span> (val1, val2, val3);<br><br>
+            <span class="comment">-- Method 2: All columns (in order)</span><br>
+            <span class="keyword">INSERT INTO</span> table_name<br>
+            <span class="keyword">VALUES</span> (val1, val2, val3, ...);<br><br>
+            <span class="comment">-- Method 3: Multiple rows at once</span><br>
+            <span class="keyword">INSERT INTO</span> table_name (col1, col2)<br>
+            <span class="keyword">VALUES</span> (v1, v2), (v3, v4), (v5, v6);
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">03</span>
+        <span class="eyebrow reveal d1">Insert Courses</span>
+        <h2 class="reveal d2">Inserting Course Data</h2>
+        <div class="code-block reveal d3" style="font-size:20px;">
+            <span class="keyword">INSERT INTO</span> courses (course_code, course_name, units, description, semester)<br>
+            <span class="keyword">VALUES</span><br>
+            &nbsp;&nbsp;(<span class="string">'DB101'</span>, <span class="string">'Fundamentals of Database Systems'</span>, 3, <span class="string">'Introduction to databases and SQL'</span>, <span class="string">'1st'</span>),<br>
+            &nbsp;&nbsp;(<span class="string">'WEB201'</span>, <span class="string">'Web Development'</span>, 3, <span class="string">'HTML, CSS, JavaScript, PHP'</span>, <span class="string">'1st'</span>),<br>
+            &nbsp;&nbsp;(<span class="string">'OOP101'</span>, <span class="string">'Object-Oriented Programming'</span>, 3, <span class="string">'Java/Python OOP concepts'</span>, <span class="string">'2nd'</span>),<br>
+            &nbsp;&nbsp;(<span class="string">'NET301'</span>, <span class="string">'Computer Networks'</span>, 3, <span class="string">'Network fundamentals'</span>, <span class="string">'2nd'</span>),<br>
+            &nbsp;&nbsp;(<span class="string">'SYS401'</span>, <span class="string">'Systems Analysis & Design'</span>, 3, <span class="string">'SDLC and system design'</span>, <span class="string">'1st'</span>);
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">03</span>
+        <span class="eyebrow reveal d1">Insert Students</span>
+        <h2 class="reveal d2">Inserting Student Data</h2>
+        <div class="code-block reveal d3" style="font-size:20px;">
+            <span class="keyword">INSERT INTO</span> students (first_name, last_name, email, date_of_birth, course, year_level, gpa)<br>
+            <span class="keyword">VALUES</span><br>
+            &nbsp;&nbsp;(<span class="string">'Maria'</span>, <span class="string">'Santos'</span>, <span class="string">'maria.santos@school.edu'</span>, <span class="string">'2003-05-15'</span>, <span class="string">'BSIS'</span>, 2, 1.50),<br>
+            &nbsp;&nbsp;(<span class="string">'Juan'</span>, <span class="string">'Cruz'</span>, <span class="string">'juan.cruz@school.edu'</span>, <span class="string">'2002-11-22'</span>, <span class="string">'BSIT'</span>, 3, 1.75),<br>
+            &nbsp;&nbsp;(<span class="string">'Ana'</span>, <span class="string">'Reyes'</span>, <span class="string">'ana.reyes@school.edu'</span>, <span class="string">'2004-01-08'</span>, <span class="string">'BSIS'</span>, 1, 1.25),<br>
+            &nbsp;&nbsp;(<span class="string">'Pedro'</span>, <span class="string">'Garcia'</span>, <span class="string">'pedro.garcia@school.edu'</span>, <span class="string">'2003-07-30'</span>, <span class="string">'BSCS'</span>, 2, 2.00),<br>
+            &nbsp;&nbsp;(<span class="string">'Lisa'</span>, <span class="string">'Mendoza'</span>, <span class="string">'lisa.mendoza@school.edu'</span>, <span class="string">'2002-09-14'</span>, <span class="string">'BSIT'</span>, 4, 1.50);
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">03</span>
+        <span class="eyebrow reveal d1">Insert Enrollments</span>
+        <h2 class="reveal d2">Inserting Enrollment Data</h2>
+        <div class="code-block reveal d3" style="font-size:20px;">
+            <span class="keyword">INSERT INTO</span> enrollments (student_id, course_code, school_year, grade)<br>
+            <span class="keyword">VALUES</span><br>
+            &nbsp;&nbsp;(1, <span class="string">'DB101'</span>, <span class="string">'2024-2025'</span>, 1.50),<br>
+            &nbsp;&nbsp;(1, <span class="string">'WEB201'</span>, <span class="string">'2024-2025'</span>, 1.75),<br>
+            &nbsp;&nbsp;(2, <span class="string">'DB101'</span>, <span class="string">'2024-2025'</span>, 2.00),<br>
+            &nbsp;&nbsp;(2, <span class="string">'OOP101'</span>, <span class="string">'2024-2025'</span>, 1.50),<br>
+            &nbsp;&nbsp;(3, <span class="string">'DB101'</span>, <span class="string">'2024-2025'</span>, <span class="keyword">NULL</span>),<br>
+            &nbsp;&nbsp;(4, <span class="string">'WEB201'</span>, <span class="string">'2024-2025'</span>, 2.25),<br>
+            &nbsp;&nbsp;(5, <span class="string">'NET301'</span>, <span class="string">'2024-2025'</span>, 1.75);
+        </div>
+        <p class="step" style="margin-top:12px; font-size:22px; color:#666;">Note: Ana's grade is NULL (hasn't taken the exam yet). That's valid!</p>
+    </section>
+
+    
+
+    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 04</span>
+        <h2 class="reveal d2">SELECT Queries</h2>
+        <p class="reveal d3">Reading your data back</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Basic SELECT</span>
+        <h2 class="reveal d2">Your First SELECT Queries</h2>
+        <div class="code-block reveal d3" style="font-size:22px;">
+            <span class="comment">-- See ALL students</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students;<br><br>
+            <span class="comment">-- See ALL courses</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> courses;<br><br>
+            <span class="comment">-- See ALL enrollments</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> enrollments;<br><br>
+            <span class="comment">-- Count students</span><br>
+            <span class="keyword">SELECT COUNT</span>(*) <span class="keyword">AS</span> total_students <span class="keyword">FROM</span> students;
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Specific Columns</span>
+        <h2 class="reveal d2">SELECT Specific Columns</h2>
+        <div class="code-block reveal d3" style="font-size:22px;">
+            <span class="comment">-- Only names and course</span><br>
+            <span class="keyword">SELECT</span> first_name, last_name, course <span class="keyword">FROM</span> students;<br><br>
+            <span class="comment">-- Only course codes and names</span><br>
+            <span class="keyword">SELECT</span> course_code, course_name <span class="keyword">FROM</span> courses;<br><br>
+            <span class="comment">-- With alias (rename column in output)</span><br>
+            <span class="keyword">SELECT</span> first_name <span class="keyword">AS</span> <span class="string">"First Name"</span>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gpa <span class="keyword">AS</span> <span class="string">"Grade Point Average"</span><br>
+            <span class="keyword">FROM</span> students;
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">WHERE Clause</span>
+        <h2 class="reveal d2">Filtering with WHERE</h2>
+        <div class="code-block reveal d3" style="font-size:22px;">
+            <span class="comment">-- BSIS students only</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students <span class="keyword">WHERE</span> course = <span class="string">'BSIS'</span>;<br><br>
+            <span class="comment">-- Students with GPA better than 1.50</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students <span class="keyword">WHERE</span> gpa < 1.50;<br><br>
+            <span class="comment">-- Year level 2 or higher</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students <span class="keyword">WHERE</span> year_level >= 2;<br><br>
+            <span class="comment">-- Combining conditions</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students<br>
+            <span class="keyword">WHERE</span> course = <span class="string">'BSIS'</span> <span class="keyword">AND</span> gpa <= 1.50;
+        </div>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Sorting</span>
+        <h2 class="reveal d2">ORDER BY (Sorting Results)</h2>
+        <div class="code-block reveal d3" style="font-size:22px;">
+            <span class="comment">-- Sort by GPA (best first)</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students <span class="keyword">ORDER BY</span> gpa <span class="keyword">ASC</span>;<br><br>
+            <span class="comment">-- Sort by last name (A-Z)</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students <span class="keyword">ORDER BY</span> last_name <span class="keyword">ASC</span>;<br><br>
+            <span class="comment">-- Sort by year (highest first), then by GPA</span><br>
+            <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> students<br>
+            <span class="keyword">ORDER BY</span> year_level <span class="keyword">DESC</span>, gpa <span class="keyword">ASC</span>;
+        </div>
+        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">ASC = ascending (A-Z, 1-9). DESC = descending (Z-A, 9-1).</p>
+    </section>
+
+    
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Answer</span>
+        <h2 class="reveal d2">Solution</h2>
+        <div class="code-block reveal d3">
+            <span class="keyword">SELECT</span> first_name, last_name, gpa<br>
+            <span class="keyword">FROM</span> students<br>
+            <span class="keyword">WHERE</span> course = <span class="string">'BSIT'</span><br>
+            <span class="keyword">ORDER BY</span> gpa <span class="keyword">ASC</span>;
+        </div>
+        <p class="step" style="margin-top:24px; font-size:26px; color:#666;">Expected result: Lisa (1.50) then Juan (1.75). Both BSIT, sorted by GPA ascending.</p>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Testing Constraints</span>
+        <h2 class="reveal d2">Let's Break Things! (Testing Constraints)</h2>
+        <div class="code-block reveal d3" style="font-size:20px;">
+            <span class="comment">-- Try these and observe the ERRORS:</span><br><br>
+            <span class="comment">-- 1. Duplicate email (UNIQUE violation)</span><br>
+            <span class="keyword">INSERT INTO</span> students (first_name, last_name, email, course, year_level)<br>
+            <span class="keyword">VALUES</span> (<span class="string">'Test'</span>, <span class="string">'User'</span>, <span class="string">'maria.santos@school.edu'</span>, <span class="string">'BSIS'</span>, 1);<br><br>
+            <span class="comment">-- 2. Invalid GPA (CHECK violation)</span><br>
+            <span class="keyword">INSERT INTO</span> students (first_name, last_name, email, course, year_level, gpa)<br>
+            <span class="keyword">VALUES</span> (<span class="string">'Bad'</span>, <span class="string">'Data'</span>, <span class="string">'bad@test.com'</span>, <span class="string">'BSIS'</span>, 1, 10.00);<br><br>
+            <span class="comment">-- 3. Invalid FK (referential integrity violation)</span><br>
+            <span class="keyword">INSERT INTO</span> enrollments (student_id, course_code, school_year)<br>
+            <span class="keyword">VALUES</span> (999, <span class="string">'FAKE101'</span>, <span class="string">'2024-2025'</span>);
+        </div>
+    </section>
+
+    
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Recap</span>
+        <h2 class="reveal d2">Session Recap</h2>
+        <ul>
+            <li class="step">✅ Learned MySQL data types (INT, VARCHAR, DATE, DECIMAL, ENUM)</li>
+            <li class="step">✅ Created 3 tables with proper constraints</li>
+            <li class="step">✅ Inserted sample data (courses → students → enrollments)</li>
+            <li class="step">✅ Wrote SELECT queries with WHERE and ORDER BY</li>
+            <li class="step">✅ Tested constraints by intentionally violating them</li>
+        </ul>
+    </section>
+
+    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <span class="section-num">04</span>
+        <span class="eyebrow reveal d1">Next Week</span>
+        <h2 class="reveal d2">Week 5: SQL Basics Deep Dive</h2>
+        <p class="reveal d3">Next sessions cover:</p>
+        <ul>
+            <li class="step">More CREATE TABLE patterns and ALTER TABLE</li>
+            <li class="step">INSERT with edge cases and batch inserts</li>
+            <li class="step">SELECT with advanced WHERE (LIKE, IN, BETWEEN, IS NULL)</li>
+            <li class="step">LIMIT and pagination</li>
+        </ul>
+    </section>
+
+    
+
+    
+
+<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Concept Model</span><h2 class="reveal d2">How Creating Your First Database &amp; Tables fits together</h2><div class="db-concept-grid reveal d3"><div class="db-concept-card"><h3>Database</h3><p>A named container for related tables and other objects.</p></div><div class="db-concept-card"><h3>Table definition</h3><p>Columns, types, defaults, keys, and constraints expressed as schema.</p></div><div class="db-concept-card"><h3>Row</h3><p>One valid instance inserted under that definition.</p></div></div></section>
+<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">System View</span><h2 class="reveal d2">Trace the logic from start to finish</h2><div class="db-flow reveal d3"><div class="db-flow-step">Create database</div><div class="db-flow-step">Select database</div><div class="db-flow-step">Create table</div><div class="db-flow-step">Insert and inspect rows</div></div><div class="db-compare reveal d4"><div><strong>Common failure</strong><p>Choosing types only by sample values creates columns that reject future valid data or allow invalid data.</p></div><div><strong>Better approach</strong><p>Choose types and constraints from the full business meaning and expected range.</p></div></div></section>
+<!-- DB OFFICIAL REFERENCE: W04S02 -->
+<section class="slide db-reference-slide" data-db-reference="w04s02"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Official Reference</span><h2 class="reveal d2">Creating and selecting a database</h2><div class="db-reference-layout reveal d3"><div class="db-reference-copy"><h3>What to notice</h3><ul><li><strong>Database:</strong> A named container for related tables and other objects.</li><li><strong>Table definition:</strong> Columns, types, defaults, keys, and constraints expressed as schema.</li><li><strong>Row:</strong> One valid instance inserted under that definition.</li></ul><p style="font-size:18px;line-height:1.45;color:var(--muted-foreground,var(--muted));">Use the labels, syntax, and navigation shown here to connect the lesson to the actual database tool or documentation.</p></div><div class="db-reference-frame"><img src="assets/student-visuals/w04s02-reference.png" alt="Official MySQL Documentation reference for Creating Your First Database &amp; Tables"><div class="db-reference-caption">MySQL Documentation · Creating and selecting a database</div></div></div></section>
+<section class="slide end-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
+        <h1 class="reveal d1">You Built a<br>Database! 🏗️</h1>
+        <p class="reveal d2">Week 4 · Session 2 Complete<br>Next: SQL Basics (CREATE, INSERT deep dive)</p>
+    </section>
+
+    
+
+
+
+
+
+
+
+<div class="image-lightbox" data-image-lightbox aria-hidden="true"><button class="image-lightbox__close" type="button" aria-label="Close fullscreen image">×</button><figure class="image-lightbox__figure"><img class="image-lightbox__image" alt=""><figcaption class="image-lightbox__caption"></figcaption></figure></div>
+<script data-image-lightbox-script>
+(()=>{const box=document.querySelector('[data-image-lightbox]');if(!box)return;const full=box.querySelector('.image-lightbox__image'),cap=box.querySelector('.image-lightbox__caption'),close=box.querySelector('.image-lightbox__close');let previous=null;const hide=()=>{box.classList.remove('is-open');box.setAttribute('aria-hidden','true');document.body.classList.remove('image-lightbox-open');if(previous)previous.focus();};const show=img=>{previous=img;full.src=img.currentSrc||img.src;full.alt=img.alt||'';cap.textContent=img.alt||'';box.classList.add('is-open');box.setAttribute('aria-hidden','false');document.body.classList.add('image-lightbox-open');close.focus();};document.querySelectorAll('.slide img').forEach(img=>{img.setAttribute('data-lightbox-ready','');img.setAttribute('role','button');img.setAttribute('tabindex','0');img.setAttribute('aria-label','Open image fullscreen: '+(img.alt||'presentation image'));img.addEventListener('click',()=>show(img));img.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(img);}});});close.addEventListener('click',hide);box.addEventListener('click',e=>{if(e.target===box)hide();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('is-open'))hide();});})();
+</script>
+</body>
+</html>
