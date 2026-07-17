@@ -1,15 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0a0e1a">
-  <meta name="description" content="Fundamentals of Database Systems class materials and lesson hub.">
-  <title>Fundamentals of Database Systems | Class Materials</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#0a0e1a" name="theme-color"/>
+<meta content="Fundamentals of Database Systems class materials and lesson hub." name="description"/>
+<title>Fundamentals of Database Systems | Class Materials</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
     :root {
       color-scheme: dark;
       --bg:#0a0e1a; --bg-2:#0f172a; --surface:#111b2f; --surface-2:#16233d;
@@ -28,7 +29,6 @@
     .header-row{display:flex;align-items:center;justify-content:space-between;gap:18px} .brand{display:flex;align-items:center;gap:13px;text-decoration:none}
     .brand-mark{width:44px;height:44px;border:1px solid rgba(96,165,250,.42);border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(59,130,246,.26),rgba(34,211,238,.08));box-shadow:0 10px 35px rgba(59,130,246,.18)}
     .brand-mark svg{width:25px;fill:none;stroke:var(--accent-2);stroke-width:1.7} .brand strong{font-family:var(--display);font-size:15px;letter-spacing:.01em} .brand small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
-    .header-progress{min-width:220px} .header-progress__line{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-bottom:8px} .progress-track{height:7px;border-radius:999px;background:rgba(148,163,184,.13);overflow:hidden} .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:inherit;transition:width .35s ease}
     .hero{padding:86px 0 46px} .eyebrow{display:inline-flex;align-items:center;gap:9px;text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--accent-2)} .eyebrow:before{content:"";width:30px;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan))}
     h1,h2,h3,p{margin-top:0} h1,h2{font-family:var(--display);font-weight:400} h1{font-size:clamp(45px,7vw,84px);line-height:.98;letter-spacing:-.045em;max-width:940px;margin:20px 0 24px} h1 span{background:linear-gradient(100deg,#fff 15%,var(--accent-2) 62%,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
     .course-description{max-width:850px;color:#cbd5e1;font-size:clamp(16px,2vw,20px);line-height:1.75;margin-bottom:34px} .hero-meta{display:flex;flex-wrap:wrap;gap:12px} .meta-chip{display:flex;align-items:center;gap:9px;padding:10px 13px;border:1px solid var(--border);border-radius:12px;background:rgba(17,27,47,.66);color:#cbd5e1;font-size:13px} .meta-chip b{color:#fff}
@@ -42,815 +42,735 @@
     .locked-message{margin-top:auto;border:1px dashed rgba(248,113,113,.28);border-radius:12px;background:rgba(248,113,113,.055);padding:13px;display:flex;align-items:center;gap:12px;position:relative} .locked-message[hidden]{display:none} .locked-message span{font-size:19px} .locked-message strong{display:block;color:#fecaca;font-size:13px} .locked-message small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.35} .lesson-card.locked{filter:saturate(.62);background:linear-gradient(145deg,rgba(22,29,44,.78),rgba(12,17,28,.9))} .lesson-card.locked:hover{transform:none;box-shadow:0 14px 40px rgba(0,0,0,.18);border-color:var(--border)} .lesson-card.locked .lesson-actions{display:none}
     .empty-state{display:none;text-align:center;border:1px dashed var(--border);padding:50px 20px;border-radius:18px;color:var(--muted);margin-top:28px} .empty-state.show{display:block} footer{border-top:1px solid var(--border);padding:30px 0 40px;color:var(--muted);font-size:13px} .footer-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap} .footer-row strong{color:#e2e8f0}
     @media(max-width:900px){.lesson-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.section-heading{grid-template-columns:1fr;gap:12px}.controls{grid-template-columns:1fr}.controls-wrap{top:88px}}
-    @media(max-width:620px){.shell{width:min(100% - 22px,1180px)}.site-header{padding:14px 0}.header-progress{display:none}.hero{padding:58px 0 30px}h1{font-size:42px}.course-description{font-size:16px}.controls-wrap{top:72px}.controls{padding:10px;border-radius:14px}.lesson-grid{grid-template-columns:1fr}.term-section{padding-top:36px}.lesson-card{min-height:220px}.complete-label{display:none}}
+    @media(max-width:620px){.shell{width:min(100% - 22px,1180px)}.site-header{padding:14px 0}.hero{padding:58px 0 30px}h1{font-size:42px}.course-description{font-size:16px}.controls-wrap{top:72px}.controls{padding:10px;border-radius:14px}.lesson-grid{grid-template-columns:1fr}.term-section{padding-top:36px}.lesson-card{min-height:220px}.complete-label{display:none}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
-</head>
+<style>.complete-toggle{display:none!important}.lesson-actions{width:100%}</style></head>
 <body>
 <header class="site-header"><div class="shell header-row">
-  <a class="brand" href="#top" aria-label="Return to top">
-    <span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></span>
-    <span><strong>Database Learning Hub</strong><small>PROFEL 3 · Class Materials</small></span>
-  </a>
-  <div class="header-progress" aria-label="Course progress"><div class="header-progress__line"><span>Your progress</span><strong id="progressText">0 of 36</strong></div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
+<a aria-label="Return to top" class="brand" href="#top">
+<span class="brand-mark"><svg aria-hidden="true" viewbox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="3"></ellipse><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"></path></svg></span>
+<span><strong>Database Learning Hub</strong><small>PROFEL 3 · Class Materials</small></span>
+</a>
 </div></header>
 <div id="top"></div>
 <section class="hero"><div class="shell">
-  <span class="eyebrow">PROFEL 3 · Course Materials</span>
-  <h1><span>Fundamentals of</span><br>Database Systems</h1>
-  <p class="course-description">This course introduces the principles and practical skills needed to design, create, query, secure, and maintain reliable database systems. Students study relational models, SQL, entity-relationship design, normalization, transactions, recovery, NoSQL, and cloud databases while building hands-on experience with MySQL and phpMyAdmin.</p>
-  <div class="hero-meta"><span class="meta-chip"><b>36</b> learning sessions</span><span class="meta-chip"><b>4</b> academic terms</span><span class="meta-chip"><b id="availableCount">Checking</b> available</span></div>
+<span class="eyebrow">PROFEL 3 · Course Materials</span>
+<h1><span>Fundamentals of</span><br/>Database Systems</h1>
+<p class="course-description">This course introduces the principles and practical skills needed to design, create, query, secure, and maintain reliable database systems. Students study relational models, SQL, entity-relationship design, normalization, transactions, recovery, NoSQL, and cloud databases while building hands-on experience with MySQL and phpMyAdmin.</p>
+<div class="hero-meta"><span class="meta-chip"><b>36</b> learning sessions</span><span class="meta-chip"><b>4</b> academic terms</span><span class="meta-chip"><b id="availableCount">Checking</b> available</span></div>
 </div></section>
 <div class="controls-wrap"><div class="shell"><div class="controls">
-  <nav class="term-filters" aria-label="Filter lessons by term">
-    <button class="filter-btn active" type="button" data-filter="all">All Terms</button>
-    <button class="filter-btn" type="button" data-filter="prelim">Prelim</button>
-    <button class="filter-btn" type="button" data-filter="midterm">Midterm</button>
-    <button class="filter-btn" type="button" data-filter="semi-final">Semi Final</button>
-    <button class="filter-btn" type="button" data-filter="final">Final</button>
-  </nav>
-  <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg><input id="lessonSearch" type="search" placeholder="Search lessons…" autocomplete="off" aria-label="Search lessons"></label>
+<nav aria-label="Filter lessons by term" class="term-filters">
+<button class="filter-btn active" data-filter="all" type="button">All Terms</button>
+<button class="filter-btn" data-filter="prelim" type="button">Prelim</button>
+<button class="filter-btn" data-filter="midterm" type="button">Midterm</button>
+<button class="filter-btn" data-filter="semi-final" type="button">Semi Final</button>
+<button class="filter-btn" data-filter="final" type="button">Final</button>
+</nav>
+<label class="search-box"><svg aria-hidden="true" viewbox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.4-3.4"></path></svg><input aria-label="Search lessons" autocomplete="off" id="lessonSearch" placeholder="Search lessons…" type="search"/></label>
 </div></div></div>
 <main class="shell">
-<section class="term-section" id="prelim" data-section-term="prelim">
-  <div class="section-heading">
-    <div><span class="section-kicker">Prelim</span><h2>Prelim Lessons</h2></div>
-    <p>Core database concepts, architecture, models, relational foundations, and first database activities.</p>
-  </div>
-  <div class="lesson-grid">
-<article class="lesson-card" data-term="prelim" data-search="prelim class orientation &amp; introduction to databases" data-file="P-1.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 01</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Class Orientation &amp; Introduction to Databases</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-1.html" aria-label="Open Class Orientation &amp; Introduction to Databases">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-1.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<section class="term-section" data-section-term="prelim" id="prelim">
+<div class="section-heading">
+<div><span class="section-kicker">Prelim</span><h2>Prelim Lessons</h2></div>
+<p>Core database concepts, architecture, models, relational foundations, and first database activities.</p>
+</div>
+<div class="lesson-grid">
+<article class="lesson-card" data-file="P-1.html" data-search="prelim class orientation &amp; introduction to databases" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 01</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Class Orientation &amp; Introduction to Databases</h3>
+<div class="lesson-actions">
+<a aria-label="Open Class Orientation &amp; Introduction to Databases" class="open-lesson" href="P-1.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="prelim" data-search="prelim data, information &amp; database concepts" data-file="P-2.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 02</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Data, Information &amp; Database Concepts</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-2.html" aria-label="Open Data, Information &amp; Database Concepts">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-2.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="P-2.html" data-search="prelim data, information &amp; database concepts" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 02</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Data, Information &amp; Database Concepts</h3>
+<div class="lesson-actions">
+<a aria-label="Open Data, Information &amp; Database Concepts" class="open-lesson" href="P-2.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="prelim" data-search="prelim database environment &amp; architecture" data-file="P-3.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 03</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Database Environment &amp; Architecture</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-3.html" aria-label="Open Database Environment &amp; Architecture">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-3.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="P-3.html" data-search="prelim database environment &amp; architecture" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 03</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Database Environment &amp; Architecture</h3>
+<div class="lesson-actions">
+<a aria-label="Open Database Environment &amp; Architecture" class="open-lesson" href="P-3.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="prelim" data-search="prelim data models overview" data-file="P-4.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 04</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Data Models Overview</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-4.html" aria-label="Open Data Models Overview">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-4.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="P-4.html" data-search="prelim data models overview" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 04</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Data Models Overview</h3>
+<div class="lesson-actions">
+<a aria-label="Open Data Models Overview" class="open-lesson" href="P-4.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="prelim" data-search="prelim the relational model" data-file="P-5.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 05</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>The Relational Model</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-5.html" aria-label="Open The Relational Model">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-5.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="P-5.html" data-search="prelim the relational model" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 05</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>The Relational Model</h3>
+<div class="lesson-actions">
+<a aria-label="Open The Relational Model" class="open-lesson" href="P-5.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="prelim" data-search="prelim keys, constraints &amp; integrity" data-file="P-6.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 06</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Keys, Constraints &amp; Integrity</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-6.html" aria-label="Open Keys, Constraints &amp; Integrity">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-6.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="P-6.html" data-search="prelim keys, constraints &amp; integrity" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 06</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Keys, Constraints &amp; Integrity</h3>
+<div class="lesson-actions">
+<a aria-label="Open Keys, Constraints &amp; Integrity" class="open-lesson" href="P-6.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="prelim" data-search="prelim installing wamp &amp; touring phpmyadmin" data-file="P-7.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 07</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Installing WAMP &amp; Touring phpMyAdmin</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-7.html" aria-label="Open Installing WAMP &amp; Touring phpMyAdmin">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-7.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="P-7.html" data-search="prelim installing wamp &amp; touring phpmyadmin" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 07</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Installing WAMP &amp; Touring phpMyAdmin</h3>
+<div class="lesson-actions">
+<a aria-label="Open Installing WAMP &amp; Touring phpMyAdmin" class="open-lesson" href="P-7.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="prelim" data-search="prelim creating your first database &amp; tables" data-file="P-8.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 08</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Creating Your First Database &amp; Tables</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="P-8.html" aria-label="Open Creating Your First Database &amp; Tables">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="P-8.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="P-8.html" data-search="prelim creating your first database &amp; tables" data-term="prelim">
+<div class="lesson-card__top">
+<span class="session-label">Session 08</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Creating Your First Database &amp; Tables</h3>
+<div class="lesson-actions">
+<a aria-label="Open Creating Your First Database &amp; Tables" class="open-lesson" href="P-8.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-  </div>
+</div>
 </section>
-<section class="term-section" id="midterm" data-section-term="midterm">
-  <div class="section-heading">
-    <div><span class="section-kicker">Midterm</span><h2>Midterm Lessons</h2></div>
-    <p>SQL creation, querying, data modification, aggregation, joins, subqueries, and ER modeling.</p>
-  </div>
-  <div class="lesson-grid">
-<article class="lesson-card" data-term="midterm" data-search="midterm sql basics: create &amp; insert" data-file="M-1.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 01</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>SQL Basics: CREATE &amp; INSERT</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-1.html" aria-label="Open SQL Basics: CREATE &amp; INSERT">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-1.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<section class="term-section" data-section-term="midterm" id="midterm">
+<div class="section-heading">
+<div><span class="section-kicker">Midterm</span><h2>Midterm Lessons</h2></div>
+<p>SQL creation, querying, data modification, aggregation, joins, subqueries, and ER modeling.</p>
+</div>
+<div class="lesson-grid">
+<article class="lesson-card" data-file="M-1.html" data-search="midterm sql basics: create &amp; insert" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 01</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>SQL Basics: CREATE &amp; INSERT</h3>
+<div class="lesson-actions">
+<a aria-label="Open SQL Basics: CREATE &amp; INSERT" class="open-lesson" href="M-1.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm sql select &amp; filtering" data-file="M-2.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 02</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>SQL SELECT &amp; Filtering</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-2.html" aria-label="Open SQL SELECT &amp; Filtering">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-2.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-2.html" data-search="midterm sql select &amp; filtering" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 02</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>SQL SELECT &amp; Filtering</h3>
+<div class="lesson-actions">
+<a aria-label="Open SQL SELECT &amp; Filtering" class="open-lesson" href="M-2.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm sql update &amp; delete" data-file="M-3.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 03</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>SQL UPDATE &amp; DELETE</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-3.html" aria-label="Open SQL UPDATE &amp; DELETE">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-3.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-3.html" data-search="midterm sql update &amp; delete" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 03</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>SQL UPDATE &amp; DELETE</h3>
+<div class="lesson-actions">
+<a aria-label="Open SQL UPDATE &amp; DELETE" class="open-lesson" href="M-3.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm sorting, aggregates &amp; group by" data-file="M-4.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 04</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Sorting, Aggregates &amp; GROUP BY</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-4.html" aria-label="Open Sorting, Aggregates &amp; GROUP BY">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-4.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-4.html" data-search="midterm sorting, aggregates &amp; group by" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 04</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Sorting, Aggregates &amp; GROUP BY</h3>
+<div class="lesson-actions">
+<a aria-label="Open Sorting, Aggregates &amp; GROUP BY" class="open-lesson" href="M-4.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm sql joins: inner, left &amp; right" data-file="M-5.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 05</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>SQL JOINs: INNER, LEFT &amp; RIGHT</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-5.html" aria-label="Open SQL JOINs: INNER, LEFT &amp; RIGHT">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-5.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-5.html" data-search="midterm sql joins: inner, left &amp; right" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 05</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>SQL JOINs: INNER, LEFT &amp; RIGHT</h3>
+<div class="lesson-actions">
+<a aria-label="Open SQL JOINs: INNER, LEFT &amp; RIGHT" class="open-lesson" href="M-5.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm subqueries &amp; nested queries" data-file="M-6.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 06</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Subqueries &amp; Nested Queries</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-6.html" aria-label="Open Subqueries &amp; Nested Queries">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-6.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-6.html" data-search="midterm subqueries &amp; nested queries" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 06</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Subqueries &amp; Nested Queries</h3>
+<div class="lesson-actions">
+<a aria-label="Open Subqueries &amp; Nested Queries" class="open-lesson" href="M-6.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm er modeling: entities &amp; relationships" data-file="M-7.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 07</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>ER Modeling: Entities &amp; Relationships</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-7.html" aria-label="Open ER Modeling: Entities &amp; Relationships">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-7.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-7.html" data-search="midterm er modeling: entities &amp; relationships" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 07</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>ER Modeling: Entities &amp; Relationships</h3>
+<div class="lesson-actions">
+<a aria-label="Open ER Modeling: Entities &amp; Relationships" class="open-lesson" href="M-7.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm er cardinality &amp; participation" data-file="M-8.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 08</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>ER Cardinality &amp; Participation</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-8.html" aria-label="Open ER Cardinality &amp; Participation">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-8.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-8.html" data-search="midterm er cardinality &amp; participation" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 08</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>ER Cardinality &amp; Participation</h3>
+<div class="lesson-actions">
+<a aria-label="Open ER Cardinality &amp; Participation" class="open-lesson" href="M-8.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm midterm review" data-file="M-9.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 09</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Midterm Review</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-9.html" aria-label="Open Midterm Review">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-9.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-9.html" data-search="midterm midterm review" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 09</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Midterm Review</h3>
+<div class="lesson-actions">
+<a aria-label="Open Midterm Review" class="open-lesson" href="M-9.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="midterm" data-search="midterm midterm review: core database concepts" data-file="M-10.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 10</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Midterm Review: Core Database Concepts</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="M-10.html" aria-label="Open Midterm Review: Core Database Concepts">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="M-10.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="M-10.html" data-search="midterm midterm review: core database concepts" data-term="midterm">
+<div class="lesson-card__top">
+<span class="session-label">Session 10</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Midterm Review: Core Database Concepts</h3>
+<div class="lesson-actions">
+<a aria-label="Open Midterm Review: Core Database Concepts" class="open-lesson" href="M-10.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-  </div>
+</div>
 </section>
-<section class="term-section" id="semi-final" data-section-term="semi-final">
-  <div class="section-heading">
-    <div><span class="section-kicker">Semi Final</span><h2>Semi Final Lessons</h2></div>
-    <p>Advanced modeling, normalization, dependencies, schema design, views, indexes, procedures, and triggers.</p>
-  </div>
-  <div class="lesson-grid">
-<article class="lesson-card" data-term="semi-final" data-search="semi final enhanced er &amp; specialization" data-file="SF-1.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 01</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Enhanced ER &amp; Specialization</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-1.html" aria-label="Open Enhanced ER &amp; Specialization">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-1.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<section class="term-section" data-section-term="semi-final" id="semi-final">
+<div class="section-heading">
+<div><span class="section-kicker">Semi Final</span><h2>Semi Final Lessons</h2></div>
+<p>Advanced modeling, normalization, dependencies, schema design, views, indexes, procedures, and triggers.</p>
+</div>
+<div class="lesson-grid">
+<article class="lesson-card" data-file="SF-1.html" data-search="semi final enhanced er &amp; specialization" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 01</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Enhanced ER &amp; Specialization</h3>
+<div class="lesson-actions">
+<a aria-label="Open Enhanced ER &amp; Specialization" class="open-lesson" href="SF-1.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final mapping er to a relational schema" data-file="SF-2.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 02</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Mapping ER to a Relational Schema</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-2.html" aria-label="Open Mapping ER to a Relational Schema">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-2.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-2.html" data-search="semi final mapping er to a relational schema" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 02</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Mapping ER to a Relational Schema</h3>
+<div class="lesson-actions">
+<a aria-label="Open Mapping ER to a Relational Schema" class="open-lesson" href="SF-2.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final normalization: 1nf &amp; 2nf" data-file="SF-3.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 03</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Normalization: 1NF &amp; 2NF</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-3.html" aria-label="Open Normalization: 1NF &amp; 2NF">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-3.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-3.html" data-search="semi final normalization: 1nf &amp; 2nf" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 03</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Normalization: 1NF &amp; 2NF</h3>
+<div class="lesson-actions">
+<a aria-label="Open Normalization: 1NF &amp; 2NF" class="open-lesson" href="SF-3.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final normalization: 3nf &amp; bcnf" data-file="SF-4.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 04</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Normalization: 3NF &amp; BCNF</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-4.html" aria-label="Open Normalization: 3NF &amp; BCNF">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-4.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-4.html" data-search="semi final normalization: 3nf &amp; bcnf" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 04</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Normalization: 3NF &amp; BCNF</h3>
+<div class="lesson-actions">
+<a aria-label="Open Normalization: 3NF &amp; BCNF" class="open-lesson" href="SF-4.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final functional dependencies &amp; decomposition" data-file="SF-5.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 05</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Functional Dependencies &amp; Decomposition</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-5.html" aria-label="Open Functional Dependencies &amp; Decomposition">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-5.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-5.html" data-search="semi final functional dependencies &amp; decomposition" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 05</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Functional Dependencies &amp; Decomposition</h3>
+<div class="lesson-actions">
+<a aria-label="Open Functional Dependencies &amp; Decomposition" class="open-lesson" href="SF-5.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final denormalization: when to break the rules" data-file="SF-6.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 06</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Denormalization: When to Break the Rules</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-6.html" aria-label="Open Denormalization: When to Break the Rules">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-6.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-6.html" data-search="semi final denormalization: when to break the rules" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 06</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Denormalization: When to Break the Rules</h3>
+<div class="lesson-actions">
+<a aria-label="Open Denormalization: When to Break the Rules" class="open-lesson" href="SF-6.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final database design project: requirements &amp; conceptual model" data-file="SF-7.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 07</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Database Design Project: Requirements &amp; Conceptual Model</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-7.html" aria-label="Open Database Design Project: Requirements &amp; Conceptual Model">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-7.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-7.html" data-search="semi final database design project: requirements &amp; conceptual model" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 07</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Database Design Project: Requirements &amp; Conceptual Model</h3>
+<div class="lesson-actions">
+<a aria-label="Open Database Design Project: Requirements &amp; Conceptual Model" class="open-lesson" href="SF-7.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final database design project: logical &amp; physical schema" data-file="SF-8.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 08</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Database Design Project: Logical &amp; Physical Schema</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-8.html" aria-label="Open Database Design Project: Logical &amp; Physical Schema">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-8.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-8.html" data-search="semi final database design project: logical &amp; physical schema" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 08</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Database Design Project: Logical &amp; Physical Schema</h3>
+<div class="lesson-actions">
+<a aria-label="Open Database Design Project: Logical &amp; Physical Schema" class="open-lesson" href="SF-8.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final views &amp; indexes" data-file="SF-9.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 09</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Views &amp; Indexes</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-9.html" aria-label="Open Views &amp; Indexes">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-9.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-9.html" data-search="semi final views &amp; indexes" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 09</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Views &amp; Indexes</h3>
+<div class="lesson-actions">
+<a aria-label="Open Views &amp; Indexes" class="open-lesson" href="SF-9.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="semi-final" data-search="semi final stored procedures &amp; triggers" data-file="SF-10.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 10</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Stored Procedures &amp; Triggers</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="SF-10.html" aria-label="Open Stored Procedures &amp; Triggers">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="SF-10.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="SF-10.html" data-search="semi final stored procedures &amp; triggers" data-term="semi-final">
+<div class="lesson-card__top">
+<span class="session-label">Session 10</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Stored Procedures &amp; Triggers</h3>
+<div class="lesson-actions">
+<a aria-label="Open Stored Procedures &amp; Triggers" class="open-lesson" href="SF-10.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-  </div>
+</div>
 </section>
-<section class="term-section" id="final" data-section-term="final">
-  <div class="section-heading">
-    <div><span class="section-kicker">Final</span><h2>Final Lessons</h2></div>
-    <p>Transactions, concurrency, security, recovery, NoSQL, cloud databases, and integrated course review.</p>
-  </div>
-  <div class="lesson-grid">
-<article class="lesson-card" data-term="final" data-search="final transactions &amp; concurrency" data-file="F-1.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 01</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Transactions &amp; Concurrency</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-1.html" aria-label="Open Transactions &amp; Concurrency">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-1.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<section class="term-section" data-section-term="final" id="final">
+<div class="section-heading">
+<div><span class="section-kicker">Final</span><h2>Final Lessons</h2></div>
+<p>Transactions, concurrency, security, recovery, NoSQL, cloud databases, and integrated course review.</p>
+</div>
+<div class="lesson-grid">
+<article class="lesson-card" data-file="F-1.html" data-search="final transactions &amp; concurrency" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 01</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Transactions &amp; Concurrency</h3>
+<div class="lesson-actions">
+<a aria-label="Open Transactions &amp; Concurrency" class="open-lesson" href="F-1.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="final" data-search="final advanced concurrency control" data-file="F-2.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 02</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Advanced Concurrency Control</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-2.html" aria-label="Open Advanced Concurrency Control">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-2.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="F-2.html" data-search="final advanced concurrency control" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 02</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Advanced Concurrency Control</h3>
+<div class="lesson-actions">
+<a aria-label="Open Advanced Concurrency Control" class="open-lesson" href="F-2.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="final" data-search="final database security" data-file="F-3.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 03</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Database Security</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-3.html" aria-label="Open Database Security">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-3.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="F-3.html" data-search="final database security" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 03</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Database Security</h3>
+<div class="lesson-actions">
+<a aria-label="Open Database Security" class="open-lesson" href="F-3.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="final" data-search="final backup &amp; recovery" data-file="F-4.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 04</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Backup &amp; Recovery</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-4.html" aria-label="Open Backup &amp; Recovery">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-4.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="F-4.html" data-search="final backup &amp; recovery" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 04</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Backup &amp; Recovery</h3>
+<div class="lesson-actions">
+<a aria-label="Open Backup &amp; Recovery" class="open-lesson" href="F-4.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="final" data-search="final nosql databases" data-file="F-5.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 05</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>NoSQL Databases</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-5.html" aria-label="Open NoSQL Databases">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-5.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="F-5.html" data-search="final nosql databases" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 05</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>NoSQL Databases</h3>
+<div class="lesson-actions">
+<a aria-label="Open NoSQL Databases" class="open-lesson" href="F-5.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="final" data-search="final cloud databases" data-file="F-6.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 06</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Cloud Databases</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-6.html" aria-label="Open Cloud Databases">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-6.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="F-6.html" data-search="final cloud databases" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 06</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Cloud Databases</h3>
+<div class="lesson-actions">
+<a aria-label="Open Cloud Databases" class="open-lesson" href="F-6.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="final" data-search="final final review" data-file="F-7.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 07</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Final Review</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-7.html" aria-label="Open Final Review">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-7.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="F-7.html" data-search="final final review" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 07</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Final Review</h3>
+<div class="lesson-actions">
+<a aria-label="Open Final Review" class="open-lesson" href="F-7.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-<article class="lesson-card" data-term="final" data-search="final final review: integrated database systems" data-file="F-8.html">
-  <div class="lesson-card__top">
-    <span class="session-label">Session 08</span>
-    <span class="availability" aria-live="polite"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
-  </div>
-  <h3>Final Review: Integrated Database Systems</h3>
-  <div class="lesson-actions">
-    <a class="open-lesson" href="F-8.html" aria-label="Open Final Review: Integrated Database Systems">
-      <span class="open-label">Open Lesson</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
-    <button class="complete-toggle" type="button" data-complete="F-8.html" aria-pressed="false">
-      <span class="check-icon" aria-hidden="true">✓</span><span class="complete-label">Mark complete</span>
-    </button>
-  </div>
-  <div class="locked-message" hidden>
-    <span aria-hidden="true">🔒</span>
-    <div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
-  </div>
+<article class="lesson-card" data-file="F-8.html" data-search="final final review: integrated database systems" data-term="final">
+<div class="lesson-card__top">
+<span class="session-label">Session 08</span>
+<span aria-live="polite" class="availability"><span class="availability-dot"></span><span class="availability-text">Checking</span></span>
+</div>
+<h3>Final Review: Integrated Database Systems</h3>
+<div class="lesson-actions">
+<a aria-label="Open Final Review: Integrated Database Systems" class="open-lesson" href="F-8.html">
+<span class="open-label">Open Lesson</span>
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</a>
+
+</div>
+<div class="locked-message" hidden="">
+<span aria-hidden="true">🔒</span>
+<div><strong>Not Yet Available</strong><small>This lesson will unlock when the material is uploaded.</small></div>
+</div>
 </article>
-  </div>
-</section><div class="empty-state" id="emptyState"><strong>No matching lessons found.</strong><br>Try another keyword or term.</div></main>
-<footer><div class="shell footer-row"><span><strong>Fundamentals of Database Systems</strong> · Student Learning Hub</span><span>Progress is saved only on this device.</span></div></footer>
+</div>
+</section><div class="empty-state" id="emptyState"><strong>No matching lessons found.</strong><br/>Try another keyword or term.</div></main>
+<footer><div class="shell footer-row"><span><strong>Fundamentals of Database Systems</strong> · Student Learning Hub</span></div></footer>
+
 <script>
-  const LESSONS=[{"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 1, "file": "P-1.html", "title": "Class Orientation & Introduction to Databases"}, {"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 2, "file": "P-2.html", "title": "Data, Information & Database Concepts"}, {"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 3, "file": "P-3.html", "title": "Database Environment & Architecture"}, {"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 4, "file": "P-4.html", "title": "Data Models Overview"}, {"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 5, "file": "P-5.html", "title": "The Relational Model"}, {"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 6, "file": "P-6.html", "title": "Keys, Constraints & Integrity"}, {"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 7, "file": "P-7.html", "title": "Installing WAMP & Touring phpMyAdmin"}, {"prefix": "P", "term": "Prelim", "term_key": "prelim", "num": 8, "file": "P-8.html", "title": "Creating Your First Database & Tables"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 1, "file": "M-1.html", "title": "SQL Basics: CREATE & INSERT"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 2, "file": "M-2.html", "title": "SQL SELECT & Filtering"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 3, "file": "M-3.html", "title": "SQL UPDATE & DELETE"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 4, "file": "M-4.html", "title": "Sorting, Aggregates & GROUP BY"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 5, "file": "M-5.html", "title": "SQL JOINs: INNER, LEFT & RIGHT"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 6, "file": "M-6.html", "title": "Subqueries & Nested Queries"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 7, "file": "M-7.html", "title": "ER Modeling: Entities & Relationships"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 8, "file": "M-8.html", "title": "ER Cardinality & Participation"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 9, "file": "M-9.html", "title": "Midterm Review"}, {"prefix": "M", "term": "Midterm", "term_key": "midterm", "num": 10, "file": "M-10.html", "title": "Midterm Review: Core Database Concepts"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 1, "file": "SF-1.html", "title": "Enhanced ER & Specialization"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 2, "file": "SF-2.html", "title": "Mapping ER to a Relational Schema"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 3, "file": "SF-3.html", "title": "Normalization: 1NF & 2NF"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 4, "file": "SF-4.html", "title": "Normalization: 3NF & BCNF"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 5, "file": "SF-5.html", "title": "Functional Dependencies & Decomposition"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 6, "file": "SF-6.html", "title": "Denormalization: When to Break the Rules"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 7, "file": "SF-7.html", "title": "Database Design Project: Requirements & Conceptual Model"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 8, "file": "SF-8.html", "title": "Database Design Project: Logical & Physical Schema"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 9, "file": "SF-9.html", "title": "Views & Indexes"}, {"prefix": "SF", "term": "Semi Final", "term_key": "semi-final", "num": 10, "file": "SF-10.html", "title": "Stored Procedures & Triggers"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 1, "file": "F-1.html", "title": "Transactions & Concurrency"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 2, "file": "F-2.html", "title": "Advanced Concurrency Control"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 3, "file": "F-3.html", "title": "Database Security"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 4, "file": "F-4.html", "title": "Backup & Recovery"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 5, "file": "F-5.html", "title": "NoSQL Databases"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 6, "file": "F-6.html", "title": "Cloud Databases"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 7, "file": "F-7.html", "title": "Final Review"}, {"prefix": "F", "term": "Final", "term_key": "final", "num": 8, "file": "F-8.html", "title": "Final Review: Integrated Database Systems"}];
-  const STORAGE_KEY='profel3-database-completed-v1';
   const cards=[...document.querySelectorAll('.lesson-card')];
   const sections=[...document.querySelectorAll('.term-section')];
   const search=document.getElementById('lessonSearch');
   const empty=document.getElementById('emptyState');
   let activeFilter='all';
-  let completed=new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'));
-
-  function saveProgress(){localStorage.setItem(STORAGE_KEY,JSON.stringify([...completed]));updateProgress();}
-  function updateProgress(){
-    cards.forEach(card=>{const file=card.dataset.file;const done=completed.has(file);card.classList.toggle('completed',done);const btn=card.querySelector('.complete-toggle');btn.setAttribute('aria-pressed',String(done));card.querySelector('.complete-label').textContent=done?'Completed':'Mark complete';});
-    const available=cards.filter(c=>c.classList.contains('available')).length;
-    const done=[...completed].filter(f=>cards.some(c=>c.dataset.file===f&&c.classList.contains('available'))).length;
-    const denom=available||cards.length;document.getElementById('progressText').textContent=`${done} of ${denom}`;
-    document.getElementById('progressFill').style.width=`${denom?done/denom*100:0}%`;
-  }
-  document.addEventListener('click',e=>{const btn=e.target.closest('.complete-toggle');if(!btn||btn.disabled)return;const file=btn.dataset.complete;completed.has(file)?completed.delete(file):completed.add(file);saveProgress();});
 
   function applyFilters(){
     const q=search.value.trim().toLowerCase();let visible=0;
     cards.forEach(card=>{const termOK=activeFilter==='all'||card.dataset.term===activeFilter;const searchOK=!q||card.dataset.search.includes(q);const show=termOK&&searchOK;card.hidden=!show;if(show)visible++;});
-    sections.forEach(section=>{section.hidden=![...section.querySelectorAll('.lesson-card')].some(c=>!c.hidden);});empty.classList.toggle('show',visible===0);
+    sections.forEach(section=>{section.hidden=![...section.querySelectorAll('.lesson-card')].some(card=>!card.hidden);});
+    empty.classList.toggle('show',visible===0);
   }
-  document.querySelectorAll('.filter-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeFilter=btn.dataset.filter;applyFilters();}));
+
+  document.querySelectorAll('.filter-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(item=>item.classList.remove('active'));
+    btn.classList.add('active');activeFilter=btn.dataset.filter;applyFilters();
+  }));
   search.addEventListener('input',applyFilters);
 
   async function fileExists(url){
@@ -858,20 +778,37 @@
     try{
       let response=await fetch(url,{method:'HEAD',cache:'no-store'});
       if(response.ok)return true;
-      if(response.status===405||response.status===501){response=await fetch(url,{method:'GET',headers:{Range:'bytes=0-0'},cache:'no-store'});return response.ok||response.status===206;}
+      if(response.status===405||response.status===501){
+        response=await fetch(url,{method:'GET',headers:{Range:'bytes=0-0'},cache:'no-store'});
+        return response.ok||response.status===206;
+      }
       return false;
     }catch(error){return false;}
   }
+
   async function checkAvailability(){
     await Promise.all(cards.map(async card=>{
-      const exists=await fileExists(card.dataset.file);const text=card.querySelector('.availability-text');
-      card.classList.toggle('available',exists);card.classList.toggle('locked',!exists);text.textContent=exists?'Available':'Locked';
-      const link=card.querySelector('.open-lesson');const complete=card.querySelector('.complete-toggle');const locked=card.querySelector('.locked-message');
-      if(!exists){link.removeAttribute('href');link.setAttribute('aria-disabled','true');complete.disabled=true;locked.hidden=false;completed.delete(card.dataset.file);}
-      else{link.href=card.dataset.file;link.removeAttribute('aria-disabled');complete.disabled=false;locked.hidden=true;}
+      const exists=await fileExists(card.dataset.file);
+      const text=card.querySelector('.availability-text');
+      card.classList.toggle('available',exists);
+      card.classList.toggle('locked',!exists);
+      text.textContent=exists?'Available':'Locked';
+      const link=card.querySelector('.open-lesson');
+      const locked=card.querySelector('.locked-message');
+      if(!exists){
+        link.removeAttribute('href');
+        link.setAttribute('aria-disabled','true');
+        locked.hidden=false;
+      }else{
+        link.href=card.dataset.file;
+        link.removeAttribute('aria-disabled');
+        locked.hidden=true;
+      }
     }));
-    const available=cards.filter(c=>c.classList.contains('available')).length;document.getElementById('availableCount').textContent=available;saveProgress();
+    const available=cards.filter(card=>card.classList.contains('available')).length;
+    document.getElementById('availableCount').textContent=available;
   }
-  updateProgress();applyFilters();checkAvailability();
-</script>
-</body></html>
+
+  applyFilters();
+  checkAvailability();
+</script></body></html>
