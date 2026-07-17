@@ -1536,6 +1536,115 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 }
 </style>
 
+
+
+
+<style id="lesson-mobile-accessibility-fix">
+/* Mobile lesson controls, reliable reveals, zoom support, and light-card contrast. */
+.lesson-slide-controls {
+    position: fixed;
+    left: 50%;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 2147483000;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    max-width: calc(100vw - 16px);
+    padding: 7px;
+    border: 1px solid rgba(255,255,255,.20);
+    border-radius: 16px;
+    background: rgba(7, 12, 24, .88);
+    box-shadow: 0 12px 36px rgba(0,0,0,.38);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transform: translateX(-50%);
+    color: #f8fafc;
+    font: 700 13px/1 var(--font-body, system-ui, sans-serif);
+    user-select: none;
+}
+.lesson-slide-controls__group { display:flex; align-items:center; gap:5px; }
+.lesson-slide-controls button {
+    min-width: 42px;
+    min-height: 40px;
+    padding: 0 10px;
+    border: 1px solid rgba(255,255,255,.20);
+    border-radius: 11px;
+    background: rgba(255,255,255,.10);
+    color: #ffffff;
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+.lesson-slide-controls button:hover,
+.lesson-slide-controls button:focus-visible {
+    background: var(--accent, #3b82f6);
+    border-color: var(--accent, #3b82f6);
+    outline: none;
+}
+.lesson-slide-controls button:disabled { opacity:.38; cursor:not-allowed; }
+.lesson-slide-controls__count {
+    min-width: 48px;
+    padding: 0 5px;
+    color: #dbeafe;
+    text-align: center;
+    white-space: nowrap;
+}
+.lesson-slide-controls__divider {
+    width: 1px;
+    height: 28px;
+    margin: 0 1px;
+    background: rgba(255,255,255,.18);
+}
+
+/* JavaScript adds this class only when the computed surface is actually light. */
+.lesson-light-surface,
+.lesson-light-surface :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,td,th,label,small,blockquote,strong,em,code,span) {
+    color: #0f172a !important;
+    text-shadow: none !important;
+}
+.lesson-light-surface a { color: #1d4ed8 !important; }
+.lesson-light-surface .lesson-dark-surface,
+.lesson-light-surface .lesson-dark-surface :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,td,th,label,small,blockquote,strong,em,code,span) {
+    color: #f8fafc !important;
+}
+
+@media (max-width: 1024px), (hover: none), (pointer: coarse) {
+    .lesson-slide-controls { display: flex !important; }
+    .keyboard-hint, .nav-dots { display: none !important; }
+
+    /* Mobile must never depend on an observer/animation to expose lesson content. */
+    :root.mobile-show-all-content .reveal,
+    :root.mobile-show-all-content .reveal-left,
+    :root.mobile-show-all-content .reveal-right,
+    :root.mobile-show-all-content .reveal-scale,
+    :root.mobile-show-all-content .reveal-blur,
+    :root.mobile-show-all-content .step {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        filter: none !important;
+        animation: none !important;
+        transition: none !important;
+    }
+    .slide-viewport {
+        touch-action: pan-x pan-y pinch-zoom !important;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (max-width: 390px) {
+    .lesson-slide-controls { gap:4px; padding:6px; border-radius:14px; }
+    .lesson-slide-controls button { min-width:36px; min-height:38px; padding:0 7px; font-size:12px; }
+    .lesson-slide-controls__count { min-width:42px; font-size:12px; }
+    .lesson-slide-controls__divider { height:25px; }
+}
+
+@media print {
+    .lesson-slide-controls { display:none !important; }
+}
+</style>
+
 </head>
 <body>
     <canvas id="particles"></canvas>
@@ -1993,5 +2102,236 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 <script data-image-lightbox-script>
 (()=>{const box=document.querySelector('[data-image-lightbox]');if(!box)return;const full=box.querySelector('.image-lightbox__image'),cap=box.querySelector('.image-lightbox__caption'),close=box.querySelector('.image-lightbox__close');let previous=null;const hide=()=>{box.classList.remove('is-open');box.setAttribute('aria-hidden','true');document.body.classList.remove('image-lightbox-open');if(previous)previous.focus();};const show=img=>{previous=img;full.src=img.currentSrc||img.src;full.alt=img.alt||'';cap.textContent=img.alt||'';box.classList.add('is-open');box.setAttribute('aria-hidden','false');document.body.classList.add('image-lightbox-open');close.focus();};document.querySelectorAll('.slide img').forEach(img=>{img.setAttribute('data-lightbox-ready','');img.setAttribute('role','button');img.setAttribute('tabindex','0');img.setAttribute('aria-label','Open image fullscreen: '+(img.alt||'presentation image'));img.addEventListener('click',()=>show(img));img.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(img);}});});close.addEventListener('click',hide);box.addEventListener('click',e=>{if(e.target===box)hide();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('is-open'))hide();});})();
 </script>
+
+
+
+<script id="lesson-mobile-accessibility-script">
+(function () {
+    'use strict';
+
+    const MOBILE_QUERY = '(max-width: 1024px), (hover: none), (pointer: coarse)';
+    const REVEAL_SELECTOR = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur, .step';
+    const CANVAS_W = 1920;
+    const CANVAS_H = 1080;
+    let zoomMultiplier = 1;
+    let userAdjustedZoom = false;
+    let deckPatched = false;
+
+    function rgbaParts(value) {
+        if (!value) return null;
+        const match = value.match(/rgba?\(\s*([\d.]+)[, ]+([\d.]+)[, ]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)/i);
+        if (!match) return null;
+        return {
+            r: Number(match[1]), g: Number(match[2]), b: Number(match[3]),
+            a: match[4] == null ? 1 : Number(match[4])
+        };
+    }
+
+    function luminance(rgb) {
+        const linear = [rgb.r, rgb.g, rgb.b].map((v) => {
+            v /= 255;
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    }
+
+    function applyReadableSurfaceClasses() {
+        document.querySelectorAll('.slide *').forEach((el) => {
+            if (!(el instanceof HTMLElement)) return;
+            const cs = getComputedStyle(el);
+            const color = rgbaParts(cs.backgroundColor);
+            if (!color || color.a < 0.62) return;
+            const lum = luminance(color);
+            if (lum > 0.68) {
+                el.classList.add('lesson-light-surface');
+                el.classList.remove('lesson-dark-surface');
+            } else if (lum < 0.20) {
+                el.classList.add('lesson-dark-surface');
+                el.classList.remove('lesson-light-surface');
+            }
+        });
+    }
+
+    function forceSlideContentVisible(slide) {
+        if (!slide) return;
+        slide.classList.add('visible', 'reveals-played');
+        slide.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
+            try { el.getAnimations().forEach((animation) => animation.cancel()); } catch (_) {}
+            if (el.classList.contains('step')) el.classList.add('step-shown');
+            el.style.removeProperty('opacity');
+            el.style.removeProperty('visibility');
+            el.style.removeProperty('transform');
+            el.style.removeProperty('filter');
+        });
+    }
+
+    function forceAllContentVisible() {
+        document.documentElement.classList.add('reveals-ready', 'mobile-show-all-content');
+        document.querySelectorAll('.slide').forEach(forceSlideContentVisible);
+    }
+
+    function patchDeckForMobile() {
+        const deck = window.slides;
+        if (!deck || deckPatched || !window.matchMedia(MOBILE_QUERY).matches) return;
+        deckPatched = true;
+        deck._playSlideReveals = forceSlideContentVisible;
+        deck._resetSlideReveals = forceSlideContentVisible;
+        deck._rewindSlide = forceSlideContentVisible;
+        deck.advance = function () { this.next(); };
+        deck.retreat = function () { this.prev(); };
+        if (Array.isArray(deck.slides)) deck.slides.forEach(forceSlideContentVisible);
+    }
+
+    function currentDeckIndex() {
+        const deck = window.slides;
+        if (deck && Number.isInteger(deck.currentSlide)) return deck.currentSlide;
+        const id = location.hash.replace(/^#/, '');
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        const hashIndex = slides.findIndex((slide) => slide.id === id);
+        return hashIndex >= 0 ? hashIndex : 0;
+    }
+
+    function applyManualZoom() {
+        if (!window.matchMedia(MOBILE_QUERY).matches) return;
+        document.querySelectorAll('.slide-scale').forEach((scaleEl) => {
+            const rawBase = scaleEl.style.getPropertyValue('--slide-scale') || getComputedStyle(scaleEl).getPropertyValue('--slide-scale');
+            const base = parseFloat(rawBase) || Math.max(window.innerWidth / CANVAS_W, 0.46);
+            const effective = Math.max(0.15, Math.min(1.4, base * zoomMultiplier));
+            const width = CANVAS_W * effective;
+            const height = CANVAS_H * effective;
+            scaleEl.style.setProperty('width', width + 'px', 'important');
+            scaleEl.style.setProperty('height', height + 'px', 'important');
+            scaleEl.style.setProperty('margin', `max(16px, calc((100dvh - ${height}px) / 2)) auto`, 'important');
+            const slide = scaleEl.querySelector('.slide');
+            if (slide) slide.style.setProperty('transform', `scale(${effective})`, 'important');
+            const viewport = scaleEl.parentElement;
+            if (viewport) requestAnimationFrame(() => {
+                viewport.scrollLeft = Math.max(0, (viewport.scrollWidth - viewport.clientWidth) / 2);
+            });
+        });
+    }
+
+    function setFitZoom() {
+        const firstScale = document.querySelector('.slide-scale');
+        const rawBase = firstScale?.style.getPropertyValue('--slide-scale') || getComputedStyle(firstScale || document.documentElement).getPropertyValue('--slide-scale');
+        const base = parseFloat(rawBase) || Math.max(window.innerWidth / CANVAS_W, 0.46);
+        const fitScale = Math.min(window.innerWidth / CANVAS_W, window.innerHeight / CANVAS_H);
+        zoomMultiplier = Math.max(0.28, Math.min(1, fitScale / base));
+        applyManualZoom();
+    }
+
+    function buildControls() {
+        if (document.querySelector('.lesson-slide-controls')) return;
+        const slides = Array.from(document.querySelectorAll('.slide'));
+        if (!slides.length) return;
+
+        const controls = document.createElement('div');
+        controls.className = 'lesson-slide-controls';
+        controls.setAttribute('role', 'navigation');
+        controls.setAttribute('aria-label', 'Presentation controls');
+        controls.innerHTML = `
+            <div class="lesson-slide-controls__group">
+                <button type="button" data-action="previous" aria-label="Previous slide">‹ Prev</button>
+                <span class="lesson-slide-controls__count" aria-live="polite">1 / ${slides.length}</span>
+                <button type="button" data-action="next" aria-label="Next slide">Next ›</button>
+            </div>
+            <span class="lesson-slide-controls__divider" aria-hidden="true"></span>
+            <div class="lesson-slide-controls__group" aria-label="Zoom controls">
+                <button type="button" data-action="zoom-out" aria-label="Zoom out">−</button>
+                <button type="button" data-action="fit" aria-label="Fit entire slide">Fit</button>
+                <button type="button" data-action="zoom-in" aria-label="Zoom in">+</button>
+            </div>`;
+        document.body.appendChild(controls);
+
+        const count = controls.querySelector('.lesson-slide-controls__count');
+        const previous = controls.querySelector('[data-action="previous"]');
+        const next = controls.querySelector('[data-action="next"]');
+
+        function update() {
+            const index = Math.max(0, Math.min(slides.length - 1, currentDeckIndex()));
+            count.textContent = `${index + 1} / ${slides.length}`;
+            previous.disabled = index <= 0;
+            next.disabled = index >= slides.length - 1;
+        }
+
+        controls.addEventListener('click', (event) => {
+            const button = event.target.closest('button[data-action]');
+            if (!button) return;
+            const deck = window.slides;
+            switch (button.dataset.action) {
+                case 'previous':
+                    if (deck?.prev) deck.prev();
+                    else slides[Math.max(0, currentDeckIndex() - 1)]?.scrollIntoView({behavior:'smooth'});
+                    break;
+                case 'next':
+                    if (deck?.next) deck.next();
+                    else slides[Math.min(slides.length - 1, currentDeckIndex() + 1)]?.scrollIntoView({behavior:'smooth'});
+                    break;
+                case 'zoom-in':
+                    userAdjustedZoom = true;
+                    zoomMultiplier = Math.min(2.2, zoomMultiplier + 0.15);
+                    applyManualZoom();
+                    break;
+                case 'zoom-out':
+                    userAdjustedZoom = true;
+                    zoomMultiplier = Math.max(0.28, zoomMultiplier - 0.15);
+                    applyManualZoom();
+                    break;
+                case 'fit':
+                    userAdjustedZoom = false;
+                    setFitZoom();
+                    break;
+            }
+            setTimeout(update, 120);
+            setTimeout(forceAllContentVisible, 180);
+        });
+
+        window.addEventListener('hashchange', update);
+        document.addEventListener('scroll', () => requestAnimationFrame(update), {passive:true});
+        setInterval(update, 700);
+        update();
+    }
+
+    function initialize() {
+        applyReadableSurfaceClasses();
+        buildControls();
+        if (window.matchMedia(MOBILE_QUERY).matches) {
+            forceAllContentVisible();
+            patchDeckForMobile();
+            setTimeout(() => {
+                forceAllContentVisible();
+                patchDeckForMobile();
+                setFitZoom();
+            }, 120);
+            setTimeout(forceAllContentVisible, 600);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize, {once:true});
+    } else {
+        initialize();
+    }
+
+    window.addEventListener('load', () => {
+        applyReadableSurfaceClasses();
+        if (window.matchMedia(MOBILE_QUERY).matches) {
+            forceAllContentVisible();
+            patchDeckForMobile();
+            if (userAdjustedZoom) applyManualZoom(); else setFitZoom();
+        }
+    });
+    window.addEventListener('resize', () => setTimeout(() => {
+        applyReadableSurfaceClasses();
+        if (window.matchMedia(MOBILE_QUERY).matches) {
+            forceAllContentVisible();
+            patchDeckForMobile();
+            if (userAdjustedZoom) applyManualZoom(); else setFitZoom();
+        }
+    }, 180));
+    window.addEventListener('orientationchange', () => setTimeout(() => location.reload(), 250));
+})();
+</script>
+
 </body>
 </html>
