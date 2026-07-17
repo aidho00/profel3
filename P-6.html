@@ -462,12 +462,28 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
             const style = getComputedStyle(slide);
             const hasBackgroundImage = style.backgroundImage && style.backgroundImage !== 'none';
             const hasBackgroundColor = !['rgba(0, 0, 0, 0)', 'transparent'].includes(style.backgroundColor);
-            if (hasBackgroundImage || hasBackgroundColor) {
-                viewport.style.background = style.background;
-            } else {
-                viewport.style.background = '';
-            }
-            slide.style.background = 'transparent';
+
+            /* Some lesson themes define .slide-viewport backgrounds with
+               !important. Set the copied slide background with the same
+               priority so the full phone/desktop viewport stays seamless. */
+            viewport.style.setProperty(
+                'background-color',
+                hasBackgroundColor ? style.backgroundColor : 'var(--background)',
+                'important'
+            );
+            viewport.style.setProperty(
+                'background-image',
+                hasBackgroundImage ? style.backgroundImage : 'none',
+                'important'
+            );
+            viewport.style.setProperty('background-position', style.backgroundPosition || 'center center', 'important');
+            viewport.style.setProperty('background-repeat', 'no-repeat', 'important');
+            viewport.style.setProperty('background-size', 'cover', 'important');
+
+            /* The viewport now owns the full-bleed background. Make the
+               fixed artboard transparent so its scaled edges cannot create
+               a visible horizontal or vertical seam on phones. */
+            slide.style.setProperty('background', 'transparent', 'important');
         }
 
         /* ---------- DOM scaffolding (auto-inserted if missing) ---------- */
@@ -745,7 +761,17 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
         }
 
         _scrollToSlide(index, behavior) {
-            this.viewports[index]?.scrollIntoView({ behavior, block: 'start' });
+            const viewport = this.viewports[index];
+            viewport?.scrollIntoView({ behavior, block: 'start', inline: 'nearest' });
+
+            if (viewport && document.documentElement.classList.contains('mobile-reading-mode')) {
+                requestAnimationFrame(() => {
+                    viewport.scrollLeft = Math.max(
+                        0,
+                        (viewport.scrollWidth - viewport.clientWidth) / 2
+                    );
+                });
+            }
         }
 
         _slideIndexFromHash(hash) {
@@ -974,6 +1000,10 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 
             window.addEventListener('touchstart', (e) => {
                 if (document.body.classList.contains('artifact-editor-editing')) { tracking = false; return; }
+                /* On portrait phones, horizontal gestures pan the enlarged
+                   slide. Multi-touch remains available for browser pinch zoom. */
+                if (document.documentElement.classList.contains('mobile-reading-mode')) { tracking = false; return; }
+                if (window.visualViewport && window.visualViewport.scale > 1.01) { tracking = false; return; }
                 if (e.touches.length !== 1) { tracking = false; return; }
                 const t = e.touches[0];
                 startX = t.clientX;
@@ -1008,13 +1038,43 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
             const scales = this.scales;
 
             const update = () => {
-                const scale = Math.min(
-                    window.innerWidth / CANVAS_W,
-                    window.innerHeight / CANVAS_H
+                const mobileReadingMode = window.matchMedia(
+                    '(max-width: 768px) and (orientation: portrait)'
+                ).matches;
+
+                /* Portrait phones use a readable minimum scale and allow
+                   horizontal panning. Landscape/desktop keeps fit-to-screen. */
+                const scale = mobileReadingMode
+                    ? Math.max(window.innerWidth / CANVAS_W, 0.46)
+                    : Math.min(
+                        window.innerWidth / CANVAS_W,
+                        window.innerHeight / CANVAS_H
+                    );
+
+                document.documentElement.classList.toggle(
+                    'mobile-reading-mode',
+                    mobileReadingMode
                 );
+
                 scales.forEach((el) => {
-                    el?.style.setProperty('--slide-scale', scale);
+                    if (!el) return;
+                    el.style.setProperty('--slide-scale', scale);
+                    el.style.setProperty('--scaled-width', `${CANVAS_W * scale}px`);
+                    el.style.setProperty('--scaled-height', `${CANVAS_H * scale}px`);
                 });
+
+                if (mobileReadingMode) {
+                    requestAnimationFrame(() => {
+                        scales.forEach((el) => {
+                            const viewport = el?.parentElement;
+                            if (!viewport) return;
+                            viewport.scrollLeft = Math.max(
+                                0,
+                                (viewport.scrollWidth - viewport.clientWidth) / 2
+                            );
+                        });
+                    });
+                }
             };
 
             update();
@@ -1078,7 +1138,7 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 </script>
 <!-- /skill:chassis -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
     <title>Keys, Constraints &amp; Integrity | Student Edition</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
     <style>
@@ -1408,6 +1468,72 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
   .image-lightbox__caption { max-width:1100px; color:rgba(255,255,255,.85); font:500 17px/1.4 var(--font-body,sans-serif); text-align:center; }
   .image-lightbox__close { position:fixed; top:18px; right:24px; width:52px; height:52px; display:grid; place-items:center; padding:0; border:1px solid rgba(255,255,255,.25); border-radius:50%; background:rgba(18,22,32,.9); color:#fff; font:300 36px/1 sans-serif; cursor:pointer; }
 </style>
+
+<style id="database-presentation-responsive-fix">
+/* Full-bleed background and mobile reading support */
+.slide-viewport {
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+}
+.slide {
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    html {
+        scroll-snap-type: y proximity !important;
+    }
+    body {
+        overscroll-behavior-x: none;
+    }
+    .slide-viewport {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        touch-action: pan-x pan-y pinch-zoom !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in srgb, var(--accent) 60%, transparent) transparent;
+    }
+    .slide-viewport::-webkit-scrollbar {
+        display: block;
+        height: 5px;
+    }
+    .slide-viewport::-webkit-scrollbar-thumb {
+        background: color-mix(in srgb, var(--accent) 60%, transparent);
+        border-radius: 999px;
+    }
+    .slide-scale {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: var(--scaled-width, 883px) !important;
+        height: var(--scaled-height, 497px) !important;
+        margin: max(16px, calc((100dvh - var(--scaled-height, 497px)) / 2)) auto !important;
+        transform: none !important;
+        transform-origin: top left !important;
+    }
+    .slide {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: scale(var(--slide-scale, 0.46)) !important;
+        transform-origin: top left !important;
+    }
+    /* Decorative artboard overlays are rectangular. Hiding only these
+       pseudo-background layers on portrait phones prevents their scaled
+       edges from looking like a cut background. */
+    .slide::before {
+        display: none !important;
+    }
+    .keyboard-hint {
+        display: none !important;
+    }
+}
+</style>
+
 </head>
 <body>
     <canvas id="particles"></canvas>
