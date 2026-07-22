@@ -1,0 +1,146 @@
+{
+  "1": {
+    "file": "P-1.html",
+    "title": "What Is a Database?"
+  },
+  "2": {
+    "file": "P-2.html",
+    "title": "Setting Up WAMP and phpMyAdmin"
+  },
+  "3": {
+    "file": "P-3.html",
+    "title": "Data, Information, and File-Based Systems"
+  },
+  "4": {
+    "file": "P-4.html",
+    "title": "Types of DBMS and the Relational Model"
+  },
+  "5": {
+    "file": "P-5.html",
+    "title": "Tables, Columns, Rows, and Data Types"
+  },
+  "6": {
+    "file": "P-6.html",
+    "title": "Primary, Candidate, and Composite Keys"
+  },
+  "7": {
+    "file": "P-7.html",
+    "title": "Foreign Keys and Referential Integrity"
+  },
+  "8": {
+    "file": "P-8.html",
+    "title": "Database Relationship Types"
+  },
+  "9": {
+    "file": "M-1.html",
+    "title": "ER Diagrams, Cardinality, and Optionality"
+  },
+  "10": {
+    "file": "M-2.html",
+    "title": "Identifying Entities and Attributes"
+  },
+  "11": {
+    "file": "M-3.html",
+    "title": "Converting an ERD into Relational Tables"
+  },
+  "12": {
+    "file": "M-4.html",
+    "title": "Introduction to SQL and SQL Categories"
+  },
+  "13": {
+    "file": "M-5.html",
+    "title": "Creating and Managing Databases"
+  },
+  "14": {
+    "file": "M-6.html",
+    "title": "Creating Tables"
+  },
+  "15": {
+    "file": "M-7.html",
+    "title": "Constraints and Data Validation"
+  },
+  "16": {
+    "file": "M-8.html",
+    "title": "Inserting Records"
+  },
+  "17": {
+    "file": "M-9.html",
+    "title": "Retrieving Records with SELECT"
+  },
+  "18": {
+    "file": "M-10.html",
+    "title": "Filtering, Sorting, and Limiting Results"
+  },
+  "19": {
+    "file": "SF-1.html",
+    "title": "Updating and Deleting Records Safely"
+  },
+  "20": {
+    "file": "SF-2.html",
+    "title": "Aggregate Functions"
+  },
+  "21": {
+    "file": "SF-3.html",
+    "title": "GROUP BY and HAVING"
+  },
+  "22": {
+    "file": "SF-4.html",
+    "title": "Introduction to SQL Joins"
+  },
+  "23": {
+    "file": "SF-5.html",
+    "title": "INNER, LEFT, and RIGHT Joins"
+  },
+  "24": {
+    "file": "SF-6.html",
+    "title": "Why Normalization Matters"
+  },
+  "25": {
+    "file": "SF-7.html",
+    "title": "First Normal Form"
+  },
+  "26": {
+    "file": "SF-8.html",
+    "title": "Second and Third Normal Forms"
+  },
+  "27": {
+    "file": "SF-9.html",
+    "title": "Indexes and Query Performance"
+  },
+  "28": {
+    "file": "SF-10.html",
+    "title": "Transactions and ACID Properties"
+  },
+  "29": {
+    "file": "F-1.html",
+    "title": "Database Security and User Access"
+  },
+  "30": {
+    "file": "F-2.html",
+    "title": "Backup, Export, Import, and Recovery"
+  },
+  "31": {
+    "file": "F-3.html",
+    "title": "Creating the Student Information Database"
+  },
+  "32": {
+    "file": "F-4.html",
+    "title": "Setting Up Java Swing and JDBC"
+  },
+  "33": {
+    "file": "F-5.html",
+    "title": "Building the Student Information Form"
+  },
+  "34": {
+    "file": "F-6.html",
+    "title": "Loading Courses and Adding Students"
+  },
+  "35": {
+    "file": "F-7.html",
+    "title": "Displaying, Updating, and Deleting Students"
+  },
+  "36": {
+    "file": "F-8.html",
+    "title": "Searching, Validation, Testing, and Completion"
+  }
+}

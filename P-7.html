@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <!-- skill:chassis -->
@@ -20,7 +21,7 @@
     --foreground:      #111111;
     --card:            #f5f5f5;
     --card-foreground: var(--foreground);
-    --accent:          #c94a3d;
+    --accent:          #1D4ED8;
     --accent-foreground: #ffffff;
 
     --muted-foreground: color-mix(in srgb, var(--foreground) 55%, transparent);
@@ -462,28 +463,12 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
             const style = getComputedStyle(slide);
             const hasBackgroundImage = style.backgroundImage && style.backgroundImage !== 'none';
             const hasBackgroundColor = !['rgba(0, 0, 0, 0)', 'transparent'].includes(style.backgroundColor);
-
-            /* Some lesson themes define .slide-viewport backgrounds with
-               !important. Set the copied slide background with the same
-               priority so the full phone/desktop viewport stays seamless. */
-            viewport.style.setProperty(
-                'background-color',
-                hasBackgroundColor ? style.backgroundColor : 'var(--background)',
-                'important'
-            );
-            viewport.style.setProperty(
-                'background-image',
-                hasBackgroundImage ? style.backgroundImage : 'none',
-                'important'
-            );
-            viewport.style.setProperty('background-position', style.backgroundPosition || 'center center', 'important');
-            viewport.style.setProperty('background-repeat', 'no-repeat', 'important');
-            viewport.style.setProperty('background-size', 'cover', 'important');
-
-            /* The viewport now owns the full-bleed background. Make the
-               fixed artboard transparent so its scaled edges cannot create
-               a visible horizontal or vertical seam on phones. */
-            slide.style.setProperty('background', 'transparent', 'important');
+            if (hasBackgroundImage || hasBackgroundColor) {
+                viewport.style.background = style.background;
+            } else {
+                viewport.style.background = '';
+            }
+            slide.style.background = 'transparent';
         }
 
         /* ---------- DOM scaffolding (auto-inserted if missing) ---------- */
@@ -529,7 +514,7 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
                 el = document.createElement('div');
                 el.className = 'chassis-credit';
                 el.setAttribute('aria-hidden', 'true');
-                el.innerHTML = 'Dave Bryan J. Beatingo';
+                el.innerHTML = '💜 by ClickUp Brain';
                 document.body.appendChild(el);
             }
             return el;
@@ -761,17 +746,7 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
         }
 
         _scrollToSlide(index, behavior) {
-            const viewport = this.viewports[index];
-            viewport?.scrollIntoView({ behavior, block: 'start', inline: 'nearest' });
-
-            if (viewport && document.documentElement.classList.contains('mobile-reading-mode')) {
-                requestAnimationFrame(() => {
-                    viewport.scrollLeft = Math.max(
-                        0,
-                        (viewport.scrollWidth - viewport.clientWidth) / 2
-                    );
-                });
-            }
+            this.viewports[index]?.scrollIntoView({ behavior, block: 'start' });
         }
 
         _slideIndexFromHash(hash) {
@@ -1000,10 +975,6 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 
             window.addEventListener('touchstart', (e) => {
                 if (document.body.classList.contains('artifact-editor-editing')) { tracking = false; return; }
-                /* On portrait phones, horizontal gestures pan the enlarged
-                   slide. Multi-touch remains available for browser pinch zoom. */
-                if (document.documentElement.classList.contains('mobile-reading-mode')) { tracking = false; return; }
-                if (window.visualViewport && window.visualViewport.scale > 1.01) { tracking = false; return; }
                 if (e.touches.length !== 1) { tracking = false; return; }
                 const t = e.touches[0];
                 startX = t.clientX;
@@ -1038,43 +1009,13 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
             const scales = this.scales;
 
             const update = () => {
-                const mobileReadingMode = window.matchMedia(
-                    '(max-width: 768px) and (orientation: portrait)'
-                ).matches;
-
-                /* Portrait phones use a readable minimum scale and allow
-                   horizontal panning. Landscape/desktop keeps fit-to-screen. */
-                const scale = mobileReadingMode
-                    ? Math.max(window.innerWidth / CANVAS_W, 0.46)
-                    : Math.min(
-                        window.innerWidth / CANVAS_W,
-                        window.innerHeight / CANVAS_H
-                    );
-
-                document.documentElement.classList.toggle(
-                    'mobile-reading-mode',
-                    mobileReadingMode
+                const scale = Math.min(
+                    window.innerWidth / CANVAS_W,
+                    window.innerHeight / CANVAS_H
                 );
-
                 scales.forEach((el) => {
-                    if (!el) return;
-                    el.style.setProperty('--slide-scale', scale);
-                    el.style.setProperty('--scaled-width', `${CANVAS_W * scale}px`);
-                    el.style.setProperty('--scaled-height', `${CANVAS_H * scale}px`);
+                    el?.style.setProperty('--slide-scale', scale);
                 });
-
-                if (mobileReadingMode) {
-                    requestAnimationFrame(() => {
-                        scales.forEach((el) => {
-                            const viewport = el?.parentElement;
-                            if (!viewport) return;
-                            viewport.scrollLeft = Math.max(
-                                0,
-                                (viewport.scrollWidth - viewport.clientWidth) / 2
-                            );
-                        });
-                    });
-                }
             };
 
             update();
@@ -1137,1201 +1078,1278 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 
 </script>
 <!-- /skill:chassis -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
-    <title>Installing WAMP &amp; Touring phpMyAdmin | Student Edition</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
-    <style>
-        :root{--background:#f0f4f8;--foreground:#0a0a0a;--accent:#1565C0;--accent-light:#1E88E5;--accent-dark:#0D47A1;--accent-foreground:#fff;--card:#1565C0;--card-foreground:#fff;--muted:#e3eaf2;--border:rgba(21,101,192,0.15);--font-display:'Archivo Black',sans-serif;--font-body:'Space Grotesk',sans-serif;--bg-gradient:linear-gradient(135deg,#f0f4f8 0%,#e1ecf7 50%,#f0f4f8 100%);--card-gradient:linear-gradient(135deg,#1565C0 0%,#1E88E5 100%)}
-        body{font-family:var(--font-body);background:var(--background)}h1,h2,h3{font-family:var(--font-display);letter-spacing:-0.02em}
-        .slide{background:var(--bg-gradient);padding:80px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
-        .section-num{font-family:var(--font-display);font-size:280px;color:rgba(21,101,192,0.06);position:absolute;top:-40px;right:60px;line-height:1;pointer-events:none}
-        .blue-card{background:var(--card-gradient);color:var(--card-foreground);border-radius:24px;padding:60px;position:relative;overflow:hidden}.blue-card::after{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);border-radius:50%;pointer-events:none}.blue-card h2,.blue-card h3{color:#fff}.blue-card p,.blue-card li{color:rgba(255,255,255,0.92);font-size:28px;line-height:1.5}
-        .eyebrow{font-family:var(--font-body);font-size:24px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px}.blue-card .eyebrow{color:rgba(255,255,255,0.7)}
-        p{font-size:32px;line-height:1.5;color:#333;max-width:800px}h2{font-size:64px;line-height:1.1;color:var(--foreground);margin-bottom:24px}h3{font-size:44px;line-height:1.2;color:var(--foreground);margin-bottom:16px}
-        ul,ol{list-style:none;padding:0;margin:0}li{font-size:30px;line-height:1.5;color:#333;padding:8px 0;padding-left:32px;position:relative}li::before{content:'';position:absolute;left:0;top:18px;width:12px;height:12px;background:var(--accent);border-radius:3px}.blue-card li::before{background:rgba(255,255,255,0.6)}
-        table{width:100%;border-collapse:collapse;font-size:26px;margin-top:24px}th{background:var(--accent);color:white;padding:16px 24px;text-align:left;font-weight:600}td{padding:14px 24px;border-bottom:1px solid var(--border);color:#333}tr:nth-child(even) td{background:rgba(21,101,192,0.04)}
-        .hero{justify-content:space-between;background:linear-gradient(135deg,#0D47A1 0%,#1565C0 40%,#1E88E5 100%)}.hero *{color:white}.hero h1{font-size:96px;line-height:1.05}.hero p{color:rgba(255,255,255,0.8);font-size:32px}
-        .pause-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#E3F2FD 0%,#BBDEFB 50%,#E3F2FD 100%)}.pause-slide h2{font-size:72px;color:var(--accent-dark)}.pause-slide p{font-size:36px;color:var(--accent);text-align:center}.pause-icon{font-size:80px;margin-bottom:24px}
-        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:32px}.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-top:32px}
-        .grid-card{background:white;border-radius:16px;padding:32px;border:2px solid var(--border);box-shadow:0 4px 20px rgba(21,101,192,0.06)}.grid-card h3{font-size:28px;margin-bottom:12px}.grid-card p{font-size:24px;color:#555}
-        .transition-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#0D47A1 0%,#1565C0 60%,#1976D2 100%)}.transition-slide h2{color:white;font-size:80px}.transition-slide p{color:rgba(255,255,255,0.7);font-size:32px;text-align:center}
-        .end-slide{align-items:center;text-align:center;justify-content:center;background:linear-gradient(135deg,#1565C0 0%,#0D47A1 100%)}.end-slide h1{color:white;font-size:96px}.end-slide p{color:rgba(255,255,255,0.8);font-size:32px;text-align:center}
-        .code-block{background:#1a1a2e;color:#e0e0e0;border-radius:16px;padding:32px;font-family:'Courier New',monospace;font-size:24px;line-height:1.6;margin-top:24px}.code-block .keyword{color:#4fc3f7}.code-block .string{color:#ce93d8}.code-block .comment{color:#666}
-        #particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
-        .screenshot-placeholder{background:linear-gradient(135deg,#e8eef5 0%,#dce6f0 100%);border:2px dashed rgba(21,101,192,0.3);border-radius:16px;padding:40px;text-align:center;color:var(--accent);font-weight:600;font-size:20px;margin-top:24px;min-height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
-        .step-number{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;background:var(--card-gradient);color:white;border-radius:50%;font-weight:700;font-size:24px;margin-right:16px;flex-shrink:0}
-        .step-row{display:flex;align-items:center;padding:12px 0;font-size:28px}
-    </style>
-    <style>
-        /* Embedded DB folder presentation theme. */
-        :root {
-            color-scheme: dark;
-            --background: #0a0e1a;
-            --foreground: #e2e8f0;
-            --card: rgba(15, 23, 42, 0.80);
-            --card-foreground: #e2e8f0;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
-            --accent-dark: #1d4ed8;
-            --accent-foreground: #ffffff;
-            --muted: #94a3b8;
-            --muted-foreground: rgba(148, 163, 184, 0.72);
-            --border: rgba(59, 130, 246, 0.30);
-            --font-display: 'Archivo Black', sans-serif;
-            --font-body: 'Space Grotesk', sans-serif;
-            --font-mono: 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
-            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #0a0e1a 100%);
-            --card-gradient: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
-            --code-bg: rgba(2, 6, 23, 0.90);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --nav-dot-color: #3b82f6;
-            --nav-dot-active-color: #60a5fa;
-        }
-
-        html, body { background: var(--background) !important; }
-        body { color: var(--foreground) !important; font-family: var(--font-body) !important; }
-        #particles { opacity: 0.35 !important; }
-        .slide-viewport { background: var(--background) !important; }
-
-        .slide {
-            background: var(--bg-gradient) !important;
-            color: var(--foreground) !important;
-            font-family: var(--font-body) !important;
-            padding: 80px !important;
-            gap: 28px !important;
-            position: relative !important;
-            overflow: hidden !important;
-        }
-        .slide::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: linear-gradient(125deg, rgba(59, 130, 246, 0.10), transparent 45%);
-        }
-        .slide > * { position: relative; z-index: 1; }
-
-        h1, h2, h3 {
-            color: #ffffff !important;
-            font-family: var(--font-display) !important;
-            letter-spacing: 0 !important;
-        }
-        h1, .hero h1, .end-slide h1 { font-size: 88px !important; line-height: 1.05 !important; }
-        h2, .transition-slide h2, .pause-slide h2 { font-size: 52px !important; line-height: 1.12 !important; margin-bottom: 10px !important; }
-        h3 { font-size: 38px !important; line-height: 1.2 !important; margin-bottom: 12px !important; }
-
-        p {
-            color: #cbd5e1 !important;
-            font-family: var(--font-body) !important;
-            font-size: 26px !important;
-            line-height: 1.55 !important;
-            max-width: 900px !important;
-        }
-        strong { color: #f8fafc !important; }
-
-        .eyebrow {
-            color: var(--accent-light) !important;
-            font-family: var(--font-body) !important;
-            font-size: 22px !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.14em !important;
-            text-transform: uppercase !important;
-            margin-bottom: 4px !important;
-        }
-
-        .section-num, .section-number {
-            color: rgba(59, 130, 246, 0.08) !important;
-            font-family: var(--font-display) !important;
-            font-size: 180px !important;
-            line-height: 1 !important;
-            position: absolute !important;
-            top: 40px !important;
-            right: 80px !important;
-            pointer-events: none !important;
-            opacity: 1 !important;
-        }
-
-        .hero, .transition-slide, .end-slide, .pause-slide {
-            align-items: center !important;
-            justify-content: center !important;
-            text-align: center !important;
-            gap: 22px !important;
-            background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
-        }
-        .hero::before, .transition-slide::before, .end-slide::before, .pause-slide::before {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), transparent 56%) !important;
-        }
-        .hero p, .transition-slide p, .end-slide p, .pause-slide p {
-            color: var(--muted-foreground) !important;
-            text-align: center !important;
-        }
-
-        .blue-card, .grid-card, .card, .dark-card, .quote-card, .info-card, .example-card {
-            background: var(--card) !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 16px !important;
-            box-shadow: none !important;
-            color: var(--card-foreground) !important;
-            padding: 32px 36px !important;
-            backdrop-filter: blur(8px);
-        }
-        .blue-card {
-            background: var(--card-gradient) !important;
-            border-color: rgba(96, 165, 250, 0.36) !important;
-            padding: 42px 48px !important;
-        }
-        .blue-card::after { display: none !important; }
-        .blue-card h2, .blue-card h3, .grid-card h3, .card h3, .dark-card h3 { color: #ffffff !important; }
-        .blue-card p, .blue-card li { color: rgba(255, 255, 255, 0.92) !important; }
-        .grid-card p, .card p, .dark-card p { color: #94a3b8 !important; font-size: 20px !important; }
-
-        .grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
-        .grid-3 { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; }
-
-        ul, ol { list-style: none !important; padding: 0 !important; margin: 0 !important; gap: 16px !important; }
-        li {
-            color: #cbd5e1 !important;
-            font-family: var(--font-body) !important;
-            font-size: 26px !important;
-            line-height: 1.5 !important;
-            padding: 8px 0 8px 28px !important;
-            position: relative !important;
-        }
-        li::before {
-            content: ">" !important;
-            position: absolute !important;
-            left: 0 !important;
-            top: 8px !important;
-            width: auto !important;
-            height: auto !important;
-            background: transparent !important;
-            border-radius: 0 !important;
-            color: var(--accent-light) !important;
-            font-weight: 700 !important;
-        }
-        .blue-card li::before { color: #bfdbfe !important; }
-
-        table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            font-family: var(--font-body) !important;
-            font-size: 21px !important;
-            margin-top: 18px !important;
-        }
-        th {
-            background: rgba(59, 130, 246, 0.15) !important;
-            border-bottom: 2px solid var(--border) !important;
-            color: #93c5fd !important;
-            font-weight: 600 !important;
-            padding: 12px 16px !important;
-            text-align: left !important;
-        }
-        td {
-            background: transparent !important;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.10) !important;
-            color: #cbd5e1 !important;
-            padding: 10px 16px !important;
-        }
-        tr:nth-child(even) td { background: rgba(59, 130, 246, 0.04) !important; }
-
-        pre, .code-block {
-            background: var(--code-bg) !important;
-            border: 1px solid rgba(59, 130, 246, 0.20) !important;
-            border-radius: 12px !important;
-            box-shadow: none !important;
-            color: #e2e8f0 !important;
-            font-family: var(--font-mono) !important;
-            font-size: 19px !important;
-            line-height: 1.6 !important;
-            padding: 24px 28px !important;
-            overflow-x: auto !important;
-        }
-        .code-block .keyword, .kw { color: #93c5fd !important; font-weight: 500 !important; }
-        .code-block .string, .str { color: #86efac !important; }
-        .code-block .comment, .cm { color: #64748b !important; font-style: italic !important; }
-        .code-block .number, .num { color: #fbbf24 !important; }
-        .fn, .code-block .function { color: #c4b5fd !important; }
-
-        .quote-slide { align-items: center !important; justify-content: center !important; text-align: center !important; }
-        .quote-text { color: #e2e8f0 !important; font-size: 30px !important; max-width: 940px !important; }
-        .quote-attr, .accent, .highlight { color: var(--accent-light) !important; }
-        .bright { color: #ffffff !important; }
-        .highlight-green { color: var(--success) !important; }
-        .highlight-orange { color: var(--warning) !important; }
-        .highlight-red { color: var(--danger) !important; }
-        .stat-num { color: var(--accent-light) !important; font-size: 120px !important; }
-        .stat-label { color: var(--muted-foreground) !important; font-size: 22px !important; }
-
-        .venn-left { background: rgba(59, 130, 246, 0.18) !important; border-color: var(--accent) !important; }
-        .venn-right { background: rgba(16, 185, 129, 0.14) !important; border-color: var(--success) !important; }
-        .venn-label { color: #cbd5e1 !important; }
-
-        [style*="color:#333"], [style*="color: #333"],
-        [style*="color:#555"], [style*="color: #555"],
-        [style*="color:#666"], [style*="color: #666"],
-        [style*="color:var(--muted)"], [style*="color: var(--muted)"] {
-            color: var(--muted-foreground) !important;
-        }
-        [style*="color:var(--accent)"], [style*="color: var(--accent)"],
-        [style*="color:var(--accent-light)"], [style*="color: var(--accent-light)"] {
-            color: var(--accent-light) !important;
-        }
-        [style*="color:#c62828"], [style*="color: #c62828"],
-        [style*="color:#ef4444"], [style*="color: #ef4444"] {
-            color: var(--danger) !important;
-        }
-        [style*="background:var(--muted)"], [style*="background: var(--muted)"] {
-            background: rgba(15, 23, 42, 0.86) !important;
-            border: 1px solid var(--border) !important;
-        }
-        [style*="background:var(--card-gradient)"], [style*="background: var(--card-gradient)"] {
-            background: var(--card-gradient) !important;
-        }
-    
-/* Title-slide cleanup: match the plain centered title layout. */
-.title-slide {
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    gap: 22px !important;
-    background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
-}
-.title-slide::before {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 56%) !important;
-}
-.title-slide .eyebrow,
-.title-slide .section-num,
-.title-slide .section-number {
-    display: none !important;
-}
-.title-slide h1,
-.title-slide h1 *,
-.title-slide .highlight,
-.title-slide .accent {
-    color: #ffffff !important;
-}
-.title-slide h1 {
-    font-size: 88px !important;
-    line-height: 1.05 !important;
-    margin: 0 !important;
-    text-align: center !important;
-}
-.title-slide p {
-    color: var(--muted-foreground, var(--muted, #94a3b8)) !important;
-    font-size: 26px !important;
-    line-height: 1.45 !important;
-    max-width: 900px !important;
-    margin: 0 !important;
-    text-align: center !important;
-}</style>
-
-
-
-<style data-db-session-upgrade>
-  .slide { gap:0 !important; }
-  .slide:not([style*="padding-top"]) { padding-top:70px !important; padding-bottom:70px !important; }
-  .slide.practice-slide { padding-top:25px !important; padding-bottom:25px !important; }
-  .db-subject-watermark { position:absolute; top:18px; right:30px; z-index:60; color:var(--muted-foreground,var(--muted,#64748b)); font:600 14px/1.2 var(--font-body,sans-serif); letter-spacing:.02em; opacity:.72; white-space:nowrap; pointer-events:none; user-select:none; }
-  .db-reference-layout { display:grid; grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr); gap:30px; align-items:stretch; margin-top:18px; }
-  .db-reference-copy { min-height:560px; display:flex; flex-direction:column; justify-content:center; gap:18px; }
-  .db-reference-copy h3 { margin:0; font-size:28px; color:var(--accent,var(--accent-light)); }
-  .db-reference-copy ul { margin:0; }
-  .db-reference-copy li { font-size:20px; line-height:1.45; margin-bottom:12px; }
-  .db-reference-frame { min-height:560px; padding:14px; display:flex; flex-direction:column; justify-content:center; background:rgba(255,255,255,.06); border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; overflow:hidden; }
-  .db-reference-frame img { width:100%; max-height:505px; object-fit:contain; border-radius:10px; background:#fff; }
-  .db-reference-caption { margin-top:10px; font-size:14px; line-height:1.35; color:var(--muted-foreground,var(--muted,#94a3b8)); text-align:center; }
-  .db-concept-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:28px; }
-  .db-concept-card { min-height:300px; padding:30px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; background:var(--card-gradient,var(--card,#172033)); }
-  .db-concept-card h3 { margin:0 0 14px; font-size:28px; color:var(--accent,var(--accent-light)); }
-  .db-concept-card p { margin:0; font-size:21px; line-height:1.45; }
-  .db-flow { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:30px; }
-  .db-flow-step { position:relative; min-height:150px; display:flex; align-items:center; justify-content:center; padding:24px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:16px; background:var(--card-gradient,var(--card,#172033)); color:var(--foreground); font-family:var(--font-body); font-size:22px; font-weight:700; text-align:center; }
-  .db-flow-step:not(:last-child)::after { content:'→'; position:absolute; right:-20px; top:50%; z-index:2; transform:translateY(-50%); color:var(--accent,var(--accent-light)); font-size:30px; }
-  .db-compare { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:26px; }
-  .db-compare > div { padding:24px 28px; border-radius:16px; background:rgba(255,255,255,.055); }
-  .db-compare strong { display:block; margin-bottom:8px; color:var(--accent,var(--accent-light)); font-family:var(--font-body); font-size:20px; text-transform:uppercase; letter-spacing:.08em; }
-  .db-compare p { font-size:19px; line-height:1.4; }
-  .mock-phone,.phone-mockup,.browser-frame,.screenshot-frame,.ui-reference,.ui-web-frame,.dashboard-mockup,.app-window,.terminal-window { box-sizing:border-box; overflow:hidden; max-width:100%; }
-  .slide img { max-width:100%; }
-</style>
-<style data-image-lightbox-styles>
-  .slide img[data-lightbox-ready] { cursor:zoom-in; transition:filter .18s ease,transform .18s ease; }
-  .slide img[data-lightbox-ready]:hover { filter:brightness(1.06); }
-  .slide img[data-lightbox-ready]:focus-visible { outline:4px solid var(--accent,var(--accent-light)); outline-offset:5px; }
-  body.image-lightbox-open { overflow:hidden !important; }
-  .image-lightbox { position:fixed; inset:0; z-index:2147483647; display:grid; place-items:center; padding:58px 46px 38px; background:rgba(3,5,12,.94); backdrop-filter:blur(12px); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .2s ease,visibility .2s ease; }
-  .image-lightbox.is-open { opacity:1; visibility:visible; pointer-events:auto; }
-  .image-lightbox__figure { width:min(94vw,1800px); height:min(88vh,980px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; margin:0; }
-  .image-lightbox__image { display:block; width:auto !important; height:auto !important; max-width:94vw !important; max-height:80vh !important; object-fit:contain !important; border-radius:12px; background:#fff; box-shadow:0 28px 80px rgba(0,0,0,.55); }
-  .image-lightbox__caption { max-width:1100px; color:rgba(255,255,255,.85); font:500 17px/1.4 var(--font-body,sans-serif); text-align:center; }
-  .image-lightbox__close { position:fixed; top:18px; right:24px; width:52px; height:52px; display:grid; place-items:center; padding:0; border:1px solid rgba(255,255,255,.25); border-radius:50%; background:rgba(18,22,32,.9); color:#fff; font:300 36px/1 sans-serif; cursor:pointer; }
-</style>
-
-<style id="database-presentation-responsive-fix">
-/* Full-bleed background and mobile reading support */
-.slide-viewport {
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-}
-.slide {
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-}
-
-@media (max-width: 768px) and (orientation: portrait) {
-    html {
-        scroll-snap-type: y proximity !important;
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lesson 7 – Foreign Keys and Referential Integrity</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --background: #fafafa;
+      --foreground: #1a1a1a;
+      --accent: #1D4ED8;
+      --accent-foreground: #ffffff;
+      --card: #1D4ED8;
+      --card-foreground: #ffffff;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --font-display: 'Archivo Black', sans-serif;
+      --font-body: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
-    body {
-        overscroll-behavior-x: none;
-    }
-    .slide-viewport {
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        touch-action: pan-x pan-y pinch-zoom !important;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: color-mix(in srgb, var(--accent) 60%, transparent) transparent;
-    }
-    .slide-viewport::-webkit-scrollbar {
-        display: block;
-        height: 5px;
-    }
-    .slide-viewport::-webkit-scrollbar-thumb {
-        background: color-mix(in srgb, var(--accent) 60%, transparent);
-        border-radius: 999px;
-    }
-    .slide-scale {
-        position: relative !important;
-        top: auto !important;
-        left: auto !important;
-        width: var(--scaled-width, 883px) !important;
-        height: var(--scaled-height, 497px) !important;
-        margin: max(16px, calc((100dvh - var(--scaled-height, 497px)) / 2)) auto !important;
-        transform: none !important;
-        transform-origin: top left !important;
-    }
+    html, body { margin: 0; padding: 0; }
     .slide {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        transform: scale(var(--slide-scale, 0.46)) !important;
-        transform-origin: top left !important;
+      padding: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-family: var(--font-body);
+      color: var(--foreground);
+      background: var(--background);
+      position: relative;
+      overflow: hidden;
     }
-    /* Decorative artboard overlays are rectangular. Hiding only these
-       pseudo-background layers on portrait phones prevents their scaled
-       edges from looking like a cut background. */
-    .slide::before {
-        display: none !important;
+    h1 { font-family: var(--font-display); font-size: 120px; line-height: 1.05; margin: 0; letter-spacing: -2px; }
+    h2 { font-family: var(--font-display); font-size: 64px; line-height: 1.1; margin: 0 0 40px 0; letter-spacing: -1px; }
+    h3 { font-family: var(--font-display); font-size: 44px; line-height: 1.2; margin: 0 0 30px 0; }
+    p, li { font-size: 36px; line-height: 1.45; color: color-mix(in srgb, var(--foreground) 75%, transparent); max-width: 800px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { padding: 12px 0; padding-left: 40px; position: relative; }
+    li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+    .eyebrow { font-family: var(--font-mono); font-size: 24px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: block; }
+    .section-number { font-family: var(--font-display); font-size: 200px; color: color-mix(in srgb, var(--accent) 12%, transparent); position: absolute; top: 40px; right: 80px; line-height: 1; }
+    .card-accent {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: var(--accent);
+      border-radius: 32px;
+      right: -80px;
+      top: 50%;
+      transform: translateY(-50%) rotate(12deg);
+      opacity: 0.9;
     }
-    .keyboard-hint {
-        display: none !important;
+    .code-block {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      font-family: var(--font-mono);
+      font-size: 30px;
+      line-height: 1.6;
+      padding: 40px 50px;
+      border-radius: 16px;
+      margin-top: 30px;
+      max-width: 1200px;
+      overflow: hidden;
     }
+    .code-block .keyword { color: #cba6f7; }
+    .code-block .class-name { color: #f9e2af; }
+    .code-block .method { color: #89b4fa; }
+    .code-block .string { color: #a6e3a1; }
+    .code-block .comment { color: #6c7086; font-style: italic; }
+    .code-block .bracket { color: #f38ba8; }
+    .highlight { color: var(--accent); font-weight: 700; }
+    .big-emoji { font-size: 100px; margin-bottom: 30px; }
+    .step-card {
+      background: color-mix(in srgb, var(--accent) 8%, var(--background));
+      border-left: 6px solid var(--accent);
+      padding: 30px 40px;
+      border-radius: 0 16px 16px 0;
+      margin: 15px 0;
+      max-width: 900px;
+    }
+    .step-card p { margin: 0; color: var(--foreground); }
+    .step-card .step-num { font-family: var(--font-display); font-size: 28px; color: var(--accent); margin-bottom: 8px; }
+    .error-block {
+      background: #fef2f2;
+      border-left: 6px solid #ef4444;
+      padding: 30px 40px;
+      border-radius: 0 16px 16px 0;
+      margin: 15px 0;
+      max-width: 1000px;
+    }
+    .error-block code { font-family: var(--font-mono); font-size: 28px; color: #dc2626; }
+    .success-block {
+      background: #f0fdf4;
+      border-left: 6px solid #22c55e;
+      padding: 30px 40px;
+      border-radius: 0 16px 16px 0;
+      margin: 15px 0;
+      max-width: 1000px;
+    }
+    .success-block code { font-family: var(--font-mono); font-size: 28px; color: #16a34a; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 30px; }
+    .info-card {
+      background: color-mix(in srgb, var(--accent) 6%, var(--background));
+      border-radius: 16px;
+      padding: 35px;
+    }
+    .info-card h3 { font-size: 32px; margin-bottom: 12px; }
+    .info-card p { font-size: 28px; margin: 0; }
+    .slide-dark {
+      background: var(--foreground);
+      color: var(--background);
+    }
+    .slide-dark h2, .slide-dark h1 { color: var(--background); }
+    .slide-dark p, .slide-dark li { color: color-mix(in srgb, var(--background) 75%, transparent); }
+    .slide-dark .eyebrow { color: var(--accent); }
+    .slide-accent {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    .slide-accent h1, .slide-accent h2 { color: var(--accent-foreground); }
+    .slide-accent p { color: color-mix(in srgb, var(--accent-foreground) 85%, transparent); max-width: 100%; }
+    .slide-accent .eyebrow { color: var(--accent-foreground); opacity: 0.7; }
+    .url-display {
+      font-family: var(--font-mono);
+      font-size: 32px;
+      background: color-mix(in srgb, var(--accent) 10%, var(--background));
+      padding: 20px 30px;
+      border-radius: 12px;
+      margin-top: 20px;
+      display: inline-block;
+      color: var(--accent);
+      font-weight: 500;
+    }
+  </style>
+<style>
+    /* Lesson-specific additions */
+
+    :root { --nav-dot-size: 7px; }
+    .nav-dots { gap: 5px; }
+    .timeline { gap: 16px 30px; }
+    .timeline .task { padding: 15px 24px; }
+
+    .chassis-credit { display: none !important; }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 30px;
+      width: 100%;
+    }
+    .comparison-card {
+      min-height: 300px;
+      padding: 36px;
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--accent) 7%, var(--background));
+      border: 2px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .comparison-card .icon {
+      font-size: 76px;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .comparison-card h3 {
+      font-size: 34px;
+      margin-bottom: 14px;
+    }
+    .comparison-card p {
+      font-size: 27px;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .analogy-flow {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 35px;
+      width: 100%;
+    }
+    .analogy-item {
+      flex: 1;
+      min-height: 280px;
+      padding: 34px;
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--accent) 8%, var(--background));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .analogy-item .emoji { font-size: 74px; margin-bottom: 18px; }
+    .analogy-item strong { font-size: 34px; color: var(--foreground); }
+    .analogy-item span { font-size: 26px; margin-top: 12px; color: color-mix(in srgb, var(--foreground) 68%, transparent); }
+    .flow-arrow {
+      align-self: center;
+      font-family: var(--font-display);
+      font-size: 58px;
+      color: var(--accent);
+    }
+
+    .question-card {
+      width: 100%;
+      max-width: 1300px;
+      padding: 42px 48px;
+      border-radius: 22px;
+      border: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      background: color-mix(in srgb, var(--accent) 6%, var(--background));
+      font-size: 38px;
+      line-height: 1.35;
+    }
+    .answer-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 10px 0 0;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 12%, var(--background));
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      font-size: 27px;
+      font-weight: 600;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 24px 30px;
+      width: 100%;
+      max-width: 1250px;
+      margin-top: 25px;
+      align-items: center;
+    }
+    .timeline .time {
+      font-family: var(--font-mono);
+      font-size: 27px;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: right;
+    }
+    .timeline .task {
+      font-size: 30px;
+      padding: 20px 26px;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--accent) 6%, var(--background));
+      border-left: 5px solid var(--accent);
+    }
+
+    .diagram-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      width: 100%;
+      margin-top: 30px;
+    }
+    .diagram-box {
+      min-width: 280px;
+      padding: 34px 28px;
+      text-align: center;
+      border-radius: 18px;
+      background: var(--foreground);
+      color: var(--background);
+      font-size: 30px;
+      font-weight: 700;
+    }
+    .diagram-arrow {
+      font-family: var(--font-display);
+      color: var(--accent);
+      font-size: 56px;
+    }
+
+    .output-block {
+      font-family: var(--font-mono);
+      font-size: 31px;
+      line-height: 1.55;
+      padding: 30px 38px;
+      border-radius: 16px;
+      margin-top: 24px;
+      width: 100%;
+      max-width: 1100px;
+      background: #111827;
+      color: #d1fae5;
+      border: 2px solid #22c55e;
+    }
+
+    .two-column-code {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 35px;
+      width: 100%;
+      align-items: start;
+    }
+    .two-column-code .code-block {
+      margin-top: 0;
+      max-width: none;
+      font-size: 27px;
+    }
+    .two-column-code .side-note {
+      border-radius: 18px;
+      padding: 34px;
+      background: color-mix(in srgb, var(--accent) 7%, var(--background));
+    }
+    .two-column-code .side-note h3 { font-size: 32px; margin-bottom: 18px; }
+    .two-column-code .side-note p { font-size: 27px; margin: 0; }
+
+    .mini-check {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      width: 100%;
+      margin-top: 28px;
+    }
+    .mini-check > div {
+      padding: 30px 34px;
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--accent) 7%, var(--background));
+      font-size: 29px;
+      line-height: 1.35;
+    }
+
+    .deck-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 120;
+      padding: 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--background) 88%, transparent);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 35px rgba(0,0,0,.12);
+      backdrop-filter: blur(12px);
+    }
+    .deck-controls button {
+      border: 0;
+      border-radius: 999px;
+      background: var(--foreground);
+      color: var(--background);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    .deck-controls button:last-of-type {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    .deck-controls .deck-count {
+      min-width: 70px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--foreground);
+    }
+    @media (min-width: 901px) and (min-height: 561px) {
+      .deck-controls { opacity: .28; transition: opacity .25s ease; }
+      .deck-controls:hover, .deck-controls:focus-within { opacity: 1; }
+    }
+    @media (max-width: 900px), (max-height: 560px) {
+      .deck-controls {
+        bottom: 8px;
+        width: calc(100vw - 16px);
+        justify-content: space-between;
+        background: rgba(255,255,255,.95);
+      }
+      .deck-controls button { font-size: 14px; padding: 10px 14px; }
+    }
+    @media print {
+      .deck-controls { display: none !important; }
+    }
+  
+
+/* Code snippet readability patch: syntax colors + no clipping */
+.code-block {
+  white-space: pre-wrap !important;
+  overflow: visible !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  max-width: calc(100% - 20px) !important;
+  max-height: none !important;
+}
+.code-block.code-small {
+  font-size: 24px !important;
+  line-height: 1.42 !important;
+  padding: 30px 38px !important;
+}
+.code-block.code-tiny {
+  font-size: 21px !important;
+  line-height: 1.34 !important;
+  padding: 24px 30px !important;
+}
+.code-block .keyword { color: #cba6f7; }
+.code-block .class-name { color: #f9e2af; }
+.code-block .method { color: #89b4fa; }
+.code-block .string { color: #a6e3a1; }
+.code-block .num { color: #fab387; }
+.code-block .comment { color: #6c7086; font-style: italic; }
+.code-block .bracket { color: #f38ba8; }
+</style>
+<style>
+/* Fundamentals of Database Systems additions */
+:root { --nav-dot-size: 7px; }
+.chassis-credit { display: none !important; }
+.nav-dots { gap: 5px; }
+.database-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  width: 100%;
+  margin-top: 30px;
+}
+.db-card {
+  background: color-mix(in srgb, var(--accent) 7%, var(--background));
+  border: 2px solid color-mix(in srgb, var(--accent) 16%, transparent);
+  border-radius: 22px;
+  padding: 34px;
+  min-height: 250px;
+}
+.db-card .icon { font-size: 70px; line-height: 1; margin-bottom: 18px; }
+.db-card h3 { font-size: 34px; margin-bottom: 14px; }
+.db-card p { font-size: 27px; line-height: 1.38; margin: 0; }
+.table-demo {
+  width: 100%;
+  max-width: 1300px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  margin-top: 30px;
+  font-size: 28px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.08);
+}
+.table-demo th {
+  background: var(--foreground);
+  color: var(--background);
+  padding: 20px 24px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 24px;
+}
+.table-demo td {
+  padding: 20px 24px;
+  border-bottom: 2px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--background));
+}
+.table-demo tr:last-child td { border-bottom: 0; }
+.label-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 8px 0 0;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--background));
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--foreground);
+  font-size: 27px;
+  font-weight: 700;
+}
+.flow-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 22px;
+  width: 100%;
+  margin-top: 35px;
+}
+.flow-box {
+  flex: 1;
+  min-height: 245px;
+  padding: 34px 28px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--background));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.flow-box .emoji { font-size: 72px; line-height: 1; margin-bottom: 18px; }
+.flow-box strong { font-size: 34px; color: var(--foreground); }
+.flow-box span { font-size: 26px; margin-top: 12px; color: color-mix(in srgb, var(--foreground) 68%, transparent); }
+.flow-arrow { align-self: center; font-family: var(--font-display); font-size: 58px; color: var(--accent); }
+.question-card {
+  width: 100%;
+  max-width: 1300px;
+  padding: 42px 48px;
+  border-radius: 22px;
+  border: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--background));
+  font-size: 38px;
+  line-height: 1.35;
+}
+.big-number {
+  font-family: var(--font-display);
+  font-size: 120px;
+  line-height: .9;
+  color: var(--accent);
+}
+.split-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+  align-items: stretch;
+  margin-top: 30px;
+}
+.panel {
+  border-radius: 24px;
+  padding: 38px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--background));
+  border: 2px solid color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.panel h3 { font-size: 36px; margin-bottom: 18px; }
+.panel p, .panel li { font-size: 28px; line-height: 1.42; }
+.entity-row {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  margin-top: 30px;
+  width: 100%;
+}
+.entity-box {
+  min-width: 260px;
+  padding: 30px 24px;
+  border-radius: 18px;
+  background: var(--foreground);
+  color: var(--background);
+  text-align: center;
+  font-weight: 800;
+  font-size: 30px;
+}
+.entity-link { font-family: var(--font-display); color: var(--accent); font-size: 54px; }
+.note-line {
+  margin-top: 24px;
+  padding: 24px 32px;
+  border-left: 6px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--background));
+  border-radius: 0 16px 16px 0;
+  font-size: 30px;
+  max-width: 1200px;
+}
+.deck-controls {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 120;
+  padding: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 35px rgba(0,0,0,.12);
+  backdrop-filter: blur(12px);
+}
+.deck-controls button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.deck-controls button:last-of-type { background: var(--accent); color: var(--accent-foreground); }
+.deck-controls .deck-count { min-width: 70px; text-align: center; font-family: var(--font-mono); font-size: 14px; color: var(--foreground); }
+@media (min-width: 901px) and (min-height: 561px) {
+  .deck-controls { opacity: .28; transition: opacity .25s ease; }
+  .deck-controls:hover, .deck-controls:focus-within { opacity: 1; }
+}
+@media (max-width: 900px), (max-height: 560px) {
+  .deck-controls { bottom: 8px; width: calc(100vw - 16px); justify-content: space-between; background: rgba(255,255,255,.95); }
+  .deck-controls button { font-size: 14px; padding: 10px 14px; }
+}
+@media print { .deck-controls { display: none !important; } }
+.code-block {
+  white-space: pre-wrap !important;
+  overflow: visible !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  max-width: calc(100% - 20px) !important;
+  max-height: none !important;
+}
+.code-block.code-small { font-size: 24px !important; line-height: 1.42 !important; padding: 30px 38px !important; }
+.code-block.code-tiny { font-size: 21px !important; line-height: 1.34 !important; padding: 24px 30px !important; }
+.code-block .keyword { color: #cba6f7; }
+.code-block .table-name { color: #f9e2af; }
+.code-block .field { color: #89b4fa; }
+.code-block .string { color: #a6e3a1; }
+.code-block .num { color: #fab387; }
+.code-block .comment { color: #6c7086; font-style: italic; }
+.code-block .bracket { color: #f38ba8; }
+</style>
+<style>
+/* Deep navy database theme override */
+:root {
+  --background: #152543;
+  --foreground: #F8FBFF;
+  --accent: #5DB4FF;
+  --accent-foreground: #06162B;
+  --card: #203A63;
+  --card-foreground: #F8FBFF;
+  --code-bg: #071426;
+  --code-fg: #DDEBFF;
+  --border: rgba(160, 195, 255, 0.22);
+  --muted-foreground: rgba(248, 251, 255, 0.62);
+  --nav-dot-color: rgba(248, 251, 255, 0.85);
+  --nav-dot-active-color: var(--accent);
+}
+html, body {
+  background: linear-gradient(180deg, #152543 0%, #142039 100%) !important;
+}
+.slide,
+.slide-dark,
+.slide-accent {
+  background: linear-gradient(180deg, #152543 0%, #142039 100%) !important;
+  color: var(--foreground) !important;
+}
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(93, 180, 255, 0.13), transparent 32%),
+    radial-gradient(circle at 14% 84%, rgba(37, 99, 235, 0.12), transparent 34%);
+  pointer-events: none;
+  z-index: -1;
+}
+h1, h2, h3,
+.slide-dark h1, .slide-dark h2,
+.slide-accent h1, .slide-accent h2 {
+  color: var(--foreground) !important;
+}
+p, li,
+.slide-dark p, .slide-dark li,
+.slide-accent p, .slide-accent li {
+  color: rgba(248, 251, 255, 0.78) !important;
+}
+.eyebrow, .slide-dark .eyebrow, .slide-accent .eyebrow,
+.highlight, .big-number, .flow-arrow, .entity-link, .diagram-arrow,
+.timeline .time, li::before {
+  color: var(--accent) !important;
+}
+.section-number {
+  color: rgba(93, 180, 255, 0.13) !important;
+}
+.info-card, .step-card, .comparison-card, .analogy-item, .question-card,
+.answer-chip, .timeline .task, .two-column-code .side-note,
+.mini-check > div, .database-grid .db-card, .db-card, .flow-box,
+.panel, .note-line, .label-pill, .url-display {
+  background: rgba(255, 255, 255, 0.075) !important;
+  border-color: rgba(115, 177, 255, 0.22) !important;
+  color: var(--foreground) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.14);
+}
+.step-card, .note-line {
+  border-left-color: var(--accent) !important;
+}
+.info-card h3, .db-card h3, .panel h3,
+.analogy-item strong, .flow-box strong, .step-card p,
+.two-column-code .side-note h3, .two-column-code .side-note p,
+.label-pill, .question-card {
+  color: var(--foreground) !important;
+}
+.info-card p, .db-card p, .panel p, .panel li,
+.analogy-item span, .flow-box span {
+  color: rgba(248, 251, 255, 0.72) !important;
+}
+.card-accent {
+  background: rgba(93, 180, 255, 0.22) !important;
+}
+.diagram-box, .entity-box {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--foreground) !important;
+  border: 2px solid rgba(115, 177, 255, 0.22) !important;
+}
+.table-demo {
+  box-shadow: 0 18px 50px rgba(0,0,0,.22) !important;
+}
+.table-demo th {
+  background: rgba(7, 20, 38, 0.92) !important;
+  color: var(--foreground) !important;
+  border-bottom: 1px solid rgba(115, 177, 255, 0.22) !important;
+}
+.table-demo td {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(248, 251, 255, 0.8) !important;
+  border-bottom: 1px solid rgba(115, 177, 255, 0.14) !important;
+}
+.code-block {
+  background: #071426 !important;
+  color: var(--code-fg) !important;
+  border: 1px solid rgba(115, 177, 255, 0.18) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24) !important;
+}
+.output-block {
+  background: #071426 !important;
+  border-color: rgba(34, 197, 94, 0.6) !important;
+}
+.error-block {
+  background: rgba(127, 29, 29, 0.25) !important;
+  border-left-color: #f87171 !important;
+}
+.error-block code { color: #fecaca !important; }
+.success-block {
+  background: rgba(20, 83, 45, 0.26) !important;
+  border-left-color: #4ade80 !important;
+}
+.success-block code { color: #bbf7d0 !important; }
+.deck-controls {
+  background: rgba(7, 20, 38, 0.84) !important;
+  border-color: rgba(115, 177, 255, 0.24) !important;
+}
+.deck-controls button {
+  background: rgba(255,255,255,.12) !important;
+  color: var(--foreground) !important;
+}
+.deck-controls button:last-of-type {
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+.deck-controls .deck-count { color: rgba(248,251,255,.78) !important; }
+@media (max-width: 900px), (max-height: 560px) {
+  .deck-controls { background: rgba(7, 20, 38, 0.94) !important; }
 }
 </style>
-
-
-
-
-<style id="lesson-mobile-accessibility-fix">
-/* Mobile lesson controls, reliable reveals, zoom support, and light-card contrast. */
-.lesson-slide-controls {
-    position: fixed;
-    left: 50%;
-    bottom: max(10px, env(safe-area-inset-bottom));
-    z-index: 2147483000;
-    display: none;
-    align-items: center;
-    gap: 6px;
-    max-width: calc(100vw - 16px);
-    padding: 7px;
-    border: 1px solid rgba(255,255,255,.20);
-    border-radius: 16px;
-    background: rgba(7, 12, 24, .88);
-    box-shadow: 0 12px 36px rgba(0,0,0,.38);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    transform: translateX(-50%);
-    color: #f8fafc;
-    font: 700 13px/1 var(--font-body, system-ui, sans-serif);
-    user-select: none;
+<style>
+/* Lesson 1 rebuilt additions */
+.lesson-badge {
+  display:inline-flex; align-items:center; gap:14px;
+  padding:16px 24px; border-radius:999px;
+  background:rgba(255,255,255,.075); border:1px solid rgba(115,177,255,.24);
+  font-family:var(--font-mono); font-size:24px; color:rgba(248,251,255,.84);
 }
-.lesson-slide-controls__group { display:flex; align-items:center; gap:5px; }
-.lesson-slide-controls button {
-    min-width: 42px;
-    min-height: 40px;
-    padding: 0 10px;
-    border: 1px solid rgba(255,255,255,.20);
-    border-radius: 11px;
-    background: rgba(255,255,255,.10);
-    color: #ffffff;
-    font: inherit;
-    line-height: 1;
-    cursor: pointer;
-    touch-action: manipulation;
+.big-question {
+  max-width: 1320px; padding: 48px 54px; border-radius: 30px;
+  background: rgba(255,255,255,.08); border: 2px solid rgba(115,177,255,.28);
+  font-family: var(--font-display); font-size: 58px; line-height: 1.18;
+  color: var(--foreground); box-shadow: 0 28px 80px rgba(0,0,0,.2);
 }
-.lesson-slide-controls button:hover,
-.lesson-slide-controls button:focus-visible {
-    background: var(--accent, #3b82f6);
-    border-color: var(--accent, #3b82f6);
-    outline: none;
+.duo {
+  display:grid; grid-template-columns:1fr 1fr; gap:38px; width:100%; align-items:stretch; margin-top:30px;
 }
-.lesson-slide-controls button:disabled { opacity:.38; cursor:not-allowed; }
-.lesson-slide-controls__count {
-    min-width: 48px;
-    padding: 0 5px;
-    color: #dbeafe;
-    text-align: center;
-    white-space: nowrap;
+.tile {
+  background:rgba(255,255,255,.075); border:2px solid rgba(115,177,255,.22);
+  border-radius:26px; padding:40px; min-height:270px; box-shadow:0 18px 46px rgba(0,0,0,.14);
 }
-.lesson-slide-controls__divider {
-    width: 1px;
-    height: 28px;
-    margin: 0 1px;
-    background: rgba(255,255,255,.18);
+.tile .icon { font-size:76px; line-height:1; margin-bottom:16px; }
+.tile h3 { font-size:38px; margin-bottom:16px; color:var(--foreground) !important; }
+.tile p, .tile li { font-size:29px; line-height:1.42; color:rgba(248,251,255,.75) !important; }
+.tile ul { gap:12px; }
+.table-demo.compact th { font-size:22px; padding:16px 20px; }
+.table-demo.compact td { font-size:24px; padding:16px 20px; }
+.callout {
+  margin-top:28px; max-width: 1260px; padding:30px 38px; border-radius: 22px;
+  background:rgba(93,180,255,.12); border-left: 7px solid var(--accent);
+  font-size:31px; line-height:1.42; color:rgba(248,251,255,.82);
 }
+.mini-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:22px; width:100%; margin-top:30px;
+}
+.mini-card {
+  min-height:220px; border-radius:22px; padding:30px 24px; text-align:center;
+  background:rgba(255,255,255,.075); border:2px solid rgba(115,177,255,.20);
+  display:flex; flex-direction:column; justify-content:center;
+}
+.mini-card strong { font-size:31px; color:var(--foreground); }
+.mini-card span { font-size:23px; margin-top:10px; color:rgba(248,251,255,.66); }
+.mini-card .emoji { font-size:58px; line-height:1; margin-bottom:16px; }
+.relationship {
+  display:flex; align-items:center; justify-content:center; gap:26px; width:100%; margin-top:44px;
+}
+.rel-box {
+  width:420px; min-height:210px; padding:36px; border-radius:26px; text-align:center;
+  background:rgba(255,255,255,.09); border:2px solid rgba(115,177,255,.26);
+}
+.rel-box strong { display:block; font-size:42px; font-family:var(--font-display); color:var(--foreground); }
+.rel-box span { display:block; margin-top:12px; font-size:27px; color:rgba(248,251,255,.7); }
+.rel-line { font-family:var(--font-display); font-size:68px; color:var(--accent); }
+.sql-preview { max-width: 1220px !important; font-size: 28px !important; line-height: 1.46 !important; }
+.slide .wide { max-width: 1320px !important; }
 
-/* JavaScript adds this class only when the computed surface is actually light. */
-.lesson-light-surface,
-.lesson-light-surface :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,td,th,label,small,blockquote,strong,em,code,span) {
-    color: #0f172a !important;
-    text-shadow: none !important;
+.support-text {
+  font-size: 27px;
+  line-height: 1.45;
+  max-width: 1180px;
+  color: rgba(248, 251, 255, 0.70);
+  margin-top: 18px;
 }
-.lesson-light-surface a { color: #1d4ed8 !important; }
-.lesson-light-surface .lesson-dark-surface,
-.lesson-light-surface .lesson-dark-surface :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,td,th,label,small,blockquote,strong,em,code,span) {
-    color: #f8fafc !important;
+.support-text strong { color: var(--foreground); }
+.support-text .highlight { color: var(--accent); font-weight: 800; }
+.micro-note {
+  font-size: 24px;
+  line-height: 1.4;
+  color: rgba(248, 251, 255, 0.58);
+  max-width: 1120px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
 }
-
-@media (max-width: 1024px), (hover: none), (pointer: coarse) {
-    .lesson-slide-controls { display: flex !important; }
-    .keyboard-hint, .nav-dots { display: none !important; }
-
-    /* Mobile must never depend on an observer/animation to expose lesson content. */
-    :root.mobile-show-all-content .reveal,
-    :root.mobile-show-all-content .reveal-left,
-    :root.mobile-show-all-content .reveal-right,
-    :root.mobile-show-all-content .reveal-scale,
-    :root.mobile-show-all-content .reveal-blur,
-    :root.mobile-show-all-content .step {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: none !important;
-        filter: none !important;
-        animation: none !important;
-        transition: none !important;
-    }
-    .slide-viewport {
-        touch-action: pan-x pan-y pinch-zoom !important;
-        -webkit-overflow-scrolling: touch;
-    }
+.explain-strip {
+  max-width: 1220px;
+  margin-top: 24px;
+  padding: 24px 30px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.075);
+  border: 1px solid rgba(115,177,255,.22);
+  color: rgba(248,251,255,.78);
+  font-size: 26px;
+  line-height: 1.42;
 }
 
-@media (max-width: 390px) {
-    .lesson-slide-controls { gap:4px; padding:6px; border-radius:14px; }
-    .lesson-slide-controls button { min-width:36px; min-height:38px; padding:0 7px; font-size:12px; }
-    .lesson-slide-controls__count { min-width:42px; font-size:12px; }
-    .lesson-slide-controls__divider { height:25px; }
+.dense-slide {
+  justify-content: flex-start;
+  gap: 28px;
+}
+.pill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1240px;
+  margin-top: 6px;
+}
+.pill-grid .label-pill {
+  width: 100%;
+  margin: 0;
+  padding: 16px 22px;
+  font-size: 25px;
+  line-height: 1.25;
+  border-radius: 18px;
+}
+@media (max-width: 1100px) {
+  .pill-grid { grid-template-columns: 1fr; }
 }
 
-@media print {
-    .lesson-slide-controls { display:none !important; }
+.deck-controls { opacity:.6; }
+@media (max-width:900px), (max-height:560px){ .deck-controls{opacity:1;} }
+</style>
+
+<style>
+.lesson3-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:32px; width:100%; max-width:1320px; margin-top:22px; }
+.lesson3-grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; width:100%; max-width:1320px; margin-top:22px; }
+.lesson3-card { background:rgba(255,255,255,.075); border:2px solid rgba(115,177,255,.22); border-radius:24px; padding:30px; min-height:230px; box-shadow:0 16px 42px rgba(0,0,0,.16); }
+.lesson3-card h3 { font-size:34px; margin-bottom:12px; color:var(--foreground)!important; }
+.lesson3-card p { font-size:27px; line-height:1.38; color:rgba(248,251,255,.75)!important; margin:0; max-width:100%; }
+.lesson3-card .emoji { font-size:58px; line-height:1; margin-bottom:14px; }
+.compact-list { gap:14px!important; }
+.compact-list li { font-size:31px!important; line-height:1.35!important; padding-top:8px!important; padding-bottom:8px!important; }
+.badge-row { display:flex; flex-wrap:wrap; gap:14px; max-width:1320px; margin-top:18px; }
+.badge-row .label-pill { margin:0; font-size:25px; padding:14px 20px; }
+.process-strip { display:flex; align-items:center; gap:18px; width:100%; max-width:1320px; margin-top:26px; }
+.process-strip .box { flex:1; padding:28px; min-height:170px; border-radius:22px; background:rgba(255,255,255,.08); border:2px solid rgba(115,177,255,.22); text-align:center; }
+.process-strip .box strong { display:block; font-size:32px; color:var(--foreground); margin-bottom:8px; }
+.process-strip .box span { font-size:24px; color:rgba(248,251,255,.68); }
+.process-strip .arrow { color:var(--accent); font-family:var(--font-display); font-size:50px; }
+.table-demo.small th { font-size:20px!important; padding:14px 16px!important; }
+.table-demo.small td { font-size:22px!important; padding:14px 16px!important; }
+@media (max-width: 1100px) { .lesson3-grid-2, .lesson3-grid-3 { grid-template-columns:1fr; } }
+</style>
+
+<style>
+/* Lesson 6 key-specific additions */
+.key-visual {
+  width: 100%;
+  max-width: 1240px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-top: 22px;
+}
+.key-box {
+  min-height: 230px;
+  padding: 34px;
+  border-radius: 26px;
+  background: rgba(255,255,255,.075);
+  border: 2px solid rgba(115,177,255,.24);
+  box-shadow: 0 18px 46px rgba(0,0,0,.14);
+}
+.key-box strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 40px;
+  color: var(--foreground);
+  margin-bottom: 12px;
+}
+.key-box span, .key-box p {
+  font-size: 27px;
+  color: rgba(248,251,255,.72);
+  line-height: 1.42;
+}
+.key-arrow {
+  font-family: var(--font-display);
+  font-size: 68px;
+  color: var(--accent);
+}
+.rule-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 1260px;
+  width: 100%;
+  margin-top: 8px;
+}
+.rule-card {
+  padding: 22px 26px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(115,177,255,.20);
+}
+.rule-card strong {
+  display: block;
+  font-size: 28px;
+  color: var(--foreground);
+  margin-bottom: 6px;
+}
+.rule-card span {
+  display: block;
+  font-size: 23px;
+  line-height: 1.34;
+  color: rgba(248,251,255,.68);
+}
+.badge-row.compact { gap: 12px; align-items: flex-start; }
+.badge-row.compact .label-pill { font-size: 24px; padding: 12px 18px; }
+.table-demo.keys th { font-size: 21px; padding: 14px 16px; }
+.table-demo.keys td { font-size: 22px; padding: 14px 16px; }
+@media (max-width: 1100px) {
+  .key-visual { grid-template-columns: 1fr; }
+  .key-arrow { transform: rotate(90deg); text-align: center; }
+  .rule-list { grid-template-columns: 1fr; }
 }
 </style>
 
 </head>
-<body>
-    <canvas id="particles"></canvas>
-
-    <section class="slide title-slide hero"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1">Week 4 · Session 1</span>
-        <h1 class="reveal d2">Installing WAMP &<br>phpMyAdmin Tour</h1>
-        
-    <p class="reveal d4" style="font-size:22px;color:var(--accent,var(--accent-light));margin-top:20px;">Student Edition - expanded lesson explanations</p></section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Finally!</span>
-        <h2 class="reveal d2">Today We Go Hands-On! 🎉</h2>
-        <p class="reveal d3">Three weeks of theory are done. Today we touch the keyboard and set up our database development environment.</p>
-        <ul>
-            <li class="step">Verify WAMP installation</li>
-            <li class="step">Understand the WAMP tray icon</li>
-            <li class="step">Navigate phpMyAdmin's interface</li>
-            <li class="step">Explore MySQL's built-in databases</li>
-            <li class="step">Run your first SQL command!</li>
-        </ul>
-    </section>
-
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 01</span>
-        <h2 class="reveal d2">WAMP Installation<br>& Verification</h2>
-        <p class="reveal d3">Making sure everything works</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Requirements</span>
-        <h2 class="reveal d2">System Requirements</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Requirement</th><th>Minimum</th><th>Recommended</th></tr></thead>
-            <tbody>
-                <tr><td>Operating System</td><td>Windows 10 (64-bit)</td><td>Windows 11 (64-bit)</td></tr>
-                <tr><td>RAM</td><td>4 GB</td><td>8 GB+</td></tr>
-                <tr><td>Disk Space</td><td>500 MB free</td><td>2 GB free</td></tr>
-                <tr><td>Visual C++</td><td>VC++ 2015-2022 Redistributable</td><td>Latest version</td></tr>
-                <tr><td>Browser</td><td>Any modern browser</td><td>Chrome or Firefox</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Installation Steps</span>
-        <h2 class="reveal d2">How to Install WAMP</h2>
-        <div class="step-row step"><span class="step-number">1</span> Go to <strong>wampserver.com</strong> → Downloads</div>
-        <div class="step-row step"><span class="step-number">2</span> Download <strong>WampServer 64-bit</strong> (latest version)</div>
-        <div class="step-row step"><span class="step-number">3</span> Run installer → Accept License → <strong>Default settings</strong></div>
-        <div class="step-row step"><span class="step-number">4</span> Choose default browser (Chrome recommended)</div>
-        <div class="step-row step"><span class="step-number">5</span> Choose default text editor (Notepad++ or VS Code)</div>
-        <div class="step-row step"><span class="step-number">6</span> Click <strong>Install</strong> → Wait → <strong>Finish</strong></div>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Common Issues</span>
-        <h2 class="reveal d2">Troubleshooting Installation</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
-            <tbody>
-                <tr><td>Missing VCRUNTIME140.dll</td><td>Install Visual C++ Redistributable 2015-2022</td></tr>
-                <tr><td>MSVCR110.dll error</td><td>Install VC++ 2012 Redistributable</td></tr>
-                <tr><td>Apache won't start (port 80 busy)</td><td>Skype or IIS using port 80. Change Apache port to 8080</td></tr>
-                <tr><td>MySQL won't start (port 3306 busy)</td><td>Another MySQL instance running. Kill it in Task Manager</td></tr>
-                <tr><td>Icon stays red/orange</td><td>Right-click → Restart All Services</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Tray Icon</span>
-        <h2 class="reveal d2">The WAMP Tray Icon</h2>
-        <div class="grid-3 reveal d3">
-            <div class="grid-card" style="text-align:center;">
-                <div style="font-size:48px;">🔴</div>
-                <h3 style="color:#c62828;">Red</h3>
-                <p>All services STOPPED. Nothing works.</p>
-            </div>
-            <div class="grid-card" style="text-align:center;">
-                <div style="font-size:48px;">🟠</div>
-                <h3 style="color:#e65100;">Orange</h3>
-                <p>PARTIAL: Some services running, some stopped.</p>
-            </div>
-            <div class="grid-card" style="text-align:center;">
-                <div style="font-size:48px;">🟢</div>
-                <h3 style="color:#2e7d32;">Green</h3>
-                <p>ALL services running! Apache + MySQL = ready.</p>
-            </div>
-        </div>
-        <p class="step" style="margin-top:24px; font-size:26px; color:var(--accent); text-align:center; max-width:100%;"><strong>You need GREEN to work with databases!</strong></p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Verification</span>
-        <h2 class="reveal d2">Verifying WAMP Works</h2>
-        <div class="step-row step"><span class="step-number">1</span> WAMP icon is <strong>GREEN</strong> in taskbar</div>
-        <div class="step-row step"><span class="step-number">2</span> Open browser → type <strong>localhost</strong> → WAMP homepage appears</div>
-        <div class="step-row step"><span class="step-number">3</span> Click <strong>"phpMyAdmin"</strong> link on WAMP page</div>
-        <div class="step-row step"><span class="step-number">4</span> phpMyAdmin loads with login (user: <strong>root</strong>, password: <em>empty</em>)</div>
-        <div class="step-row step"><span class="step-number">5</span> You see the phpMyAdmin dashboard = <strong>SUCCESS! 🎉</strong></div>
-    </section>
-
-    
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">WAMP Menu</span>
-        <h2 class="reveal d2">Right-Click WAMP Menu</h2>
-        <ul>
-            <li class="step"><strong>Start/Stop/Restart All Services</strong> — Control everything</li>
-            <li class="step"><strong>Apache</strong> → httpd.conf (configuration file)</li>
-            <li class="step"><strong>MySQL</strong> → my.ini (configuration), MySQL Console</li>
-            <li class="step"><strong>PHP</strong> → php.ini, version switching</li>
-            <li class="step"><strong>www directory</strong> — Your web files go here (C:\wamp64\www)</li>
-        </ul>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Key URLs</span>
-        <h2 class="reveal d2">Important URLs to Remember</h2>
-        <table class="reveal d3">
-            <thead><tr><th>URL</th><th>What It Shows</th></tr></thead>
-            <tbody>
-                <tr><td><strong>localhost</strong></td><td>WAMP homepage (server info)</td></tr>
-                <tr><td><strong>localhost/phpmyadmin</strong></td><td>phpMyAdmin (database management)</td></tr>
-                <tr><td><strong>localhost:3306</strong></td><td>MySQL port (not accessible via browser)</td></tr>
-            </tbody>
-        </table>
-        <p class="step" style="margin-top:24px; font-size:26px; color:#666;">You'll type "localhost/phpmyadmin" 100+ times this semester. Bookmark it!</p>
-    </section>
-
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 02</span>
-        <h2 class="reveal d2">phpMyAdmin Tour</h2>
-        <p class="reveal d3">Your visual database management tool</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">What is phpMyAdmin</span>
-        <h2 class="reveal d2">phpMyAdmin Overview</h2>
-        <p class="reveal d3">A free, web-based GUI for managing MySQL databases. Written in PHP. Comes bundled with WAMP.</p>
-        <div class="grid-2 step">
-            <div class="grid-card">
-                <h3>What You Can Do</h3>
-                <p>Create/delete databases, create/edit tables, insert/view/edit data, run SQL queries, export/import, manage users</p>
-            </div>
-            <div class="grid-card">
-                <h3>Why We Use It</h3>
-                <p>Visual, beginner-friendly, no command line needed. See results instantly. Great for learning SQL.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">Interface Layout</span>
-        <h2 class="reveal d2">phpMyAdmin Interface</h2>
-        <div class="screenshot-placeholder reveal d3">
-            <p>📸 phpMyAdmin Main Interface</p>
-            <p style="font-size:16px; opacity:0.7;">[Demonstrate live on projector]</p>
-        </div>
-        <ul style="margin-top:16px;">
-            <li class="step"><strong>Left Panel:</strong> Database & table list (navigation tree)</li>
-            <li class="step"><strong>Top Tabs:</strong> Structure, SQL, Search, Query, Export, Import, Operations</li>
-            <li class="step"><strong>Main Area:</strong> Content display, query results, forms</li>
-        </ul>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">Left Panel</span>
-        <h2 class="reveal d2">Navigation Panel (Left Side)</h2>
-        <div class="code-block reveal d3" style="font-size:22px;">
-            <span class="comment">📂 Databases visible in left panel:</span><br><br>
-            ├── <span class="keyword">information_schema</span> <span class="comment">← metadata (don't touch)</span><br>
-            ├── <span class="keyword">mysql</span> <span class="comment">← user accounts (don't touch)</span><br>
-            ├── <span class="keyword">performance_schema</span> <span class="comment">← monitoring (don't touch)</span><br>
-            ├── <span class="keyword">phpmyadmin</span> <span class="comment">← phpMyAdmin's own config</span><br>
-            ├── <span class="keyword">sys</span> <span class="comment">← system views</span><br>
-            └── <span class="string">school_db</span> <span class="comment">← YOUR database (we'll create this!)</span>
-        </div>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">Top Tabs</span>
-        <h2 class="reveal d2">phpMyAdmin Tab Bar</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Tab</th><th>Function</th><th>When You Use It</th></tr></thead>
-            <tbody>
-                <tr><td><strong>Structure</strong></td><td>View/edit table columns</td><td>Designing tables</td></tr>
-                <tr><td><strong>SQL</strong></td><td>Write & run SQL queries</td><td>Every session!</td></tr>
-                <tr><td><strong>Search</strong></td><td>Visual search builder</td><td>Finding specific data</td></tr>
-                <tr><td><strong>Insert</strong></td><td>Add new rows via form</td><td>Adding data visually</td></tr>
-                <tr><td><strong>Export</strong></td><td>Download database as file</td><td>Backup & sharing</td></tr>
-                <tr><td><strong>Import</strong></td><td>Upload SQL/CSV files</td><td>Restoring data</td></tr>
-                <tr><td><strong>Operations</strong></td><td>Rename, copy, delete DB</td><td>Database management</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">SQL Tab</span>
-        <h2 class="reveal d2">The SQL Tab (Your Best Friend)</h2>
-        <p class="reveal d3">The SQL tab gives you a text box to type and execute any SQL command. Results appear below.</p>
-        <div class="screenshot-placeholder step">
-            <p>📸 SQL Tab with Query Box</p>
-            <p style="font-size:16px; opacity:0.7;">Type SQL → Click "Go" → See results</p>
-        </div>
-        <p class="step" style="margin-top:16px; font-size:26px; color:var(--accent);"><strong>Pro tip:</strong> Use Ctrl+Enter to run queries quickly instead of clicking "Go".</p>
-    </section>
-
-    
-
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 03</span>
-        <h2 class="reveal d2">Creating Your<br>First Database</h2>
-        <p class="reveal d3">Let's build something!</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Method 1: GUI</span>
-        <h2 class="reveal d2">Create Database (GUI Method)</h2>
-        <div class="step-row step"><span class="step-number">1</span> Click <strong>"New"</strong> in left panel (or "Databases" tab)</div>
-        <div class="step-row step"><span class="step-number">2</span> Type database name: <strong>school_db</strong></div>
-        <div class="step-row step"><span class="step-number">3</span> Select collation: <strong>utf8mb4_general_ci</strong></div>
-        <div class="step-row step"><span class="step-number">4</span> Click <strong>"Create"</strong></div>
-        <div class="step-row step"><span class="step-number">5</span> New database appears in left panel! ✅</div>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Method 2: SQL</span>
-        <h2 class="reveal d2">Create Database (SQL Method)</h2>
-        <div class="code-block reveal d3">
-            <span class="comment">-- Create a new database</span><br>
-            <span class="keyword">CREATE DATABASE</span> school_db<br>
-            <span class="keyword">CHARACTER SET</span> utf8mb4<br>
-            <span class="keyword">COLLATE</span> utf8mb4_general_ci;<br><br>
-            <span class="comment">-- Select it for use</span><br>
-            <span class="keyword">USE</span> school_db;
-        </div>
-        <ul style="margin-top:16px;">
-            <li class="step"><strong>utf8mb4:</strong> Supports all characters including emoji 🎉</li>
-            <li class="step"><strong>general_ci:</strong> Case-insensitive comparisons (A = a)</li>
-        </ul>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Naming Rules</span>
-        <h2 class="reveal d2">Database Naming Conventions</h2>
-        <ul>
-            <li class="step"><strong>Lowercase only:</strong> school_db (not School_DB)</li>
-            <li class="step"><strong>Underscores for spaces:</strong> student_records (not "student records")</li>
-            <li class="step"><strong>No special characters:</strong> Letters, numbers, underscores only</li>
-            <li class="step"><strong>Meaningful names:</strong> enrollment_system (not "db1" or "test")</li>
-            <li class="step"><strong>No reserved words:</strong> Don't name it "database" or "select"</li>
-        </ul>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Useful Commands</span>
-        <h2 class="reveal d2">Essential Database Commands</h2>
-        <div class="code-block reveal d3" style="font-size:22px;">
-            <span class="comment">-- Show all databases</span><br>
-            <span class="keyword">SHOW DATABASES</span>;<br><br>
-            <span class="comment">-- Select a database to work with</span><br>
-            <span class="keyword">USE</span> school_db;<br><br>
-            <span class="comment">-- Show tables in current database</span><br>
-            <span class="keyword">SHOW TABLES</span>;<br><br>
-            <span class="comment">-- Delete a database (CAREFUL!)</span><br>
-            <span class="keyword">DROP DATABASE</span> school_db;<br><br>
-            <span class="comment">-- Show current database</span><br>
-            <span class="keyword">SELECT DATABASE</span>();
-        </div>
-    </section>
-
-    
-
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 04</span>
-        <h2 class="reveal d2">Exploring phpMyAdmin<br>Features</h2>
-        <p class="reveal d3">What else can this tool do?</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Server Info</span>
-        <h2 class="reveal d2">Server Information Page</h2>
-        <p class="reveal d3">Click the phpMyAdmin logo (top-left) to see server details:</p>
-        <ul>
-            <li class="step"><strong>Server:</strong> MySQL version (e.g., 8.0.31)</li>
-            <li class="step"><strong>Protocol:</strong> TCP/IP on port 3306</li>
-            <li class="step"><strong>User:</strong> root@localhost (no password)</li>
-            <li class="step"><strong>Server charset:</strong> utf8mb4</li>
-            <li class="step"><strong>Web server:</strong> Apache version</li>
-        </ul>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">User Accounts</span>
-        <h2 class="reveal d2">User Accounts Tab</h2>
-        <p class="reveal d3">Click "User accounts" (top menu) to see who can access MySQL:</p>
-        <table class="step">
-            <thead><tr><th>User</th><th>Host</th><th>Password</th><th>Privileges</th></tr></thead>
-            <tbody>
-                <tr><td><strong>root</strong></td><td>localhost</td><td>No</td><td>ALL (god mode)</td></tr>
-                <tr><td>root</td><td>127.0.0.1</td><td>No</td><td>ALL</td></tr>
-                <tr><td>root</td><td>::1</td><td>No</td><td>ALL</td></tr>
-            </tbody>
-        </table>
-        <p class="step" style="margin-top:16px; font-size:24px; color:#c62828;"><strong>⚠️ Security note:</strong> Root with no password is fine for LOCAL development. NEVER in production!</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Variables</span>
-        <h2 class="reveal d2">MySQL Server Variables</h2>
-        <div class="code-block reveal d3" style="font-size:22px;">
-            <span class="comment">-- Check MySQL version</span><br>
-            <span class="keyword">SELECT VERSION</span>();<br><br>
-            <span class="comment">-- Check current user</span><br>
-            <span class="keyword">SELECT USER</span>();<br><br>
-            <span class="comment">-- Check current date/time</span><br>
-            <span class="keyword">SELECT NOW</span>();<br><br>
-            <span class="comment">-- Show all server variables</span><br>
-            <span class="keyword">SHOW VARIABLES LIKE</span> <span class="string">'%version%'</span>;
-        </div>
-        <p class="step" style="margin-top:16px; font-size:24px; color:#666;">Try running these in the SQL tab! They're simple queries that return server information.</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Export/Import</span>
-        <h2 class="reveal d2">Export & Import (Backup)</h2>
-        <div class="grid-2 reveal d3">
-            <div class="grid-card">
-                <h3>📤 Export (Backup)</h3>
-                <p>Click "Export" → Format: SQL → Go. Downloads a .sql file containing all your CREATE TABLE and INSERT statements.</p>
-            </div>
-            <div class="grid-card">
-                <h3>📥 Import (Restore)</h3>
-                <p>Click "Import" → Choose .sql file → Go. Recreates the entire database from the file. Great for sharing.</p>
-            </div>
-        </div>
-        <p class="step" style="margin-top:16px; font-size:26px; color:var(--accent);"><strong>Always export before making risky changes!</strong> It's your undo button.</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">First SQL</span>
-        <h2 class="reveal d2">Your First SQL Queries! 🎉</h2>
-        <div class="code-block reveal d3" style="font-size:22px;">
-            <span class="comment">-- Try these in the SQL tab:</span><br><br>
-            <span class="keyword">SELECT</span> <span class="string">'Hello, Database World!'</span>;<br><br>
-            <span class="keyword">SELECT</span> 2 + 2 <span class="keyword">AS</span> result;<br><br>
-            <span class="keyword">SELECT NOW</span>() <span class="keyword">AS</span> current_time;<br><br>
-            <span class="keyword">SELECT VERSION</span>() <span class="keyword">AS</span> mysql_version;<br><br>
-            <span class="keyword">SELECT</span> <span class="string">'Maria'</span> <span class="keyword">AS</span> name, <span class="string">'BSIS'</span> <span class="keyword">AS</span> course, 1.50 <span class="keyword">AS</span> gpa;
-        </div>
-    </section>
-
-    
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Keyboard Shortcuts</span>
-        <h2 class="reveal d2">phpMyAdmin Shortcuts</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
-            <tbody>
-                <tr><td><strong>Ctrl + Enter</strong></td><td>Execute SQL query</td></tr>
-                <tr><td><strong>Ctrl + L</strong></td><td>Clear SQL query box</td></tr>
-                <tr><td><strong>Ctrl + /</strong></td><td>Comment/uncomment selection</td></tr>
-                <tr><td><strong>Tab</strong></td><td>Auto-indent</td></tr>
-            </tbody>
-        </table>
-        <p class="step" style="margin-top:24px; font-size:26px; color:var(--accent);"><strong>Ctrl+Enter is your new best friend.</strong> Faster than clicking "Go" every time.</p>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Settings</span>
-        <h2 class="reveal d2">Recommended phpMyAdmin Settings</h2>
-        <ul>
-            <li class="step"><strong>Appearance:</strong> Settings → Features → Show "SQL" tab always</li>
-            <li class="step"><strong>Rows per page:</strong> Set to 50 or 100 (default 25 is too few)</li>
-            <li class="step"><strong>SQL editor:</strong> Enable syntax highlighting</li>
-            <li class="step"><strong>Confirm drops:</strong> Keep enabled (prevents accidental deletes)</li>
-        </ul>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Recap</span>
-        <h2 class="reveal d2">Today's Key Takeaways</h2>
-        <ul>
-            <li class="step">✅ WAMP installed and GREEN = ready to work</li>
-            <li class="step">✅ localhost/phpmyadmin = your database workspace</li>
-            <li class="step">✅ Created "school_db" database</li>
-            <li class="step">✅ Navigated phpMyAdmin: left panel, tabs, SQL editor</li>
-            <li class="step">✅ Ran first SQL queries (SELECT, SHOW DATABASES)</li>
-        </ul>
-    </section>
-
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Next Session</span>
-        <h2 class="reveal d2">Next: Creating Tables!</h2>
-        <p class="reveal d3">In Session 2, we'll create our first REAL tables:</p>
-        <ul>
-            <li class="step">CREATE TABLE with all data types</li>
-            <li class="step">Adding constraints (PK, FK, UNIQUE, NOT NULL)</li>
-            <li class="step">INSERT your first data records</li>
-            <li class="step">SELECT to view your data</li>
-        </ul>
-    </section>
-
-    
-
-    
-
-<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Concept Model</span><h2 class="reveal d2">How Installing WAMP &amp; Touring phpMyAdmin fits together</h2><div class="db-concept-grid reveal d3"><div class="db-concept-card"><h3>WAMP stack</h3><p>Windows, Apache, MySQL or MariaDB, and PHP running as one local environment.</p></div><div class="db-concept-card"><h3>phpMyAdmin</h3><p>A browser interface for database objects, data, SQL, users, import, and export.</p></div><div class="db-concept-card"><h3>Server state</h3><p>Services must be running and listening before the interface can connect.</p></div></div></section>
-<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">System View</span><h2 class="reveal d2">Trace the logic from start to finish</h2><div class="db-flow reveal d3"><div class="db-flow-step">Start services</div><div class="db-flow-step">Open localhost</div><div class="db-flow-step">Select server/database</div><div class="db-flow-step">Inspect or run SQL</div></div><div class="db-compare reveal d4"><div><strong>Common failure</strong><p>Changing random ports or reinstalling immediately can hide the original service conflict.</p></div><div><strong>Better approach</strong><p>Check service status, ports, logs, and the exact error before changing configuration.</p></div></div></section>
-<!-- DB OFFICIAL REFERENCE: W04S01 -->
-<section class="slide db-reference-slide" data-db-reference="w04s01"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Official Reference</span><h2 class="reveal d2">MySQL administration on the web</h2><div class="db-reference-layout reveal d3"><div class="db-reference-copy"><h3>What to notice</h3><ul><li><strong>WAMP stack:</strong> Windows, Apache, MySQL or MariaDB, and PHP running as one local environment.</li><li><strong>phpMyAdmin:</strong> A browser interface for database objects, data, SQL, users, import, and export.</li><li><strong>Server state:</strong> Services must be running and listening before the interface can connect.</li></ul><p style="font-size:18px;line-height:1.45;color:var(--muted-foreground,var(--muted));">Use the labels, syntax, and navigation shown here to connect the lesson to the actual database tool or documentation.</p></div><div class="db-reference-frame"><img src="assets/student-visuals/w04s01-reference.png" alt="Official phpMyAdmin reference for Installing WAMP &amp; Touring phpMyAdmin"><div class="db-reference-caption">phpMyAdmin · MySQL administration on the web</div></div></div></section>
-<section class="slide end-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <h1 class="reveal d1">You're a Database<br>Developer Now! 💻</h1>
-        <p class="reveal d2">Week 4 · Session 1 Complete<br>Next: Creating Your First Database & Tables</p>
-    </section>
-
-    
+<body data-nav="hidden">
 
 
-
-
-
-
-
-<div class="image-lightbox" data-image-lightbox aria-hidden="true"><button class="image-lightbox__close" type="button" aria-label="Close fullscreen image">×</button><figure class="image-lightbox__figure"><img class="image-lightbox__image" alt=""><figcaption class="image-lightbox__caption"></figcaption></figure></div>
-<script data-image-lightbox-script>
-(()=>{const box=document.querySelector('[data-image-lightbox]');if(!box)return;const full=box.querySelector('.image-lightbox__image'),cap=box.querySelector('.image-lightbox__caption'),close=box.querySelector('.image-lightbox__close');let previous=null;const hide=()=>{box.classList.remove('is-open');box.setAttribute('aria-hidden','true');document.body.classList.remove('image-lightbox-open');if(previous)previous.focus();};const show=img=>{previous=img;full.src=img.currentSrc||img.src;full.alt=img.alt||'';cap.textContent=img.alt||'';box.classList.add('is-open');box.setAttribute('aria-hidden','false');document.body.classList.add('image-lightbox-open');close.focus();};document.querySelectorAll('.slide img').forEach(img=>{img.setAttribute('data-lightbox-ready','');img.setAttribute('role','button');img.setAttribute('tabindex','0');img.setAttribute('aria-label','Open image fullscreen: '+(img.alt||'presentation image'));img.addEventListener('click',()=>show(img));img.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(img);}});});close.addEventListener('click',hide);box.addEventListener('click',e=>{if(e.target===box)hide();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('is-open'))hide();});})();
-</script>
-
-
-
-<script id="lesson-mobile-accessibility-script">
+<section class="slide slide-dark">
+<span class="section-number" style="color: rgba(93,180,255,.16);">07</span>
+<span class="eyebrow reveal d1">Fundamentals of Database Systems</span>
+<h1 class="reveal d2" style="font-size:90px;">Foreign Keys &<br/>Referential Integrity</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">How tables connect safely using IDs and rules.</p>
+<div class="lesson-badge reveal d4" style="margin-top:26px;">Lesson 7 · Students + Courses relationship</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">01</span>
+<span class="eyebrow reveal d1">Learning Targets</span>
+<h2 class="reveal d2">By the end, you can...</h2>
+<p class="support-text reveal d3 wide">Today we move from identifying one table to connecting two tables correctly. This is where database design starts to feel real.</p><ul>
+<li class="step">Explain what a foreign key is using simple words.</li>
+<li class="step">Identify parent and child tables in a relationship.</li>
+<li class="step">Explain why referential integrity prevents invalid records.</li>
+<li class="step">Write a simple foreign key in SQL.</li>
+<li class="step">Use students and courses as our main example.</li>
+</ul>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">02</span>
+<span class="eyebrow reveal d1">Warm-up Review</span>
+<h2 class="reveal d2">What Did We Learn About Keys?</h2>
+<div class="question-card reveal d3">A primary key uniquely identifies one record in a table.</div><ul>
+<li class="step">What key can identify one student record?</li>
+<li class="step">Why should two students not share the same student_id?</li>
+<li class="step">Why is student_number usually unique?</li>
+</ul>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">03</span>
+<span class="eyebrow reveal d1">Recall</span>
+<h2 class="reveal d2">Primary Key = Unique ID</h2>
+<p class="support-text reveal d3 wide">Before learning foreign keys, remember the primary key first. It is the ID that makes one row different from all other rows.</p><div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">courses</span> (<br>&nbsp;&nbsp;<span class="field">course_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">course_code</span> <span class="keyword">VARCHAR</span>(<span class="num">20</span>)<br>);</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">04</span>
+<span class="eyebrow reveal d1">Big Idea</span>
+<h2 class="reveal d2">Tables Should Not Live Alone</h2>
+<div class="big-question reveal d3">In real systems, information is connected.</div><p class="support-text reveal d4 wide">A student belongs to a course. A grade belongs to a student. A payment belongs to an account. These connections are represented using keys.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">05</span>
+<span class="eyebrow reveal d1">Analogy</span>
+<h2 class="reveal d2">Foreign Key = A Reference Number</h2>
+<div class="duo reveal d3"><div class="tile"><h3>Course Table</h3><p>Stores the official course list.</p></div><div class="tile"><h3>Student Table</h3><p>Stores students and the course they belong to.</p></div></div><p class="support-text reveal d4 wide">Instead of typing the course name repeatedly, the student record stores the course ID.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">06</span>
+<span class="eyebrow reveal d1">Simple Definition</span>
+<h2 class="reveal d2">What Is a Foreign Key?</h2>
+<div class="question-card reveal d3">A foreign key is a column that points to the primary key of another table.</div><p class="support-text reveal d4 wide">Simple version: it is a connector. It tells the database that a value in one table must match a valid record in another table.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">07</span>
+<span class="eyebrow reveal d1">Relationship View</span>
+<h2 class="reveal d2">Parent Table and Child Table</h2>
+<div class="relationship reveal d3"><div class="rel-box"><strong>courses</strong><span>Parent table</span></div><div class="rel-line">→</div><div class="rel-box"><strong>students</strong><span>Child table</span></div></div><p class="support-text reveal d4 wide">The parent table contains the main list. The child table depends on that list.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">08</span>
+<span class="eyebrow reveal d1">Parent Table</span>
+<h2 class="reveal d2">Courses Table</h2>
+<p class="support-text reveal d3 wide">The courses table is the parent table because its course_id will be referenced by students.</p><div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">courses</span> (<br>&nbsp;&nbsp;<span class="field">course_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">course_code</span> <span class="keyword">VARCHAR</span>(<span class="num">20</span>) <span class="keyword">NOT NULL UNIQUE</span>,<br>&nbsp;&nbsp;<span class="field">course_name</span> <span class="keyword">VARCHAR</span>(<span class="num">100</span>) <span class="keyword">NOT NULL</span><br>);</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">09</span>
+<span class="eyebrow reveal d1">Child Table</span>
+<h2 class="reveal d2">Students Table</h2>
+<p class="support-text reveal d3 wide">The students table is the child table because each student must choose a valid course from the courses table.</p><div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">students</span> (<br>&nbsp;&nbsp;<span class="field">student_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">student_number</span> <span class="keyword">VARCHAR</span>(<span class="num">20</span>) <span class="keyword">NOT NULL UNIQUE</span>,<br>&nbsp;&nbsp;<span class="field">last_name</span> <span class="keyword">VARCHAR</span>(<span class="num">50</span>) <span class="keyword">NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">first_name</span> <span class="keyword">VARCHAR</span>(<span class="num">50</span>) <span class="keyword">NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">course_id</span> <span class="keyword">INT NOT NULL</span><br>);</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">10</span>
+<span class="eyebrow reveal d1">Key Connection</span>
+<h2 class="reveal d2">course_id Appears in Both Tables</h2>
+<table class="table-demo compact reveal d3"><tr><th>courses.course_id</th><th>courses.course_code</th></tr><tr><td>1</td><td>BSIS</td></tr><tr><td>2</td><td>BSAIS</td></tr></table><table class="table-demo compact reveal d4"><tr><th>students.student_number</th><th>students.first_name</th><th>students.course_id</th></tr><tr><td>2026-001</td><td>Ana</td><td>1</td></tr><tr><td>2026-002</td><td>Ben</td><td>2</td></tr></table>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">11</span>
+<span class="eyebrow reveal d1">Interpretation</span>
+<h2 class="reveal d2">What Does course_id = 1 Mean?</h2>
+<div class="question-card reveal d3">If Ana has course_id = 1, look for course_id 1 in the courses table.</div><p class="support-text reveal d4 wide">The database does not need to repeat the full course name inside the students table. It can connect to the course record.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">12</span>
+<span class="eyebrow reveal d1">Why Not Store Course Name Directly?</span>
+<h2 class="reveal d2">The Repetition Problem</h2>
+<div class="duo reveal d3"><div class="tile"><h3>Without relationship</h3><p>BSIS, B.S.I.S., BS Info Systems, Information System</p></div><div class="tile"><h3>With relationship</h3><p>Store only course_id and get the official course details from courses.</p></div></div><p class="support-text reveal d4 wide">A foreign key helps keep values consistent and easier to update.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">13</span>
+<span class="eyebrow reveal d1">Vocabulary</span>
+<h2 class="reveal d2">Foreign Key Words to Remember</h2>
+<div class="pill-grid reveal d3"><div class="label-pill">Primary key: unique ID in parent table</div><div class="label-pill">Foreign key: reference in child table</div><div class="label-pill">Parent table: table being referenced</div><div class="label-pill">Child table: table containing the reference</div></div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">14</span>
+<span class="eyebrow reveal d1">Rule</span>
+<h2 class="reveal d2">The Foreign Key Must Match</h2>
+<div class="big-question reveal d3">A student cannot reference a course that does not exist.</div><p class="support-text reveal d4 wide">If courses only have IDs 1, 2, and 3, the students table should not accept course_id 99.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">15</span>
+<span class="eyebrow reveal d1">Referential Integrity</span>
+<h2 class="reveal d2">What Is Referential Integrity?</h2>
+<div class="question-card reveal d3">Referential integrity means relationships between tables stay valid and consistent.</div><p class="support-text reveal d4 wide">It protects the database from broken links, like a student record pointing to a non-existing course.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">16</span>
+<span class="eyebrow reveal d1">Broken Link Example</span>
+<h2 class="reveal d2">Invalid Student Course</h2>
+<table class="table-demo compact reveal d3"><tr><th>courses.course_id</th><th>course_code</th></tr><tr><td>1</td><td>BSIS</td></tr><tr><td>2</td><td>BSAIS</td></tr></table><table class="table-demo compact reveal d4"><tr><th>student_number</th><th>first_name</th><th>course_id</th></tr><tr><td>2026-003</td><td>Carlos</td><td>99</td></tr></table><div class="callout reveal d5">Problem: course_id 99 does not exist.</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">17</span>
+<span class="eyebrow reveal d1">SQL Syntax</span>
+<h2 class="reveal d2">Adding a Foreign Key Constraint</h2>
+<p class="support-text reveal d3 wide">A constraint is a database rule. This rule says: students.course_id must match courses.course_id.</p><div class="code-block code-small reveal d3"><span class="keyword">CONSTRAINT</span> <span class="table-name">fk_student_course</span><br>&nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (<span class="field">course_id</span>)<br>&nbsp;&nbsp;<span class="keyword">REFERENCES</span> <span class="table-name">courses</span>(<span class="field">course_id</span>)</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">18</span>
+<span class="eyebrow reveal d1">Complete Example</span>
+<h2 class="reveal d2">Students Table with Foreign Key</h2>
+<div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">students</span> (<br>&nbsp;&nbsp;<span class="field">student_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">student_number</span> <span class="keyword">VARCHAR</span>(<span class="num">20</span>) <span class="keyword">NOT NULL UNIQUE</span>,<br>&nbsp;&nbsp;<span class="field">last_name</span> <span class="keyword">VARCHAR</span>(<span class="num">50</span>) <span class="keyword">NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">first_name</span> <span class="keyword">VARCHAR</span>(<span class="num">50</span>) <span class="keyword">NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">course_id</span> <span class="keyword">INT NOT NULL</span>,<br><br>&nbsp;&nbsp;<span class="keyword">CONSTRAINT</span> <span class="table-name">fk_student_course</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (<span class="field">course_id</span>)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">REFERENCES</span> <span class="table-name">courses</span>(<span class="field">course_id</span>)<br>);</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">19</span>
+<span class="eyebrow reveal d1">Important Order</span>
+<h2 class="reveal d2">Create Parent Table First</h2>
+<div class="flow-row reveal d3"><div class="flow-box"><strong>1</strong><span>Create courses</span></div><div class="flow-box"><strong>2</strong><span>Create students</span></div><div class="flow-box"><strong>3</strong><span>Insert courses</span></div><div class="flow-box"><strong>4</strong><span>Insert students</span></div></div><p class="support-text reveal d4 wide">The parent table must exist before the child table can reference it.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">20</span>
+<span class="eyebrow reveal d1">Insert Parent Records</span>
+<h2 class="reveal d2">Add Courses First</h2>
+<div class="code-block code-small reveal d3"><span class="keyword">INSERT INTO</span> <span class="table-name">courses</span> (<span class="field">course_code</span>, <span class="field">course_name</span>)<br><span class="keyword">VALUES</span><br>&nbsp;&nbsp;(<span class="string">'BSIS'</span>, <span class="string">'Bachelor of Science in Information Systems'</span>),<br>&nbsp;&nbsp;(<span class="string">'BSAIS'</span>, <span class="string">'Bachelor of Science in Accounting Information Systems'</span>);</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">21</span>
+<span class="eyebrow reveal d1">Insert Child Records</span>
+<h2 class="reveal d2">Then Add Students</h2>
+<div class="code-block code-small reveal d3"><span class="keyword">INSERT INTO</span> <span class="table-name">students</span> (<br>&nbsp;&nbsp;<span class="field">student_number</span>, <span class="field">last_name</span>, <span class="field">first_name</span>, <span class="field">course_id</span><br>)<br><span class="keyword">VALUES</span> (<span class="string">'2026-001'</span>, <span class="string">'Cruz'</span>, <span class="string">'Ana'</span>, <span class="num">1</span>);</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">22</span>
+<span class="eyebrow reveal d1">Try an Invalid Insert</span>
+<h2 class="reveal d2">What Will Happen?</h2>
+<div class="code-block code-small reveal d3"><span class="comment">-- course_id 99 does not exist</span><br><span class="keyword">INSERT INTO</span> <span class="table-name">students</span> (<br>&nbsp;&nbsp;<span class="field">student_number</span>, <span class="field">last_name</span>, <span class="field">first_name</span>, <span class="field">course_id</span><br>)<br><span class="keyword">VALUES</span> (<span class="string">'2026-002'</span>, <span class="string">'Santos'</span>, <span class="string">'Ben'</span>, <span class="num">99</span>);</div><div class="callout reveal d4">The database should reject this record.</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">23</span>
+<span class="eyebrow reveal d1">Common Error Message</span>
+<h2 class="reveal d2">Cannot Add or Update Child Row</h2>
+<div class="error-block reveal d3"><code>Cannot add or update a child row: a foreign key constraint fails</code></div><p class="support-text reveal d4 wide">This error usually means the foreign key value you inserted does not exist in the parent table.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">24</span>
+<span class="eyebrow reveal d1">Delete Protection</span>
+<h2 class="reveal d2">Can We Delete a Used Course?</h2>
+<div class="big-question reveal d3">If students are already assigned to BSIS, should we delete the BSIS course record?</div><p class="support-text reveal d4 wide">Referential integrity may block deletion because deleting the parent record would break existing student records.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">25</span>
+<span class="eyebrow reveal d1">Common Error Message</span>
+<h2 class="reveal d2">Cannot Delete Parent Row</h2>
+<div class="error-block reveal d3"><code>Cannot delete or update a parent row: a foreign key constraint fails</code></div><p class="support-text reveal d4 wide">This means another table is still using that record. Check the child table first.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">26</span>
+<span class="eyebrow reveal d1">Real-Life Analogy</span>
+<h2 class="reveal d2">Enrollment Form Analogy</h2>
+<div class="duo reveal d3"><div class="tile"><h3>Approved course list</h3><p>The school has an official course list.</p></div><div class="tile"><h3>Enrollment form</h3><p>The student must choose from the official list, not invent a course.</p></div></div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">27</span>
+<span class="eyebrow reveal d1">Application Connection</span>
+<h2 class="reveal d2">Future Java CRUD App</h2>
+<div class="question-card reveal d3">The course dropdown in Java will come from the courses table.</div><p class="support-text reveal d4 wide">Students will see course names in the combo box, but the database will save the course_id behind the scenes.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">28</span>
+<span class="eyebrow reveal d1">JComboBox Preview</span>
+<h2 class="reveal d2">What the User Sees vs What DB Saves</h2>
+<div class="duo reveal d3"><div class="tile"><h3>User sees</h3><p>BSIS - Bachelor of Science in Information Systems</p></div><div class="tile"><h3>Database saves</h3><p>course_id = 1</p></div></div><p class="support-text reveal d4 wide">This is a practical use of foreign keys in applications.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">29</span>
+<span class="eyebrow reveal d1">Join Preview</span>
+<h2 class="reveal d2">How to Display the Course Name</h2>
+<p class="support-text reveal d3 wide">Because students only store course_id, we use a join to display the course code and course name.</p><div class="code-block code-small reveal d3"><span class="keyword">SELECT</span><br>&nbsp;&nbsp;<span class="table-name">students</span>.<span class="field">student_number</span>,<br>&nbsp;&nbsp;<span class="table-name">students</span>.<span class="field">first_name</span>,<br>&nbsp;&nbsp;<span class="table-name">courses</span>.<span class="field">course_code</span><br><span class="keyword">FROM</span> <span class="table-name">students</span><br><span class="keyword">INNER JOIN</span> <span class="table-name">courses</span><br>&nbsp;&nbsp;<span class="keyword">ON</span> <span class="table-name">students</span>.<span class="field">course_id</span> = <span class="table-name">courses</span>.<span class="field">course_id</span>;</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">30</span>
+<span class="eyebrow reveal d1">Step-by-Step Reading</span>
+<h2 class="reveal d2">How the Join Works</h2>
+<div class="flow-row reveal d3"><div class="flow-box"><strong>1</strong><span>Start with students</span></div><div class="flow-box"><strong>2</strong><span>Read course_id</span></div><div class="flow-box"><strong>3</strong><span>Match to courses</span></div><div class="flow-box"><strong>4</strong><span>Show course_code</span></div></div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">31</span>
+<span class="eyebrow reveal d1">Check Understanding</span>
+<h2 class="reveal d2">Point to the Foreign Key</h2>
+<table class="table-demo compact reveal d3"><tr><th>student_id</th><th>student_number</th><th>first_name</th><th>course_id</th></tr><tr><td>1</td><td>2026-001</td><td>Ana</td><td>1</td></tr></table><ul>
+<li class="step">Which column is the foreign key?</li>
+<li class="step">Which table should it connect to?</li>
+<li class="step">What primary key should it match?</li>
+</ul>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">32</span>
+<span class="eyebrow reveal d1">Guided Practice</span>
+<h2 class="reveal d2">Identify Parent and Child</h2>
+<div class="pill-grid reveal d3"><div class="label-pill">departments → employees</div><div class="label-pill">customers → orders</div><div class="label-pill">authors → books</div><div class="label-pill">courses → students</div></div><p class="support-text reveal d4 wide">For each pair, identify the parent table and the child table.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">33</span>
+<span class="eyebrow reveal d1">Guided Practice</span>
+<h2 class="reveal d2">Predict Allowed or Rejected</h2>
+<table class="table-demo compact reveal d3"><tr><th>Existing course_id</th><th>Insert student course_id</th><th>Result?</th></tr><tr><td>1, 2, 3</td><td>2</td><td>Allowed</td></tr><tr><td>1, 2, 3</td><td>9</td><td>Rejected</td></tr><tr><td>1, 2, 3</td><td>1</td><td>Allowed</td></tr></table>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">34</span>
+<span class="eyebrow reveal d1">Common Mistake 1</span>
+<h2 class="reveal d2">Different Data Types</h2>
+<div class="duo reveal d3"><div class="tile"><h3>Wrong</h3><p>courses.course_id is INT but students.course_id is VARCHAR.</p></div><div class="tile"><h3>Better</h3><p>Both course_id columns should use compatible data types.</p></div></div><p class="support-text reveal d4 wide">Foreign key columns should match the referenced primary key type.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">35</span>
+<span class="eyebrow reveal d1">Common Mistake 2</span>
+<h2 class="reveal d2">Creating Tables in Wrong Order</h2>
+<div class="error-block reveal d3"><code>Cannot add foreign key constraint</code></div><p class="support-text reveal d4 wide">This can happen when the parent table does not exist yet, the referenced column is not indexed, or the data types do not match.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">36</span>
+<span class="eyebrow reveal d1">Common Mistake 3</span>
+<h2 class="reveal d2">Inserting Child Before Parent</h2>
+<div class="question-card reveal d3">You must add the course before assigning a student to that course.</div><p class="support-text reveal d4 wide">The database checks the parent table first. If the referenced course is not there, the student record is rejected.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">37</span>
+<span class="eyebrow reveal d1">Debugging Routine</span>
+<h2 class="reveal d2">When Foreign Keys Fail</h2>
+<div class="flow-row reveal d3"><div class="flow-box"><strong>1</strong><span>Check table names</span></div><div class="flow-box"><strong>2</strong><span>Check column names</span></div><div class="flow-box"><strong>3</strong><span>Check data types</span></div><div class="flow-box"><strong>4</strong><span>Check parent record</span></div></div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">38</span>
+<span class="eyebrow reveal d1">Independent Exercise</span>
+<h2 class="reveal d2">Design the Connection</h2>
+<div class="big-question reveal d3">Create a relationship between departments and employees.</div><ul>
+<li class="step">Which table is the parent?</li>
+<li class="step">Which table is the child?</li>
+<li class="step">What is the primary key?</li>
+<li class="step">What is the foreign key?</li>
+</ul>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">39</span>
+<span class="eyebrow reveal d1">Mini SQL Challenge</span>
+<h2 class="reveal d2">Complete the Missing Line</h2>
+<div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">employees</span> (<br>&nbsp;&nbsp;<span class="field">employee_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">full_name</span> <span class="keyword">VARCHAR</span>(<span class="num">100</span>) <span class="keyword">NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">department_id</span> <span class="keyword">INT NOT NULL</span>,<br>&nbsp;&nbsp;<span class="comment">-- Add the FOREIGN KEY line here</span><br>);</div><p class="support-text reveal d4 wide">Students should write the foreign key constraint that points to departments(department_id).</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">40</span>
+<span class="eyebrow reveal d1">Lesson Summary</span>
+<h2 class="reveal d2">What We Learned</h2>
+<ul>
+<li class="step">A foreign key connects one table to another table.</li>
+<li class="step">The parent table contains the referenced primary key.</li>
+<li class="step">The child table contains the foreign key.</li>
+<li class="step">Referential integrity prevents invalid links.</li>
+<li class="step">Foreign keys are useful in real applications like course dropdowns.</li>
+</ul>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">41</span>
+<span class="eyebrow reveal d1">Exit Check</span>
+<h2 class="reveal d2">Answer in One or Two Sentences</h2>
+<div class="big-question reveal d3">Why should the students table store course_id instead of repeatedly typing the course name?</div><p class="support-text reveal d4 wide">Use the words foreign key, parent table, and consistency in your answer.</p>
+</section>
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Coming Up Next</span>
+<h2 class="reveal d2">Lesson 8</h2>
+<h3 class="reveal d3" style="color:var(--accent);">Database Relationship Types</h3>
+<p class="support-text reveal d4 wide">Next, we will compare one-to-one, one-to-many, and many-to-many relationships using simple database examples.</p>
+</section>
+<div aria-label="Presentation controls" class="deck-controls">
+<button aria-label="Previous slide" id="deckPrev" type="button">← Previous</button>
+<span class="deck-count" id="deckCount">1 / 1</span>
+<button aria-label="Next slide" id="deckNext" type="button">Next →</button>
+</div>
+<script>
 (function () {
-    'use strict';
-
-    const MOBILE_QUERY = '(max-width: 1024px), (hover: none), (pointer: coarse)';
-    const REVEAL_SELECTOR = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur, .step';
-    const CANVAS_W = 1920;
-    const CANVAS_H = 1080;
-    let zoomMultiplier = 1;
-    let userAdjustedZoom = false;
-    let deckPatched = false;
-
-    function rgbaParts(value) {
-        if (!value) return null;
-        const match = value.match(/rgba?\(\s*([\d.]+)[, ]+([\d.]+)[, ]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)/i);
-        if (!match) return null;
-        return {
-            r: Number(match[1]), g: Number(match[2]), b: Number(match[3]),
-            a: match[4] == null ? 1 : Number(match[4])
-        };
+  function initDeckControls() {
+    const prev = document.getElementById('deckPrev');
+    const next = document.getElementById('deckNext');
+    const count = document.getElementById('deckCount');
+    function update() {
+      if (!window.slides || !window.slides.slides) return;
+      count.textContent = (window.slides.currentSlide + 1) + ' / ' + window.slides.slides.length;
+      prev.disabled = window.slides.currentSlide <= 0;
+      next.disabled = window.slides.currentSlide >= window.slides.slides.length - 1;
+      prev.style.opacity = prev.disabled ? '.45' : '1';
+      next.style.opacity = next.disabled ? '.45' : '1';
     }
-
-    function luminance(rgb) {
-        const linear = [rgb.r, rgb.g, rgb.b].map((v) => {
-            v /= 255;
-            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-        });
-        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
-    }
-
-    function applyReadableSurfaceClasses() {
-        document.querySelectorAll('.slide *').forEach((el) => {
-            if (!(el instanceof HTMLElement)) return;
-            const cs = getComputedStyle(el);
-            const color = rgbaParts(cs.backgroundColor);
-            if (!color || color.a < 0.62) return;
-            const lum = luminance(color);
-            if (lum > 0.68) {
-                el.classList.add('lesson-light-surface');
-                el.classList.remove('lesson-dark-surface');
-            } else if (lum < 0.20) {
-                el.classList.add('lesson-dark-surface');
-                el.classList.remove('lesson-light-surface');
-            }
-        });
-    }
-
-    function forceSlideContentVisible(slide) {
-        if (!slide) return;
-        slide.classList.add('visible', 'reveals-played');
-        slide.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
-            try { el.getAnimations().forEach((animation) => animation.cancel()); } catch (_) {}
-            if (el.classList.contains('step')) el.classList.add('step-shown');
-            el.style.removeProperty('opacity');
-            el.style.removeProperty('visibility');
-            el.style.removeProperty('transform');
-            el.style.removeProperty('filter');
-        });
-    }
-
-    function forceAllContentVisible() {
-        document.documentElement.classList.add('reveals-ready', 'mobile-show-all-content');
-        document.querySelectorAll('.slide').forEach(forceSlideContentVisible);
-    }
-
-    function patchDeckForMobile() {
-        const deck = window.slides;
-        if (!deck || deckPatched || !window.matchMedia(MOBILE_QUERY).matches) return;
-        deckPatched = true;
-        deck._playSlideReveals = forceSlideContentVisible;
-        deck._resetSlideReveals = forceSlideContentVisible;
-        deck._rewindSlide = forceSlideContentVisible;
-        deck.advance = function () { this.next(); };
-        deck.retreat = function () { this.prev(); };
-        if (Array.isArray(deck.slides)) deck.slides.forEach(forceSlideContentVisible);
-    }
-
-    function currentDeckIndex() {
-        const deck = window.slides;
-        if (deck && Number.isInteger(deck.currentSlide)) return deck.currentSlide;
-        const id = location.hash.replace(/^#/, '');
-        const slides = Array.from(document.querySelectorAll('.slide'));
-        const hashIndex = slides.findIndex((slide) => slide.id === id);
-        return hashIndex >= 0 ? hashIndex : 0;
-    }
-
-    function applyManualZoom() {
-        if (!window.matchMedia(MOBILE_QUERY).matches) return;
-        document.querySelectorAll('.slide-scale').forEach((scaleEl) => {
-            const rawBase = scaleEl.style.getPropertyValue('--slide-scale') || getComputedStyle(scaleEl).getPropertyValue('--slide-scale');
-            const base = parseFloat(rawBase) || Math.max(window.innerWidth / CANVAS_W, 0.46);
-            const effective = Math.max(0.15, Math.min(1.4, base * zoomMultiplier));
-            const width = CANVAS_W * effective;
-            const height = CANVAS_H * effective;
-            scaleEl.style.setProperty('width', width + 'px', 'important');
-            scaleEl.style.setProperty('height', height + 'px', 'important');
-            scaleEl.style.setProperty('margin', `max(16px, calc((100dvh - ${height}px) / 2)) auto`, 'important');
-            const slide = scaleEl.querySelector('.slide');
-            if (slide) slide.style.setProperty('transform', `scale(${effective})`, 'important');
-            const viewport = scaleEl.parentElement;
-            if (viewport) requestAnimationFrame(() => {
-                viewport.scrollLeft = Math.max(0, (viewport.scrollWidth - viewport.clientWidth) / 2);
-            });
-        });
-    }
-
-    function setFitZoom() {
-        const firstScale = document.querySelector('.slide-scale');
-        const rawBase = firstScale?.style.getPropertyValue('--slide-scale') || getComputedStyle(firstScale || document.documentElement).getPropertyValue('--slide-scale');
-        const base = parseFloat(rawBase) || Math.max(window.innerWidth / CANVAS_W, 0.46);
-        const fitScale = Math.min(window.innerWidth / CANVAS_W, window.innerHeight / CANVAS_H);
-        zoomMultiplier = Math.max(0.28, Math.min(1, fitScale / base));
-        applyManualZoom();
-    }
-
-    function buildControls() {
-        if (document.querySelector('.lesson-slide-controls')) return;
-        const slides = Array.from(document.querySelectorAll('.slide'));
-        if (!slides.length) return;
-
-        const controls = document.createElement('div');
-        controls.className = 'lesson-slide-controls';
-        controls.setAttribute('role', 'navigation');
-        controls.setAttribute('aria-label', 'Presentation controls');
-        controls.innerHTML = `
-            <div class="lesson-slide-controls__group">
-                <button type="button" data-action="previous" aria-label="Previous slide">‹ Prev</button>
-                <span class="lesson-slide-controls__count" aria-live="polite">1 / ${slides.length}</span>
-                <button type="button" data-action="next" aria-label="Next slide">Next ›</button>
-            </div>
-            <span class="lesson-slide-controls__divider" aria-hidden="true"></span>
-            <div class="lesson-slide-controls__group" aria-label="Zoom controls">
-                <button type="button" data-action="zoom-out" aria-label="Zoom out">−</button>
-                <button type="button" data-action="fit" aria-label="Fit entire slide">Fit</button>
-                <button type="button" data-action="zoom-in" aria-label="Zoom in">+</button>
-            </div>`;
-        document.body.appendChild(controls);
-
-        const count = controls.querySelector('.lesson-slide-controls__count');
-        const previous = controls.querySelector('[data-action="previous"]');
-        const next = controls.querySelector('[data-action="next"]');
-
-        function update() {
-            const index = Math.max(0, Math.min(slides.length - 1, currentDeckIndex()));
-            count.textContent = `${index + 1} / ${slides.length}`;
-            previous.disabled = index <= 0;
-            next.disabled = index >= slides.length - 1;
-        }
-
-        controls.addEventListener('click', (event) => {
-            const button = event.target.closest('button[data-action]');
-            if (!button) return;
-            const deck = window.slides;
-            switch (button.dataset.action) {
-                case 'previous':
-                    if (deck?.prev) deck.prev();
-                    else slides[Math.max(0, currentDeckIndex() - 1)]?.scrollIntoView({behavior:'smooth'});
-                    break;
-                case 'next':
-                    if (deck?.next) deck.next();
-                    else slides[Math.min(slides.length - 1, currentDeckIndex() + 1)]?.scrollIntoView({behavior:'smooth'});
-                    break;
-                case 'zoom-in':
-                    userAdjustedZoom = true;
-                    zoomMultiplier = Math.min(2.2, zoomMultiplier + 0.15);
-                    applyManualZoom();
-                    break;
-                case 'zoom-out':
-                    userAdjustedZoom = true;
-                    zoomMultiplier = Math.max(0.28, zoomMultiplier - 0.15);
-                    applyManualZoom();
-                    break;
-                case 'fit':
-                    userAdjustedZoom = false;
-                    setFitZoom();
-                    break;
-            }
-            setTimeout(update, 120);
-            setTimeout(forceAllContentVisible, 180);
-        });
-
-        window.addEventListener('hashchange', update);
-        document.addEventListener('scroll', () => requestAnimationFrame(update), {passive:true});
-        setInterval(update, 700);
-        update();
-    }
-
-    function initialize() {
-        applyReadableSurfaceClasses();
-        buildControls();
-        if (window.matchMedia(MOBILE_QUERY).matches) {
-            forceAllContentVisible();
-            patchDeckForMobile();
-            setTimeout(() => {
-                forceAllContentVisible();
-                patchDeckForMobile();
-                setFitZoom();
-            }, 120);
-            setTimeout(forceAllContentVisible, 600);
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize, {once:true});
-    } else {
-        initialize();
-    }
-
-    window.addEventListener('load', () => {
-        applyReadableSurfaceClasses();
-        if (window.matchMedia(MOBILE_QUERY).matches) {
-            forceAllContentVisible();
-            patchDeckForMobile();
-            if (userAdjustedZoom) applyManualZoom(); else setFitZoom();
-        }
+    prev.addEventListener('click', function () {
+      if (window.slides) window.slides.retreat();
+      setTimeout(update, 550);
     });
-    window.addEventListener('resize', () => setTimeout(() => {
-        applyReadableSurfaceClasses();
-        if (window.matchMedia(MOBILE_QUERY).matches) {
-            forceAllContentVisible();
-            patchDeckForMobile();
-            if (userAdjustedZoom) applyManualZoom(); else setFitZoom();
-        }
-    }, 180));
-    window.addEventListener('orientationchange', () => setTimeout(() => location.reload(), 250));
+    next.addEventListener('click', function () {
+      if (window.slides) window.slides.advance();
+      setTimeout(update, 550);
+    });
+    document.addEventListener('keydown', function () { setTimeout(update, 50); });
+    window.addEventListener('wheel', function () { setTimeout(update, 600); }, { passive: true });
+    window.addEventListener('touchend', function () { setTimeout(update, 650); }, { passive: true });
+    window.addEventListener('hashchange', function () { setTimeout(update, 100); });
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    setTimeout(update, 150);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDeckControls);
+  } else {
+    initDeckControls();
+  }
 })();
 </script>
-
 </body>
 </html>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <!-- skill:chassis -->
@@ -20,7 +21,7 @@
     --foreground:      #111111;
     --card:            #f5f5f5;
     --card-foreground: var(--foreground);
-    --accent:          #c94a3d;
+    --accent:          #1D4ED8;
     --accent-foreground: #ffffff;
 
     --muted-foreground: color-mix(in srgb, var(--foreground) 55%, transparent);
@@ -462,28 +463,12 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
             const style = getComputedStyle(slide);
             const hasBackgroundImage = style.backgroundImage && style.backgroundImage !== 'none';
             const hasBackgroundColor = !['rgba(0, 0, 0, 0)', 'transparent'].includes(style.backgroundColor);
-
-            /* Some lesson themes define .slide-viewport backgrounds with
-               !important. Set the copied slide background with the same
-               priority so the full phone/desktop viewport stays seamless. */
-            viewport.style.setProperty(
-                'background-color',
-                hasBackgroundColor ? style.backgroundColor : 'var(--background)',
-                'important'
-            );
-            viewport.style.setProperty(
-                'background-image',
-                hasBackgroundImage ? style.backgroundImage : 'none',
-                'important'
-            );
-            viewport.style.setProperty('background-position', style.backgroundPosition || 'center center', 'important');
-            viewport.style.setProperty('background-repeat', 'no-repeat', 'important');
-            viewport.style.setProperty('background-size', 'cover', 'important');
-
-            /* The viewport now owns the full-bleed background. Make the
-               fixed artboard transparent so its scaled edges cannot create
-               a visible horizontal or vertical seam on phones. */
-            slide.style.setProperty('background', 'transparent', 'important');
+            if (hasBackgroundImage || hasBackgroundColor) {
+                viewport.style.background = style.background;
+            } else {
+                viewport.style.background = '';
+            }
+            slide.style.background = 'transparent';
         }
 
         /* ---------- DOM scaffolding (auto-inserted if missing) ---------- */
@@ -529,7 +514,7 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
                 el = document.createElement('div');
                 el.className = 'chassis-credit';
                 el.setAttribute('aria-hidden', 'true');
-                el.innerHTML = 'Dave Bryan J. Beatingo';
+                el.innerHTML = '💜 by ClickUp Brain';
                 document.body.appendChild(el);
             }
             return el;
@@ -761,17 +746,7 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
         }
 
         _scrollToSlide(index, behavior) {
-            const viewport = this.viewports[index];
-            viewport?.scrollIntoView({ behavior, block: 'start', inline: 'nearest' });
-
-            if (viewport && document.documentElement.classList.contains('mobile-reading-mode')) {
-                requestAnimationFrame(() => {
-                    viewport.scrollLeft = Math.max(
-                        0,
-                        (viewport.scrollWidth - viewport.clientWidth) / 2
-                    );
-                });
-            }
+            this.viewports[index]?.scrollIntoView({ behavior, block: 'start' });
         }
 
         _slideIndexFromHash(hash) {
@@ -1000,10 +975,6 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 
             window.addEventListener('touchstart', (e) => {
                 if (document.body.classList.contains('artifact-editor-editing')) { tracking = false; return; }
-                /* On portrait phones, horizontal gestures pan the enlarged
-                   slide. Multi-touch remains available for browser pinch zoom. */
-                if (document.documentElement.classList.contains('mobile-reading-mode')) { tracking = false; return; }
-                if (window.visualViewport && window.visualViewport.scale > 1.01) { tracking = false; return; }
                 if (e.touches.length !== 1) { tracking = false; return; }
                 const t = e.touches[0];
                 startX = t.clientX;
@@ -1038,43 +1009,13 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
             const scales = this.scales;
 
             const update = () => {
-                const mobileReadingMode = window.matchMedia(
-                    '(max-width: 768px) and (orientation: portrait)'
-                ).matches;
-
-                /* Portrait phones use a readable minimum scale and allow
-                   horizontal panning. Landscape/desktop keeps fit-to-screen. */
-                const scale = mobileReadingMode
-                    ? Math.max(window.innerWidth / CANVAS_W, 0.46)
-                    : Math.min(
-                        window.innerWidth / CANVAS_W,
-                        window.innerHeight / CANVAS_H
-                    );
-
-                document.documentElement.classList.toggle(
-                    'mobile-reading-mode',
-                    mobileReadingMode
+                const scale = Math.min(
+                    window.innerWidth / CANVAS_W,
+                    window.innerHeight / CANVAS_H
                 );
-
                 scales.forEach((el) => {
-                    if (!el) return;
-                    el.style.setProperty('--slide-scale', scale);
-                    el.style.setProperty('--scaled-width', `${CANVAS_W * scale}px`);
-                    el.style.setProperty('--scaled-height', `${CANVAS_H * scale}px`);
+                    el?.style.setProperty('--slide-scale', scale);
                 });
-
-                if (mobileReadingMode) {
-                    requestAnimationFrame(() => {
-                        scales.forEach((el) => {
-                            const viewport = el?.parentElement;
-                            if (!viewport) return;
-                            viewport.scrollLeft = Math.max(
-                                0,
-                                (viewport.scrollWidth - viewport.clientWidth) / 2
-                            );
-                        });
-                    });
-                }
             };
 
             update();
@@ -1137,1591 +1078,1345 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 
 </script>
 <!-- /skill:chassis -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
-    <title>Data, Information &amp; Database Concepts | Student Edition</title>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
-
-    <style>
-        :root {
-            --background: #f0f4f8;
-            --foreground: #0a0a0a;
-            --accent: #1565C0;
-            --accent-light: #1E88E5;
-            --accent-dark: #0D47A1;
-            --accent-foreground: #ffffff;
-            --card: #1565C0;
-            --card-foreground: #ffffff;
-            --muted: #e3eaf2;
-            --border: rgba(21, 101, 192, 0.15);
-            --font-display: 'Archivo Black', sans-serif;
-            --font-body: 'Space Grotesk', sans-serif;
-            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #e1ecf7 50%, #f0f4f8 100%);
-            --card-gradient: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%);
-        }
-
-        body { font-family: var(--font-body); background: var(--background); }
-        h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
-
-        .slide {
-            background: var(--bg-gradient);
-            padding: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section-num {
-            font-family: var(--font-display);
-            font-size: 280px;
-            color: rgba(21, 101, 192, 0.06);
-            position: absolute;
-            top: -40px;
-            right: 60px;
-            line-height: 1;
-            pointer-events: none;
-        }
-
-        .blue-card {
-            background: var(--card-gradient);
-            color: var(--card-foreground);
-            border-radius: 24px;
-            padding: 60px;
-            position: relative;
-            overflow: hidden;
-        }
-        .blue-card::after {
-            content: '';
-            position: absolute;
-            top: -50%; right: -20%;
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-        .blue-card h2, .blue-card h3 { color: #ffffff; }
-        .blue-card p, .blue-card li { color: rgba(255, 255, 255, 0.92); font-size: 28px; line-height: 1.5; }
-
-        .eyebrow {
-            font-family: var(--font-body);
-            font-size: 24px; font-weight: 600;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 16px;
-        }
-        .blue-card .eyebrow { color: rgba(255,255,255,0.7); }
-
-        p { font-size: 32px; line-height: 1.5; color: #333; max-width: 800px; }
-        h2 { font-size: 64px; line-height: 1.1; color: var(--foreground); margin-bottom: 24px; }
-        h3 { font-size: 44px; line-height: 1.2; color: var(--foreground); margin-bottom: 16px; }
-
-        ul, ol { list-style: none; padding: 0; margin: 0; }
-        li { font-size: 30px; line-height: 1.5; color: #333; padding: 8px 0; padding-left: 32px; position: relative; }
-        li::before {
-            content: ''; position: absolute; left: 0; top: 18px;
-            width: 12px; height: 12px; background: var(--accent); border-radius: 3px;
-        }
-        .blue-card li::before { background: rgba(255,255,255,0.6); }
-
-        table { width: 100%; border-collapse: collapse; font-size: 26px; margin-top: 24px; }
-        th { background: var(--accent); color: white; padding: 16px 24px; text-align: left; font-weight: 600; }
-        td { padding: 14px 24px; border-bottom: 1px solid var(--border); color: #333; }
-        tr:nth-child(even) td { background: rgba(21, 101, 192, 0.04); }
-
-        .hero {
-            justify-content: space-between;
-            background: linear-gradient(135deg, #0D47A1 0%, #1565C0 40%, #1E88E5 100%);
-        }
-        .hero * { color: white; }
-        .hero h1 { font-size: 96px; line-height: 1.05; }
-        .hero p { color: rgba(255,255,255,0.8); font-size: 32px; }
-
-        .pause-slide {
-            align-items: center; text-align: center; justify-content: center;
-            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #E3F2FD 100%);
-        }
-        .pause-slide h2 { font-size: 72px; color: var(--accent-dark); }
-        .pause-slide p { font-size: 36px; color: var(--accent); text-align: center; }
-        .pause-icon { font-size: 80px; margin-bottom: 24px; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 32px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; margin-top: 32px; }
-        .grid-card {
-            background: white; border-radius: 16px; padding: 32px;
-            border: 2px solid var(--border);
-            box-shadow: 0 4px 20px rgba(21, 101, 192, 0.06);
-        }
-        .grid-card h3 { font-size: 28px; margin-bottom: 12px; }
-        .grid-card p { font-size: 24px; color: #555; }
-
-        .transition-slide {
-            align-items: center; text-align: center; justify-content: center;
-            background: linear-gradient(135deg, #0D47A1 0%, #1565C0 60%, #1976D2 100%);
-        }
-        .transition-slide h2 { color: white; font-size: 80px; }
-        .transition-slide p { color: rgba(255,255,255,0.7); font-size: 32px; text-align: center; }
-
-        .end-slide {
-            align-items: center; text-align: center; justify-content: center;
-            background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
-        }
-        .end-slide h1 { color: white; font-size: 96px; }
-        .end-slide p { color: rgba(255,255,255,0.8); font-size: 32px; text-align: center; }
-
-        /* Pyramid / hierarchy visual */
-        .pyramid {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            margin-top: 32px;
-        }
-        .pyramid-level {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 28px;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* Flow arrow */
-        .flow-arrow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-        .flow-box {
-            background: white;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            padding: 24px 32px;
-            text-align: center;
-            min-width: 180px;
-        }
-        .flow-box h3 { font-size: 24px; margin-bottom: 8px; }
-        .flow-box p { font-size: 20px; color: #666; }
-        .flow-connector { font-size: 36px; color: var(--accent); font-weight: 700; }
-
-        #particles {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: 0;
-        }
-    </style>
-    <style>
-        /* Embedded DB folder presentation theme. */
-        :root {
-            color-scheme: dark;
-            --background: #0a0e1a;
-            --foreground: #e2e8f0;
-            --card: rgba(15, 23, 42, 0.80);
-            --card-foreground: #e2e8f0;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
-            --accent-dark: #1d4ed8;
-            --accent-foreground: #ffffff;
-            --muted: #94a3b8;
-            --muted-foreground: rgba(148, 163, 184, 0.72);
-            --border: rgba(59, 130, 246, 0.30);
-            --font-display: 'Archivo Black', sans-serif;
-            --font-body: 'Space Grotesk', sans-serif;
-            --font-mono: 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
-            --bg-gradient: linear-gradient(135deg, #0a0e1a 0%, #0f172a 50%, #0a0e1a 100%);
-            --card-gradient: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
-            --code-bg: rgba(2, 6, 23, 0.90);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --nav-dot-color: #3b82f6;
-            --nav-dot-active-color: #60a5fa;
-        }
-
-        html, body { background: var(--background) !important; }
-        body { color: var(--foreground) !important; font-family: var(--font-body) !important; }
-        #particles { opacity: 0.35 !important; }
-        .slide-viewport { background: var(--background) !important; }
-
-        .slide {
-            background: var(--bg-gradient) !important;
-            color: var(--foreground) !important;
-            font-family: var(--font-body) !important;
-            padding: 80px !important;
-            gap: 28px !important;
-            position: relative !important;
-            overflow: hidden !important;
-        }
-        .slide::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: linear-gradient(125deg, rgba(59, 130, 246, 0.10), transparent 45%);
-        }
-        .slide > * { position: relative; z-index: 1; }
-
-        h1, h2, h3 {
-            color: #ffffff !important;
-            font-family: var(--font-display) !important;
-            letter-spacing: 0 !important;
-        }
-        h1, .hero h1, .end-slide h1 { font-size: 88px !important; line-height: 1.05 !important; }
-        h2, .transition-slide h2, .pause-slide h2 { font-size: 52px !important; line-height: 1.12 !important; margin-bottom: 10px !important; }
-        h3 { font-size: 38px !important; line-height: 1.2 !important; margin-bottom: 12px !important; }
-
-        p {
-            color: #cbd5e1 !important;
-            font-family: var(--font-body) !important;
-            font-size: 26px !important;
-            line-height: 1.55 !important;
-            max-width: 900px !important;
-        }
-        strong { color: #f8fafc !important; }
-
-        .eyebrow {
-            color: var(--accent-light) !important;
-            font-family: var(--font-body) !important;
-            font-size: 22px !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.14em !important;
-            text-transform: uppercase !important;
-            margin-bottom: 4px !important;
-        }
-
-        .section-num, .section-number {
-            color: rgba(59, 130, 246, 0.08) !important;
-            font-family: var(--font-display) !important;
-            font-size: 180px !important;
-            line-height: 1 !important;
-            position: absolute !important;
-            top: 40px !important;
-            right: 80px !important;
-            pointer-events: none !important;
-            opacity: 1 !important;
-        }
-
-        .hero, .transition-slide, .end-slide, .pause-slide {
-            align-items: center !important;
-            justify-content: center !important;
-            text-align: center !important;
-            gap: 22px !important;
-            background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
-        }
-        .hero::before, .transition-slide::before, .end-slide::before, .pause-slide::before {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), transparent 56%) !important;
-        }
-        .hero p, .transition-slide p, .end-slide p, .pause-slide p {
-            color: var(--muted-foreground) !important;
-            text-align: center !important;
-        }
-
-        .blue-card, .grid-card, .card, .dark-card, .quote-card, .info-card, .example-card {
-            background: var(--card) !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 16px !important;
-            box-shadow: none !important;
-            color: var(--card-foreground) !important;
-            padding: 32px 36px !important;
-            backdrop-filter: blur(8px);
-        }
-        .blue-card {
-            background: var(--card-gradient) !important;
-            border-color: rgba(96, 165, 250, 0.36) !important;
-            padding: 42px 48px !important;
-        }
-        .blue-card::after { display: none !important; }
-        .blue-card h2, .blue-card h3, .grid-card h3, .card h3, .dark-card h3 { color: #ffffff !important; }
-        .blue-card p, .blue-card li { color: rgba(255, 255, 255, 0.92) !important; }
-        .grid-card p, .card p, .dark-card p { color: #94a3b8 !important; font-size: 20px !important; }
-
-        .grid-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
-        .grid-3 { display: grid !important; grid-template-columns: 1fr 1fr 1fr !important; gap: 24px !important; }
-
-        ul, ol { list-style: none !important; padding: 0 !important; margin: 0 !important; gap: 16px !important; }
-        li {
-            color: #cbd5e1 !important;
-            font-family: var(--font-body) !important;
-            font-size: 26px !important;
-            line-height: 1.5 !important;
-            padding: 8px 0 8px 28px !important;
-            position: relative !important;
-        }
-        li::before {
-            content: ">" !important;
-            position: absolute !important;
-            left: 0 !important;
-            top: 8px !important;
-            width: auto !important;
-            height: auto !important;
-            background: transparent !important;
-            border-radius: 0 !important;
-            color: var(--accent-light) !important;
-            font-weight: 700 !important;
-        }
-        .blue-card li::before { color: #bfdbfe !important; }
-
-        table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            font-family: var(--font-body) !important;
-            font-size: 21px !important;
-            margin-top: 18px !important;
-        }
-        th {
-            background: rgba(59, 130, 246, 0.15) !important;
-            border-bottom: 2px solid var(--border) !important;
-            color: #93c5fd !important;
-            font-weight: 600 !important;
-            padding: 12px 16px !important;
-            text-align: left !important;
-        }
-        td {
-            background: transparent !important;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.10) !important;
-            color: #cbd5e1 !important;
-            padding: 10px 16px !important;
-        }
-        tr:nth-child(even) td { background: rgba(59, 130, 246, 0.04) !important; }
-
-        pre, .code-block {
-            background: var(--code-bg) !important;
-            border: 1px solid rgba(59, 130, 246, 0.20) !important;
-            border-radius: 12px !important;
-            box-shadow: none !important;
-            color: #e2e8f0 !important;
-            font-family: var(--font-mono) !important;
-            font-size: 19px !important;
-            line-height: 1.6 !important;
-            padding: 24px 28px !important;
-            overflow-x: auto !important;
-        }
-        .code-block .keyword, .kw { color: #93c5fd !important; font-weight: 500 !important; }
-        .code-block .string, .str { color: #86efac !important; }
-        .code-block .comment, .cm { color: #64748b !important; font-style: italic !important; }
-        .code-block .number, .num { color: #fbbf24 !important; }
-        .fn, .code-block .function { color: #c4b5fd !important; }
-
-        .quote-slide { align-items: center !important; justify-content: center !important; text-align: center !important; }
-        .quote-text { color: #e2e8f0 !important; font-size: 30px !important; max-width: 940px !important; }
-        .quote-attr, .accent, .highlight { color: var(--accent-light) !important; }
-        .bright { color: #ffffff !important; }
-        .highlight-green { color: var(--success) !important; }
-        .highlight-orange { color: var(--warning) !important; }
-        .highlight-red { color: var(--danger) !important; }
-        .stat-num { color: var(--accent-light) !important; font-size: 120px !important; }
-        .stat-label { color: var(--muted-foreground) !important; font-size: 22px !important; }
-
-        .venn-left { background: rgba(59, 130, 246, 0.18) !important; border-color: var(--accent) !important; }
-        .venn-right { background: rgba(16, 185, 129, 0.14) !important; border-color: var(--success) !important; }
-        .venn-label { color: #cbd5e1 !important; }
-
-        [style*="color:#333"], [style*="color: #333"],
-        [style*="color:#555"], [style*="color: #555"],
-        [style*="color:#666"], [style*="color: #666"],
-        [style*="color:var(--muted)"], [style*="color: var(--muted)"] {
-            color: var(--muted-foreground) !important;
-        }
-        [style*="color:var(--accent)"], [style*="color: var(--accent)"],
-        [style*="color:var(--accent-light)"], [style*="color: var(--accent-light)"] {
-            color: var(--accent-light) !important;
-        }
-        [style*="color:#c62828"], [style*="color: #c62828"],
-        [style*="color:#ef4444"], [style*="color: #ef4444"] {
-            color: var(--danger) !important;
-        }
-        [style*="background:var(--muted)"], [style*="background: var(--muted)"] {
-            background: rgba(15, 23, 42, 0.86) !important;
-            border: 1px solid var(--border) !important;
-        }
-        [style*="background:var(--card-gradient)"], [style*="background: var(--card-gradient)"] {
-            background: var(--card-gradient) !important;
-        }
-    
-/* Title-slide cleanup: match the plain centered title layout. */
-.title-slide {
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    gap: 22px !important;
-    background: radial-gradient(ellipse at 30% 40%, #1a2744 0%, #0f172a 42%, #0a0e1a 72%) !important;
-}
-.title-slide::before {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 56%) !important;
-}
-.title-slide .eyebrow,
-.title-slide .section-num,
-.title-slide .section-number {
-    display: none !important;
-}
-.title-slide h1,
-.title-slide h1 *,
-.title-slide .highlight,
-.title-slide .accent {
-    color: #ffffff !important;
-}
-.title-slide h1 {
-    font-size: 88px !important;
-    line-height: 1.05 !important;
-    margin: 0 !important;
-    text-align: center !important;
-}
-.title-slide p {
-    color: var(--muted-foreground, var(--muted, #94a3b8)) !important;
-    font-size: 26px !important;
-    line-height: 1.45 !important;
-    max-width: 900px !important;
-    margin: 0 !important;
-    text-align: center !important;
-}</style>
-
-
-
-<style data-db-session-upgrade>
-  .slide { gap:0 !important; }
-  .slide:not([style*="padding-top"]) { padding-top:70px !important; padding-bottom:70px !important; }
-  .slide.practice-slide { padding-top:25px !important; padding-bottom:25px !important; }
-  .db-subject-watermark { position:absolute; top:18px; right:30px; z-index:60; color:var(--muted-foreground,var(--muted,#64748b)); font:600 14px/1.2 var(--font-body,sans-serif); letter-spacing:.02em; opacity:.72; white-space:nowrap; pointer-events:none; user-select:none; }
-  .db-reference-layout { display:grid; grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr); gap:30px; align-items:stretch; margin-top:18px; }
-  .db-reference-copy { min-height:560px; display:flex; flex-direction:column; justify-content:center; gap:18px; }
-  .db-reference-copy h3 { margin:0; font-size:28px; color:var(--accent,var(--accent-light)); }
-  .db-reference-copy ul { margin:0; }
-  .db-reference-copy li { font-size:20px; line-height:1.45; margin-bottom:12px; }
-  .db-reference-frame { min-height:560px; padding:14px; display:flex; flex-direction:column; justify-content:center; background:rgba(255,255,255,.06); border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; overflow:hidden; }
-  .db-reference-frame img { width:100%; max-height:505px; object-fit:contain; border-radius:10px; background:#fff; }
-  .db-reference-caption { margin-top:10px; font-size:14px; line-height:1.35; color:var(--muted-foreground,var(--muted,#94a3b8)); text-align:center; }
-  .db-concept-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:28px; }
-  .db-concept-card { min-height:300px; padding:30px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:18px; background:var(--card-gradient,var(--card,#172033)); }
-  .db-concept-card h3 { margin:0 0 14px; font-size:28px; color:var(--accent,var(--accent-light)); }
-  .db-concept-card p { margin:0; font-size:21px; line-height:1.45; }
-  .db-flow { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:30px; }
-  .db-flow-step { position:relative; min-height:150px; display:flex; align-items:center; justify-content:center; padding:24px; border:1px solid var(--border,rgba(255,255,255,.14)); border-radius:16px; background:var(--card-gradient,var(--card,#172033)); color:var(--foreground); font-family:var(--font-body); font-size:22px; font-weight:700; text-align:center; }
-  .db-flow-step:not(:last-child)::after { content:'→'; position:absolute; right:-20px; top:50%; z-index:2; transform:translateY(-50%); color:var(--accent,var(--accent-light)); font-size:30px; }
-  .db-compare { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:26px; }
-  .db-compare > div { padding:24px 28px; border-radius:16px; background:rgba(255,255,255,.055); }
-  .db-compare strong { display:block; margin-bottom:8px; color:var(--accent,var(--accent-light)); font-family:var(--font-body); font-size:20px; text-transform:uppercase; letter-spacing:.08em; }
-  .db-compare p { font-size:19px; line-height:1.4; }
-  .mock-phone,.phone-mockup,.browser-frame,.screenshot-frame,.ui-reference,.ui-web-frame,.dashboard-mockup,.app-window,.terminal-window { box-sizing:border-box; overflow:hidden; max-width:100%; }
-  .slide img { max-width:100%; }
-</style>
-<style data-image-lightbox-styles>
-  .slide img[data-lightbox-ready] { cursor:zoom-in; transition:filter .18s ease,transform .18s ease; }
-  .slide img[data-lightbox-ready]:hover { filter:brightness(1.06); }
-  .slide img[data-lightbox-ready]:focus-visible { outline:4px solid var(--accent,var(--accent-light)); outline-offset:5px; }
-  body.image-lightbox-open { overflow:hidden !important; }
-  .image-lightbox { position:fixed; inset:0; z-index:2147483647; display:grid; place-items:center; padding:58px 46px 38px; background:rgba(3,5,12,.94); backdrop-filter:blur(12px); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .2s ease,visibility .2s ease; }
-  .image-lightbox.is-open { opacity:1; visibility:visible; pointer-events:auto; }
-  .image-lightbox__figure { width:min(94vw,1800px); height:min(88vh,980px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; margin:0; }
-  .image-lightbox__image { display:block; width:auto !important; height:auto !important; max-width:94vw !important; max-height:80vh !important; object-fit:contain !important; border-radius:12px; background:#fff; box-shadow:0 28px 80px rgba(0,0,0,.55); }
-  .image-lightbox__caption { max-width:1100px; color:rgba(255,255,255,.85); font:500 17px/1.4 var(--font-body,sans-serif); text-align:center; }
-  .image-lightbox__close { position:fixed; top:18px; right:24px; width:52px; height:52px; display:grid; place-items:center; padding:0; border:1px solid rgba(255,255,255,.25); border-radius:50%; background:rgba(18,22,32,.9); color:#fff; font:300 36px/1 sans-serif; cursor:pointer; }
-</style>
-
-<style id="database-presentation-responsive-fix">
-/* Full-bleed background and mobile reading support */
-.slide-viewport {
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-}
-.slide {
-    background-position: center center !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-}
-
-@media (max-width: 768px) and (orientation: portrait) {
-    html {
-        scroll-snap-type: y proximity !important;
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lesson 2 – Setting Up WAMP and phpMyAdmin</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --background: #fafafa;
+      --foreground: #1a1a1a;
+      --accent: #1D4ED8;
+      --accent-foreground: #ffffff;
+      --card: #1D4ED8;
+      --card-foreground: #ffffff;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --font-display: 'Archivo Black', sans-serif;
+      --font-body: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
-    body {
-        overscroll-behavior-x: none;
-    }
-    .slide-viewport {
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        touch-action: pan-x pan-y pinch-zoom !important;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: color-mix(in srgb, var(--accent) 60%, transparent) transparent;
-    }
-    .slide-viewport::-webkit-scrollbar {
-        display: block;
-        height: 5px;
-    }
-    .slide-viewport::-webkit-scrollbar-thumb {
-        background: color-mix(in srgb, var(--accent) 60%, transparent);
-        border-radius: 999px;
-    }
-    .slide-scale {
-        position: relative !important;
-        top: auto !important;
-        left: auto !important;
-        width: var(--scaled-width, 883px) !important;
-        height: var(--scaled-height, 497px) !important;
-        margin: max(16px, calc((100dvh - var(--scaled-height, 497px)) / 2)) auto !important;
-        transform: none !important;
-        transform-origin: top left !important;
-    }
+    html, body { margin: 0; padding: 0; }
     .slide {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        transform: scale(var(--slide-scale, 0.46)) !important;
-        transform-origin: top left !important;
+      padding: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-family: var(--font-body);
+      color: var(--foreground);
+      background: var(--background);
+      position: relative;
+      overflow: hidden;
     }
-    /* Decorative artboard overlays are rectangular. Hiding only these
-       pseudo-background layers on portrait phones prevents their scaled
-       edges from looking like a cut background. */
-    .slide::before {
-        display: none !important;
+    h1 { font-family: var(--font-display); font-size: 120px; line-height: 1.05; margin: 0; letter-spacing: -2px; }
+    h2 { font-family: var(--font-display); font-size: 64px; line-height: 1.1; margin: 0 0 40px 0; letter-spacing: -1px; }
+    h3 { font-family: var(--font-display); font-size: 44px; line-height: 1.2; margin: 0 0 30px 0; }
+    p, li { font-size: 36px; line-height: 1.45; color: color-mix(in srgb, var(--foreground) 75%, transparent); max-width: 800px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { padding: 12px 0; padding-left: 40px; position: relative; }
+    li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+    .eyebrow { font-family: var(--font-mono); font-size: 24px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: block; }
+    .section-number { font-family: var(--font-display); font-size: 200px; color: color-mix(in srgb, var(--accent) 12%, transparent); position: absolute; top: 40px; right: 80px; line-height: 1; }
+    .card-accent {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: var(--accent);
+      border-radius: 32px;
+      right: -80px;
+      top: 50%;
+      transform: translateY(-50%) rotate(12deg);
+      opacity: 0.9;
     }
-    .keyboard-hint {
-        display: none !important;
+    .code-block {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      font-family: var(--font-mono);
+      font-size: 30px;
+      line-height: 1.6;
+      padding: 40px 50px;
+      border-radius: 16px;
+      margin-top: 30px;
+      max-width: 1200px;
+      overflow: hidden;
     }
+    .code-block .keyword { color: #cba6f7; }
+    .code-block .class-name { color: #f9e2af; }
+    .code-block .method { color: #89b4fa; }
+    .code-block .string { color: #a6e3a1; }
+    .code-block .comment { color: #6c7086; font-style: italic; }
+    .code-block .bracket { color: #f38ba8; }
+    .highlight { color: var(--accent); font-weight: 700; }
+    .big-emoji { font-size: 100px; margin-bottom: 30px; }
+    .step-card {
+      background: color-mix(in srgb, var(--accent) 8%, var(--background));
+      border-left: 6px solid var(--accent);
+      padding: 30px 40px;
+      border-radius: 0 16px 16px 0;
+      margin: 15px 0;
+      max-width: 900px;
+    }
+    .step-card p { margin: 0; color: var(--foreground); }
+    .step-card .step-num { font-family: var(--font-display); font-size: 28px; color: var(--accent); margin-bottom: 8px; }
+    .error-block {
+      background: #fef2f2;
+      border-left: 6px solid #ef4444;
+      padding: 30px 40px;
+      border-radius: 0 16px 16px 0;
+      margin: 15px 0;
+      max-width: 1000px;
+    }
+    .error-block code { font-family: var(--font-mono); font-size: 28px; color: #dc2626; }
+    .success-block {
+      background: #f0fdf4;
+      border-left: 6px solid #22c55e;
+      padding: 30px 40px;
+      border-radius: 0 16px 16px 0;
+      margin: 15px 0;
+      max-width: 1000px;
+    }
+    .success-block code { font-family: var(--font-mono); font-size: 28px; color: #16a34a; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 30px; }
+    .info-card {
+      background: color-mix(in srgb, var(--accent) 6%, var(--background));
+      border-radius: 16px;
+      padding: 35px;
+    }
+    .info-card h3 { font-size: 32px; margin-bottom: 12px; }
+    .info-card p { font-size: 28px; margin: 0; }
+    .slide-dark {
+      background: var(--foreground);
+      color: var(--background);
+    }
+    .slide-dark h2, .slide-dark h1 { color: var(--background); }
+    .slide-dark p, .slide-dark li { color: color-mix(in srgb, var(--background) 75%, transparent); }
+    .slide-dark .eyebrow { color: var(--accent); }
+    .slide-accent {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    .slide-accent h1, .slide-accent h2 { color: var(--accent-foreground); }
+    .slide-accent p { color: color-mix(in srgb, var(--accent-foreground) 85%, transparent); max-width: 100%; }
+    .slide-accent .eyebrow { color: var(--accent-foreground); opacity: 0.7; }
+    .url-display {
+      font-family: var(--font-mono);
+      font-size: 32px;
+      background: color-mix(in srgb, var(--accent) 10%, var(--background));
+      padding: 20px 30px;
+      border-radius: 12px;
+      margin-top: 20px;
+      display: inline-block;
+      color: var(--accent);
+      font-weight: 500;
+    }
+  </style>
+<style>
+    /* Lesson-specific additions */
+
+    :root { --nav-dot-size: 7px; }
+    .nav-dots { gap: 5px; }
+    .timeline { gap: 16px 30px; }
+    .timeline .task { padding: 15px 24px; }
+
+    .chassis-credit { display: none !important; }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 30px;
+      width: 100%;
+    }
+    .comparison-card {
+      min-height: 300px;
+      padding: 36px;
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--accent) 7%, var(--background));
+      border: 2px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .comparison-card .icon {
+      font-size: 76px;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .comparison-card h3 {
+      font-size: 34px;
+      margin-bottom: 14px;
+    }
+    .comparison-card p {
+      font-size: 27px;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .analogy-flow {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 35px;
+      width: 100%;
+    }
+    .analogy-item {
+      flex: 1;
+      min-height: 280px;
+      padding: 34px;
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--accent) 8%, var(--background));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .analogy-item .emoji { font-size: 74px; margin-bottom: 18px; }
+    .analogy-item strong { font-size: 34px; color: var(--foreground); }
+    .analogy-item span { font-size: 26px; margin-top: 12px; color: color-mix(in srgb, var(--foreground) 68%, transparent); }
+    .flow-arrow {
+      align-self: center;
+      font-family: var(--font-display);
+      font-size: 58px;
+      color: var(--accent);
+    }
+
+    .question-card {
+      width: 100%;
+      max-width: 1300px;
+      padding: 42px 48px;
+      border-radius: 22px;
+      border: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      background: color-mix(in srgb, var(--accent) 6%, var(--background));
+      font-size: 38px;
+      line-height: 1.35;
+    }
+    .answer-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 10px 0 0;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 12%, var(--background));
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      font-size: 27px;
+      font-weight: 600;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 24px 30px;
+      width: 100%;
+      max-width: 1250px;
+      margin-top: 25px;
+      align-items: center;
+    }
+    .timeline .time {
+      font-family: var(--font-mono);
+      font-size: 27px;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: right;
+    }
+    .timeline .task {
+      font-size: 30px;
+      padding: 20px 26px;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--accent) 6%, var(--background));
+      border-left: 5px solid var(--accent);
+    }
+
+    .diagram-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      width: 100%;
+      margin-top: 30px;
+    }
+    .diagram-box {
+      min-width: 280px;
+      padding: 34px 28px;
+      text-align: center;
+      border-radius: 18px;
+      background: var(--foreground);
+      color: var(--background);
+      font-size: 30px;
+      font-weight: 700;
+    }
+    .diagram-arrow {
+      font-family: var(--font-display);
+      color: var(--accent);
+      font-size: 56px;
+    }
+
+    .output-block {
+      font-family: var(--font-mono);
+      font-size: 31px;
+      line-height: 1.55;
+      padding: 30px 38px;
+      border-radius: 16px;
+      margin-top: 24px;
+      width: 100%;
+      max-width: 1100px;
+      background: #111827;
+      color: #d1fae5;
+      border: 2px solid #22c55e;
+    }
+
+    .two-column-code {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 35px;
+      width: 100%;
+      align-items: start;
+    }
+    .two-column-code .code-block {
+      margin-top: 0;
+      max-width: none;
+      font-size: 27px;
+    }
+    .two-column-code .side-note {
+      border-radius: 18px;
+      padding: 34px;
+      background: color-mix(in srgb, var(--accent) 7%, var(--background));
+    }
+    .two-column-code .side-note h3 { font-size: 32px; margin-bottom: 18px; }
+    .two-column-code .side-note p { font-size: 27px; margin: 0; }
+
+    .mini-check {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      width: 100%;
+      margin-top: 28px;
+    }
+    .mini-check > div {
+      padding: 30px 34px;
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--accent) 7%, var(--background));
+      font-size: 29px;
+      line-height: 1.35;
+    }
+
+    .deck-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 120;
+      padding: 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--background) 88%, transparent);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 35px rgba(0,0,0,.12);
+      backdrop-filter: blur(12px);
+    }
+    .deck-controls button {
+      border: 0;
+      border-radius: 999px;
+      background: var(--foreground);
+      color: var(--background);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    .deck-controls button:last-of-type {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    .deck-controls .deck-count {
+      min-width: 70px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--foreground);
+    }
+    @media (min-width: 901px) and (min-height: 561px) {
+      .deck-controls { opacity: .28; transition: opacity .25s ease; }
+      .deck-controls:hover, .deck-controls:focus-within { opacity: 1; }
+    }
+    @media (max-width: 900px), (max-height: 560px) {
+      .deck-controls {
+        bottom: 8px;
+        width: calc(100vw - 16px);
+        justify-content: space-between;
+        background: rgba(255,255,255,.95);
+      }
+      .deck-controls button { font-size: 14px; padding: 10px 14px; }
+    }
+    @media print {
+      .deck-controls { display: none !important; }
+    }
+  
+
+/* Code snippet readability patch: syntax colors + no clipping */
+.code-block {
+  white-space: pre-wrap !important;
+  overflow: visible !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  max-width: calc(100% - 20px) !important;
+  max-height: none !important;
+}
+.code-block.code-small {
+  font-size: 24px !important;
+  line-height: 1.42 !important;
+  padding: 30px 38px !important;
+}
+.code-block.code-tiny {
+  font-size: 21px !important;
+  line-height: 1.34 !important;
+  padding: 24px 30px !important;
+}
+.code-block .keyword { color: #cba6f7; }
+.code-block .class-name { color: #f9e2af; }
+.code-block .method { color: #89b4fa; }
+.code-block .string { color: #a6e3a1; }
+.code-block .num { color: #fab387; }
+.code-block .comment { color: #6c7086; font-style: italic; }
+.code-block .bracket { color: #f38ba8; }
+</style>
+<style>
+/* Fundamentals of Database Systems additions */
+:root { --nav-dot-size: 7px; }
+.chassis-credit { display: none !important; }
+.nav-dots { gap: 5px; }
+.database-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  width: 100%;
+  margin-top: 30px;
+}
+.db-card {
+  background: color-mix(in srgb, var(--accent) 7%, var(--background));
+  border: 2px solid color-mix(in srgb, var(--accent) 16%, transparent);
+  border-radius: 22px;
+  padding: 34px;
+  min-height: 250px;
+}
+.db-card .icon { font-size: 70px; line-height: 1; margin-bottom: 18px; }
+.db-card h3 { font-size: 34px; margin-bottom: 14px; }
+.db-card p { font-size: 27px; line-height: 1.38; margin: 0; }
+.table-demo {
+  width: 100%;
+  max-width: 1300px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  margin-top: 30px;
+  font-size: 28px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.08);
+}
+.table-demo th {
+  background: var(--foreground);
+  color: var(--background);
+  padding: 20px 24px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 24px;
+}
+.table-demo td {
+  padding: 20px 24px;
+  border-bottom: 2px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--background));
+}
+.table-demo tr:last-child td { border-bottom: 0; }
+.label-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 8px 0 0;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--background));
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--foreground);
+  font-size: 27px;
+  font-weight: 700;
+}
+.flow-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 22px;
+  width: 100%;
+  margin-top: 35px;
+}
+.flow-box {
+  flex: 1;
+  min-height: 245px;
+  padding: 34px 28px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--background));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.flow-box .emoji { font-size: 72px; line-height: 1; margin-bottom: 18px; }
+.flow-box strong { font-size: 34px; color: var(--foreground); }
+.flow-box span { font-size: 26px; margin-top: 12px; color: color-mix(in srgb, var(--foreground) 68%, transparent); }
+.flow-arrow { align-self: center; font-family: var(--font-display); font-size: 58px; color: var(--accent); }
+.question-card {
+  width: 100%;
+  max-width: 1300px;
+  padding: 42px 48px;
+  border-radius: 22px;
+  border: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--background));
+  font-size: 38px;
+  line-height: 1.35;
+}
+.big-number {
+  font-family: var(--font-display);
+  font-size: 120px;
+  line-height: .9;
+  color: var(--accent);
+}
+.split-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+  align-items: stretch;
+  margin-top: 30px;
+}
+.panel {
+  border-radius: 24px;
+  padding: 38px;
+  background: color-mix(in srgb, var(--accent) 7%, var(--background));
+  border: 2px solid color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.panel h3 { font-size: 36px; margin-bottom: 18px; }
+.panel p, .panel li { font-size: 28px; line-height: 1.42; }
+.entity-row {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  margin-top: 30px;
+  width: 100%;
+}
+.entity-box {
+  min-width: 260px;
+  padding: 30px 24px;
+  border-radius: 18px;
+  background: var(--foreground);
+  color: var(--background);
+  text-align: center;
+  font-weight: 800;
+  font-size: 30px;
+}
+.entity-link { font-family: var(--font-display); color: var(--accent); font-size: 54px; }
+.note-line {
+  margin-top: 24px;
+  padding: 24px 32px;
+  border-left: 6px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--background));
+  border-radius: 0 16px 16px 0;
+  font-size: 30px;
+  max-width: 1200px;
+}
+.deck-controls {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 120;
+  padding: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 35px rgba(0,0,0,.12);
+  backdrop-filter: blur(12px);
+}
+.deck-controls button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.deck-controls button:last-of-type { background: var(--accent); color: var(--accent-foreground); }
+.deck-controls .deck-count { min-width: 70px; text-align: center; font-family: var(--font-mono); font-size: 14px; color: var(--foreground); }
+@media (min-width: 901px) and (min-height: 561px) {
+  .deck-controls { opacity: .28; transition: opacity .25s ease; }
+  .deck-controls:hover, .deck-controls:focus-within { opacity: 1; }
+}
+@media (max-width: 900px), (max-height: 560px) {
+  .deck-controls { bottom: 8px; width: calc(100vw - 16px); justify-content: space-between; background: rgba(255,255,255,.95); }
+  .deck-controls button { font-size: 14px; padding: 10px 14px; }
+}
+@media print { .deck-controls { display: none !important; } }
+.code-block {
+  white-space: pre-wrap !important;
+  overflow: visible !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  max-width: calc(100% - 20px) !important;
+  max-height: none !important;
+}
+.code-block.code-small { font-size: 24px !important; line-height: 1.42 !important; padding: 30px 38px !important; }
+.code-block.code-tiny { font-size: 21px !important; line-height: 1.34 !important; padding: 24px 30px !important; }
+.code-block .keyword { color: #cba6f7; }
+.code-block .table-name { color: #f9e2af; }
+.code-block .field { color: #89b4fa; }
+.code-block .string { color: #a6e3a1; }
+.code-block .num { color: #fab387; }
+.code-block .comment { color: #6c7086; font-style: italic; }
+.code-block .bracket { color: #f38ba8; }
+</style>
+<style>
+/* Deep navy database theme override */
+:root {
+  --background: #152543;
+  --foreground: #F8FBFF;
+  --accent: #5DB4FF;
+  --accent-foreground: #06162B;
+  --card: #203A63;
+  --card-foreground: #F8FBFF;
+  --code-bg: #071426;
+  --code-fg: #DDEBFF;
+  --border: rgba(160, 195, 255, 0.22);
+  --muted-foreground: rgba(248, 251, 255, 0.62);
+  --nav-dot-color: rgba(248, 251, 255, 0.85);
+  --nav-dot-active-color: var(--accent);
+}
+html, body {
+  background: linear-gradient(180deg, #152543 0%, #142039 100%) !important;
+}
+.slide,
+.slide-dark,
+.slide-accent {
+  background: linear-gradient(180deg, #152543 0%, #142039 100%) !important;
+  color: var(--foreground) !important;
+}
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(93, 180, 255, 0.13), transparent 32%),
+    radial-gradient(circle at 14% 84%, rgba(37, 99, 235, 0.12), transparent 34%);
+  pointer-events: none;
+  z-index: -1;
+}
+h1, h2, h3,
+.slide-dark h1, .slide-dark h2,
+.slide-accent h1, .slide-accent h2 {
+  color: var(--foreground) !important;
+}
+p, li,
+.slide-dark p, .slide-dark li,
+.slide-accent p, .slide-accent li {
+  color: rgba(248, 251, 255, 0.78) !important;
+}
+.eyebrow, .slide-dark .eyebrow, .slide-accent .eyebrow,
+.highlight, .big-number, .flow-arrow, .entity-link, .diagram-arrow,
+.timeline .time, li::before {
+  color: var(--accent) !important;
+}
+.section-number {
+  color: rgba(93, 180, 255, 0.13) !important;
+}
+.info-card, .step-card, .comparison-card, .analogy-item, .question-card,
+.answer-chip, .timeline .task, .two-column-code .side-note,
+.mini-check > div, .database-grid .db-card, .db-card, .flow-box,
+.panel, .note-line, .label-pill, .url-display {
+  background: rgba(255, 255, 255, 0.075) !important;
+  border-color: rgba(115, 177, 255, 0.22) !important;
+  color: var(--foreground) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.14);
+}
+.step-card, .note-line {
+  border-left-color: var(--accent) !important;
+}
+.info-card h3, .db-card h3, .panel h3,
+.analogy-item strong, .flow-box strong, .step-card p,
+.two-column-code .side-note h3, .two-column-code .side-note p,
+.label-pill, .question-card {
+  color: var(--foreground) !important;
+}
+.info-card p, .db-card p, .panel p, .panel li,
+.analogy-item span, .flow-box span {
+  color: rgba(248, 251, 255, 0.72) !important;
+}
+.card-accent {
+  background: rgba(93, 180, 255, 0.22) !important;
+}
+.diagram-box, .entity-box {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: var(--foreground) !important;
+  border: 2px solid rgba(115, 177, 255, 0.22) !important;
+}
+.table-demo {
+  box-shadow: 0 18px 50px rgba(0,0,0,.22) !important;
+}
+.table-demo th {
+  background: rgba(7, 20, 38, 0.92) !important;
+  color: var(--foreground) !important;
+  border-bottom: 1px solid rgba(115, 177, 255, 0.22) !important;
+}
+.table-demo td {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(248, 251, 255, 0.8) !important;
+  border-bottom: 1px solid rgba(115, 177, 255, 0.14) !important;
+}
+.code-block {
+  background: #071426 !important;
+  color: var(--code-fg) !important;
+  border: 1px solid rgba(115, 177, 255, 0.18) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24) !important;
+}
+.output-block {
+  background: #071426 !important;
+  border-color: rgba(34, 197, 94, 0.6) !important;
+}
+.error-block {
+  background: rgba(127, 29, 29, 0.25) !important;
+  border-left-color: #f87171 !important;
+}
+.error-block code { color: #fecaca !important; }
+.success-block {
+  background: rgba(20, 83, 45, 0.26) !important;
+  border-left-color: #4ade80 !important;
+}
+.success-block code { color: #bbf7d0 !important; }
+.deck-controls {
+  background: rgba(7, 20, 38, 0.84) !important;
+  border-color: rgba(115, 177, 255, 0.24) !important;
+}
+.deck-controls button {
+  background: rgba(255,255,255,.12) !important;
+  color: var(--foreground) !important;
+}
+.deck-controls button:last-of-type {
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+.deck-controls .deck-count { color: rgba(248,251,255,.78) !important; }
+@media (max-width: 900px), (max-height: 560px) {
+  .deck-controls { background: rgba(7, 20, 38, 0.94) !important; }
 }
 </style>
-
-
-
-
-<style id="lesson-mobile-accessibility-fix">
-/* Mobile lesson controls, reliable reveals, zoom support, and light-card contrast. */
-.lesson-slide-controls {
-    position: fixed;
-    left: 50%;
-    bottom: max(10px, env(safe-area-inset-bottom));
-    z-index: 2147483000;
-    display: none;
-    align-items: center;
-    gap: 6px;
-    max-width: calc(100vw - 16px);
-    padding: 7px;
-    border: 1px solid rgba(255,255,255,.20);
-    border-radius: 16px;
-    background: rgba(7, 12, 24, .88);
-    box-shadow: 0 12px 36px rgba(0,0,0,.38);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    transform: translateX(-50%);
-    color: #f8fafc;
-    font: 700 13px/1 var(--font-body, system-ui, sans-serif);
-    user-select: none;
+<style>
+/* Lesson 1 rebuilt additions */
+.lesson-badge {
+  display:inline-flex; align-items:center; gap:14px;
+  padding:16px 24px; border-radius:999px;
+  background:rgba(255,255,255,.075); border:1px solid rgba(115,177,255,.24);
+  font-family:var(--font-mono); font-size:24px; color:rgba(248,251,255,.84);
 }
-.lesson-slide-controls__group { display:flex; align-items:center; gap:5px; }
-.lesson-slide-controls button {
-    min-width: 42px;
-    min-height: 40px;
-    padding: 0 10px;
-    border: 1px solid rgba(255,255,255,.20);
-    border-radius: 11px;
-    background: rgba(255,255,255,.10);
-    color: #ffffff;
-    font: inherit;
-    line-height: 1;
-    cursor: pointer;
-    touch-action: manipulation;
+.big-question {
+  max-width: 1320px; padding: 48px 54px; border-radius: 30px;
+  background: rgba(255,255,255,.08); border: 2px solid rgba(115,177,255,.28);
+  font-family: var(--font-display); font-size: 58px; line-height: 1.18;
+  color: var(--foreground); box-shadow: 0 28px 80px rgba(0,0,0,.2);
 }
-.lesson-slide-controls button:hover,
-.lesson-slide-controls button:focus-visible {
-    background: var(--accent, #3b82f6);
-    border-color: var(--accent, #3b82f6);
-    outline: none;
+.duo {
+  display:grid; grid-template-columns:1fr 1fr; gap:38px; width:100%; align-items:stretch; margin-top:30px;
 }
-.lesson-slide-controls button:disabled { opacity:.38; cursor:not-allowed; }
-.lesson-slide-controls__count {
-    min-width: 48px;
-    padding: 0 5px;
-    color: #dbeafe;
-    text-align: center;
-    white-space: nowrap;
+.tile {
+  background:rgba(255,255,255,.075); border:2px solid rgba(115,177,255,.22);
+  border-radius:26px; padding:40px; min-height:270px; box-shadow:0 18px 46px rgba(0,0,0,.14);
 }
-.lesson-slide-controls__divider {
-    width: 1px;
-    height: 28px;
-    margin: 0 1px;
-    background: rgba(255,255,255,.18);
+.tile .icon { font-size:76px; line-height:1; margin-bottom:16px; }
+.tile h3 { font-size:38px; margin-bottom:16px; color:var(--foreground) !important; }
+.tile p, .tile li { font-size:29px; line-height:1.42; color:rgba(248,251,255,.75) !important; }
+.tile ul { gap:12px; }
+.table-demo.compact th { font-size:22px; padding:16px 20px; }
+.table-demo.compact td { font-size:24px; padding:16px 20px; }
+.callout {
+  margin-top:28px; max-width: 1260px; padding:30px 38px; border-radius: 22px;
+  background:rgba(93,180,255,.12); border-left: 7px solid var(--accent);
+  font-size:31px; line-height:1.42; color:rgba(248,251,255,.82);
 }
+.mini-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:22px; width:100%; margin-top:30px;
+}
+.mini-card {
+  min-height:220px; border-radius:22px; padding:30px 24px; text-align:center;
+  background:rgba(255,255,255,.075); border:2px solid rgba(115,177,255,.20);
+  display:flex; flex-direction:column; justify-content:center;
+}
+.mini-card strong { font-size:31px; color:var(--foreground); }
+.mini-card span { font-size:23px; margin-top:10px; color:rgba(248,251,255,.66); }
+.mini-card .emoji { font-size:58px; line-height:1; margin-bottom:16px; }
+.relationship {
+  display:flex; align-items:center; justify-content:center; gap:26px; width:100%; margin-top:44px;
+}
+.rel-box {
+  width:420px; min-height:210px; padding:36px; border-radius:26px; text-align:center;
+  background:rgba(255,255,255,.09); border:2px solid rgba(115,177,255,.26);
+}
+.rel-box strong { display:block; font-size:42px; font-family:var(--font-display); color:var(--foreground); }
+.rel-box span { display:block; margin-top:12px; font-size:27px; color:rgba(248,251,255,.7); }
+.rel-line { font-family:var(--font-display); font-size:68px; color:var(--accent); }
+.sql-preview { max-width: 1220px !important; font-size: 28px !important; line-height: 1.46 !important; }
+.slide .wide { max-width: 1320px !important; }
 
-/* JavaScript adds this class only when the computed surface is actually light. */
-.lesson-light-surface,
-.lesson-light-surface :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,td,th,label,small,blockquote,strong,em,code,span) {
-    color: #0f172a !important;
-    text-shadow: none !important;
+.support-text {
+  font-size: 27px;
+  line-height: 1.45;
+  max-width: 1180px;
+  color: rgba(248, 251, 255, 0.70);
+  margin-top: 18px;
 }
-.lesson-light-surface a { color: #1d4ed8 !important; }
-.lesson-light-surface .lesson-dark-surface,
-.lesson-light-surface .lesson-dark-surface :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,td,th,label,small,blockquote,strong,em,code,span) {
-    color: #f8fafc !important;
+.support-text strong { color: var(--foreground); }
+.support-text .highlight { color: var(--accent); font-weight: 800; }
+.micro-note {
+  font-size: 24px;
+  line-height: 1.4;
+  color: rgba(248, 251, 255, 0.58);
+  max-width: 1120px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
 }
-
-@media (max-width: 1024px), (hover: none), (pointer: coarse) {
-    .lesson-slide-controls { display: flex !important; }
-    .keyboard-hint, .nav-dots { display: none !important; }
-
-    /* Mobile must never depend on an observer/animation to expose lesson content. */
-    :root.mobile-show-all-content .reveal,
-    :root.mobile-show-all-content .reveal-left,
-    :root.mobile-show-all-content .reveal-right,
-    :root.mobile-show-all-content .reveal-scale,
-    :root.mobile-show-all-content .reveal-blur,
-    :root.mobile-show-all-content .step {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: none !important;
-        filter: none !important;
-        animation: none !important;
-        transition: none !important;
-    }
-    .slide-viewport {
-        touch-action: pan-x pan-y pinch-zoom !important;
-        -webkit-overflow-scrolling: touch;
-    }
+.explain-strip {
+  max-width: 1220px;
+  margin-top: 24px;
+  padding: 24px 30px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.075);
+  border: 1px solid rgba(115,177,255,.22);
+  color: rgba(248,251,255,.78);
+  font-size: 26px;
+  line-height: 1.42;
 }
 
-@media (max-width: 390px) {
-    .lesson-slide-controls { gap:4px; padding:6px; border-radius:14px; }
-    .lesson-slide-controls button { min-width:36px; min-height:38px; padding:0 7px; font-size:12px; }
-    .lesson-slide-controls__count { min-width:42px; font-size:12px; }
-    .lesson-slide-controls__divider { height:25px; }
+.dense-slide {
+  justify-content: flex-start;
+  gap: 28px;
+}
+.pill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1240px;
+  margin-top: 6px;
+}
+.pill-grid .label-pill {
+  width: 100%;
+  margin: 0;
+  padding: 16px 22px;
+  font-size: 25px;
+  line-height: 1.25;
+  border-radius: 18px;
+}
+@media (max-width: 1100px) {
+  .pill-grid { grid-template-columns: 1fr; }
 }
 
-@media print {
-    .lesson-slide-controls { display:none !important; }
-}
+.deck-controls { opacity:.6; }
+@media (max-width:900px), (max-height:560px){ .deck-controls{opacity:1;} }
 </style>
-
 </head>
-<body>
-    <canvas id="particles"></canvas>
-
-    <!-- ========== SLIDE 1: TITLE ========== -->
-    <section class="slide title-slide hero"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1">Week 1 · Session 2</span>
-        <h1 class="reveal d2">Data, Information &<br>Database Concepts</h1>
-        <p class="reveal d3">Deep dive into the foundations of database systems</p>
-    <p class="reveal d4" style="font-size:22px;color:var(--accent,var(--accent-light));margin-top:20px;">Student Edition - expanded lesson explanations</p></section>
-
-    <!-- ========== SLIDE 2: RECAP ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Quick Recap</span>
-        <h2 class="reveal d2">Last Session We Learned:</h2>
-        <ul>
-            <li class="step">A database is an organized collection of related data</li>
-            <li class="step">A DBMS is software that manages databases</li>
-            <li class="step">We'll use WAMP (Windows + Apache + MySQL + PHP)</li>
-            <li class="step">The relational model uses tables with rows & columns</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 3: TODAY'S AGENDA ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Today's Agenda</span>
-        <h2 class="reveal d2">What We'll Cover Today</h2>
-        <ul>
-            <li class="step">The DIKW Pyramid (Data → Information → Knowledge → Wisdom)</li>
-            <li class="step">Characteristics of good data</li>
-            <li class="step">Database system components & architecture</li>
-            <li class="step">People who work with databases (roles)</li>
-            <li class="step">Advantages & disadvantages of the database approach</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 4: TRANSITION ========== -->
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 01</span>
-        <h2 class="reveal d2">The DIKW Pyramid</h2>
-        <p class="reveal d3">From raw data to actionable wisdom</p>
-    </section>
-
-    <!-- ========== SLIDE 5: DIKW OVERVIEW ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">The Hierarchy</span>
-        <h2 class="reveal d2">Data → Information → Knowledge → Wisdom</h2>
-        <div class="pyramid reveal d3">
-            <div class="pyramid-level" style="width:300px; background:#0D47A1; color:white;">🧠 WISDOM</div>
-            <div class="pyramid-level" style="width:450px; background:#1565C0; color:white;">💡 KNOWLEDGE</div>
-            <div class="pyramid-level" style="width:600px; background:#1E88E5; color:white;">📊 INFORMATION</div>
-            <div class="pyramid-level" style="width:750px; background:#BBDEFB; color:#0D47A1;">📦 DATA</div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 6: DATA LEVEL ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Level 1: Data</span>
-        <h2 class="reveal d2">Data = Raw Facts</h2>
-        <p class="reveal d3">Unprocessed, unorganized symbols. No meaning on their own. They are the building blocks.</p>
-        <div class="blue-card step" style="margin-top:24px;">
-            <p style="font-size:30px;"><strong>Examples:</strong></p>
-            <p style="font-size:28px; margin-top:12px;">"37.5" · "Paracetamol" · "2024-03-15" · "Room 201"</p>
-            <p style="font-size:24px; margin-top:16px; opacity:0.8;">Without context: Is 37.5 a temperature? A price? A weight? We don't know yet.</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 7: INFORMATION LEVEL ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Level 2: Information</span>
-        <h2 class="reveal d2">Information = Processed Data</h2>
-        <p class="reveal d3">Data + Context + Structure = Information. It answers Who, What, When, Where.</p>
-        <div class="blue-card step" style="margin-top:24px;">
-            <p style="font-size:30px;"><strong>Example:</strong></p>
-            <p style="font-size:28px; margin-top:12px;">"Patient Juan has a temperature of 37.5°C, was given Paracetamol on March 15, 2024 in Room 201."</p>
-            <p style="font-size:24px; margin-top:16px; opacity:0.8;">Now the data MEANS something. We can act on it.</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 8: KNOWLEDGE LEVEL ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Level 3: Knowledge</span>
-        <h2 class="reveal d2">Knowledge = Applied Information</h2>
-        <p class="reveal d3">When you combine information with experience and understanding, you get knowledge. It answers HOW and WHY.</p>
-        <div class="blue-card step" style="margin-top:24px;">
-            <p style="font-size:30px;"><strong>Example:</strong></p>
-            <p style="font-size:28px; margin-top:12px;">"37.5°C is a low-grade fever. Paracetamol is the standard first-line treatment. Monitor for 4 hours."</p>
-            <p style="font-size:24px; margin-top:16px; opacity:0.8;">This requires TRAINING and EXPERIENCE beyond just reading data.</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 9: WISDOM LEVEL ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Level 4: Wisdom</span>
-        <h2 class="reveal d2">Wisdom = Judgment + Ethics</h2>
-        <p class="reveal d3">Wisdom is knowing WHEN and WHETHER to act. It's the ability to make the right decision considering all factors.</p>
-        <div class="blue-card step" style="margin-top:24px;">
-            <p style="font-size:30px;"><strong>Example:</strong></p>
-            <p style="font-size:28px; margin-top:12px;">"This patient has recurring fevers every month. Instead of just treating symptoms, we should run a full diagnostic to find the root cause."</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 10: DIKW SUMMARY TABLE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Summary</span>
-        <h2 class="reveal d2">DIKW at a Glance</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Level</th><th>Definition</th><th>Question Answered</th></tr></thead>
-            <tbody>
-                <tr><td><strong>Data</strong></td><td>Raw facts, symbols</td><td>Nothing (no context)</td></tr>
-                <tr><td><strong>Information</strong></td><td>Processed, structured data</td><td>Who, What, When, Where</td></tr>
-                <tr><td><strong>Knowledge</strong></td><td>Information + experience</td><td>How, Why</td></tr>
-                <tr><td><strong>Wisdom</strong></td><td>Judgment from knowledge</td><td>Should we? When to act?</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- ========== SLIDE 11: WHERE DATABASES FIT ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Key Insight</span>
-        <h2 class="reveal d2">Where Do Databases Fit?</h2>
-        <p class="reveal d3">Databases primarily store <strong>DATA</strong> and help transform it into <strong>INFORMATION</strong> through queries and reports.</p>
-        <div class="grid-2 step">
-            <div class="grid-card">
-                <h3>Database Stores</h3>
-                <p>Raw data: names, numbers, dates, IDs, transactions</p>
-            </div>
-            <div class="grid-card">
-                <h3>Queries Produce</h3>
-                <p>Information: reports, summaries, filtered results, analytics</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 12: DIKW REAL EXAMPLE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">01</span>
-        <span class="eyebrow reveal d1">Real-World Example</span>
-        <h2 class="reveal d2">DIKW in Enrollment System</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Level</th><th>Example</th></tr></thead>
-            <tbody>
-                <tr><td><strong>Data</strong></td><td>"BSIS" · "42" · "Section A" · "2024"</td></tr>
-                <tr><td><strong>Information</strong></td><td>"42 students enrolled in BSIS Section A for 2024"</td></tr>
-                <tr><td><strong>Knowledge</strong></td><td>"BSIS Section A is at full capacity; we need to open Section B"</td></tr>
-                <tr><td><strong>Wisdom</strong></td><td>"Based on 3-year trends, we should plan for 3 sections next year"</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- ========== SLIDE 13: Q&A PAUSE #1 ========== -->
-    
-
-    <!-- ========== SLIDE 14: TRANSITION ========== -->
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 02</span>
-        <h2 class="reveal d2">Characteristics of<br>Good Data</h2>
-        <p class="reveal d3">Not all data is created equal</p>
-    </section>
-
-    <!-- ========== SLIDE 15: DATA QUALITY ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">Data Quality</span>
-        <h2 class="reveal d2">What Makes Data "Good"?</h2>
-        <p class="reveal d3">Garbage in, garbage out. If your data is bad, your information and decisions will be bad too.</p>
-        <p class="step" style="margin-top:16px; font-size:28px; color:#666;">A database is only as useful as the quality of data it contains.</p>
-    </section>
-
-    <!-- ========== SLIDE 16: 5 CHARACTERISTICS ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">The 5 Pillars</span>
-        <h2 class="reveal d2">Characteristics of Quality Data</h2>
-        <ul>
-            <li class="step"><strong>Accurate:</strong> Data reflects reality correctly</li>
-            <li class="step"><strong>Complete:</strong> No missing fields or gaps</li>
-            <li class="step"><strong>Consistent:</strong> Same format, no contradictions</li>
-            <li class="step"><strong>Timely:</strong> Up-to-date, not stale</li>
-            <li class="step"><strong>Relevant:</strong> Useful for its intended purpose</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 17: GOOD VS BAD DATA ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">Comparison</span>
-        <h2 class="reveal d2">Good Data vs. Bad Data</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Good Data ✅</th><th>Bad Data ❌</th></tr></thead>
-            <tbody>
-                <tr><td>Name: "Maria Santos"</td><td>Name: "maria" (incomplete)</td></tr>
-                <tr><td>Date: "2024-03-15"</td><td>Date: "March 15ish" (vague)</td></tr>
-                <tr><td>Phone: "09171234567"</td><td>Phone: "0917" (incomplete)</td></tr>
-                <tr><td>GPA: 1.75</td><td>GPA: "one point seven five" (wrong format)</td></tr>
-                <tr><td>Status: "Enrolled"</td><td>Status: "" (missing)</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- ========== SLIDE 18: GIGO ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">02</span>
-        <span class="eyebrow reveal d1">Golden Rule</span>
-        <h2 class="reveal d2">GIGO: Garbage In, Garbage Out</h2>
-        <div class="flow-arrow reveal d3">
-            <div class="flow-box">
-                <h3>🗑️ Bad Data</h3>
-                <p>Wrong, incomplete, inconsistent</p>
-            </div>
-            <div class="flow-connector">→</div>
-            <div class="flow-box">
-                <h3>⚙️ Processing</h3>
-                <p>Queries, reports, analysis</p>
-            </div>
-            <div class="flow-connector">→</div>
-            <div class="flow-box">
-                <h3>💀 Bad Decisions</h3>
-                <p>Wrong conclusions, costly mistakes</p>
-            </div>
-        </div>
-        <p class="step" style="margin-top:32px; font-size:26px; color:#666;">This is why data validation and constraints in databases are critical.</p>
-    </section>
-
-    <!-- ========== SLIDE 19: TRANSITION ========== -->
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 03</span>
-        <h2 class="reveal d2">Database System<br>Components</h2>
-        <p class="reveal d3">What makes a database system work</p>
-    </section>
-
-    <!-- ========== SLIDE 20: 5 COMPONENTS ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Architecture</span>
-        <h2 class="reveal d2">5 Components of a Database System</h2>
-        <ul>
-            <li class="step"><strong>Hardware</strong> — Physical machines & storage</li>
-            <li class="step"><strong>Software</strong> — DBMS + applications</li>
-            <li class="step"><strong>Data</strong> — The actual stored information</li>
-            <li class="step"><strong>Procedures</strong> — Rules & instructions for users</li>
-            <li class="step"><strong>People</strong> — Users, admins, developers</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 21: HARDWARE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Component 1</span>
-        <h2 class="reveal d2">Hardware</h2>
-        <p class="reveal d3">The physical devices that store and process data.</p>
-        <div class="grid-2 step">
-            <div class="grid-card">
-                <h3>Storage Devices</h3>
-                <p>Hard drives, SSDs, cloud storage, RAID arrays for redundancy</p>
-            </div>
-            <div class="grid-card">
-                <h3>Processing</h3>
-                <p>Servers, RAM, processors that execute queries and manage connections</p>
-            </div>
-        </div>
-        <p class="step" style="margin-top:20px; font-size:24px; color:#666;">For our class: Your laptop IS the hardware. WAMP runs locally.</p>
-    </section>
-
-    <!-- ========== SLIDE 22: SOFTWARE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Component 2</span>
-        <h2 class="reveal d2">Software</h2>
-        <p class="reveal d3">The programs that manage, access, and interact with the database.</p>
-        <div class="grid-3 step">
-            <div class="grid-card">
-                <h3>DBMS</h3>
-                <p>MySQL, PostgreSQL, Oracle</p>
-            </div>
-            <div class="grid-card">
-                <h3>Applications</h3>
-                <p>phpMyAdmin, custom apps, reporting tools</p>
-            </div>
-            <div class="grid-card">
-                <h3>OS</h3>
-                <p>Windows, Linux (the host system)</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 23: DATA COMPONENT ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Component 3</span>
-        <h2 class="reveal d2">Data</h2>
-        <p class="reveal d3">The most important component. The reason the entire system exists.</p>
-        <div class="blue-card step" style="margin-top:24px;">
-            <p style="font-size:28px;"><strong>Two types of data in a database:</strong></p>
-            <ul style="margin-top:16px;">
-                <li><strong>User Data:</strong> Actual business records (students, grades, transactions)</li>
-                <li style="margin-top:8px;"><strong>Metadata:</strong> Data ABOUT the data (table names, column types, constraints)</li>
-            </ul>
-            <p style="font-size:24px; margin-top:20px; opacity:0.8;">Metadata = the structure. User data = the content.</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 24: METADATA EXAMPLE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Metadata Example</span>
-        <h2 class="reveal d2">User Data vs. Metadata</h2>
-        <div class="grid-2 reveal d3">
-            <div class="grid-card">
-                <h3>User Data (Content)</h3>
-                <p style="font-size:22px; font-family:monospace; margin-top:12px;">
-                    StudentID: 2024-001<br>
-                    Name: Maria Santos<br>
-                    Course: BSIS<br>
-                    GPA: 1.50
-                </p>
-            </div>
-            <div class="grid-card">
-                <h3>Metadata (Structure)</h3>
-                <p style="font-size:22px; font-family:monospace; margin-top:12px;">
-                    Table: students<br>
-                    Column: StudentID (VARCHAR, PK)<br>
-                    Column: Name (VARCHAR, NOT NULL)<br>
-                    Column: GPA (DECIMAL)
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 25: PROCEDURES ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Component 4</span>
-        <h2 class="reveal d2">Procedures</h2>
-        <p class="reveal d3">Documented rules and instructions that govern how the database is used.</p>
-        <ul>
-            <li class="step"><strong>Login procedures:</strong> Who can access what</li>
-            <li class="step"><strong>Backup schedules:</strong> When and how often</li>
-            <li class="step"><strong>Data entry rules:</strong> Formats, required fields</li>
-            <li class="step"><strong>Recovery plans:</strong> What to do when things break</li>
-            <li class="step"><strong>Audit procedures:</strong> Who did what, when</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 26: PEOPLE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">03</span>
-        <span class="eyebrow reveal d1">Component 5</span>
-        <h2 class="reveal d2">People</h2>
-        <p class="reveal d3">The humans who interact with the database system in different roles.</p>
-        <p class="step" style="margin-top:16px; font-size:28px;">Let's look at each role in detail...</p>
-    </section>
-
-    <!-- ========== SLIDE 27: Q&A PAUSE #2 ========== -->
-    
-
-    <!-- ========== SLIDE 28: TRANSITION ========== -->
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 04</span>
-        <h2 class="reveal d2">Database Roles</h2>
-        <p class="reveal d3">Who works with databases and what do they do?</p>
-    </section>
-
-    <!-- ========== SLIDE 29: DATABASE ADMINISTRATOR ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Role 1</span>
-        <h2 class="reveal d2">Database Administrator (DBA)</h2>
-        <div class="blue-card reveal d3">
-            <p style="font-size:30px;"><strong>The "guardian" of the database.</strong></p>
-            <ul style="margin-top:16px;">
-                <li>Controls access and permissions</li>
-                <li>Monitors performance and optimization</li>
-                <li>Manages backups and recovery</li>
-                <li>Ensures security and integrity</li>
-                <li>Plans storage and capacity</li>
-            </ul>
-            <p style="font-size:24px; margin-top:20px; opacity:0.8;">💰 Avg salary: ₱40K-80K/month (PH) | $80K-130K/year (US)</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 30: DATABASE DESIGNER ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Role 2</span>
-        <h2 class="reveal d2">Database Designer</h2>
-        <div class="blue-card reveal d3">
-            <p style="font-size:30px;"><strong>The "architect" who plans the structure.</strong></p>
-            <ul style="margin-top:16px;">
-                <li>Creates ER diagrams and data models</li>
-                <li>Defines tables, relationships, and constraints</li>
-                <li>Normalizes the schema for efficiency</li>
-                <li>Works with stakeholders to understand data needs</li>
-            </ul>
-            <p style="font-size:24px; margin-top:20px; opacity:0.8;">This is what YOU will learn to do in this course! 🎯</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 31: APPLICATION DEVELOPER ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Role 3</span>
-        <h2 class="reveal d2">Application Developer</h2>
-        <div class="blue-card reveal d3">
-            <p style="font-size:30px;"><strong>The "builder" who connects apps to the database.</strong></p>
-            <ul style="margin-top:16px;">
-                <li>Writes code that reads/writes to the database</li>
-                <li>Builds forms, reports, and interfaces</li>
-                <li>Uses SQL within programming languages (PHP, Python, Java)</li>
-                <li>Creates APIs for data access</li>
-            </ul>
-            <p style="font-size:24px; margin-top:20px; opacity:0.8;">Think: the person who builds the enrollment system's web interface.</p>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 32: END USERS ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">Role 4</span>
-        <h2 class="reveal d2">End Users</h2>
-        <p class="reveal d3">The people who actually USE the system day-to-day.</p>
-        <div class="grid-2 step">
-            <div class="grid-card">
-                <h3>Casual Users</h3>
-                <p>Access occasionally. Use pre-built reports. (Example: a dean checking enrollment numbers)</p>
-            </div>
-            <div class="grid-card">
-                <h3>Power Users</h3>
-                <p>Use daily, write their own queries. (Example: registrar staff processing records)</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 33: ROLES SUMMARY ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">04</span>
-        <span class="eyebrow reveal d1">All Roles</span>
-        <h2 class="reveal d2">Database Roles Summary</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Role</th><th>Focus</th><th>Analogy</th></tr></thead>
-            <tbody>
-                <tr><td>DBA</td><td>Security, performance, backups</td><td>Building security guard</td></tr>
-                <tr><td>Designer</td><td>Structure & planning</td><td>Architect</td></tr>
-                <tr><td>Developer</td><td>Apps & interfaces</td><td>Construction worker</td></tr>
-                <tr><td>End User</td><td>Daily operations</td><td>Tenant / resident</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- ========== SLIDE 34: TRANSITION ========== -->
-    <section class="slide transition-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="eyebrow reveal d1" style="color:rgba(255,255,255,0.6);">Part 05</span>
-        <h2 class="reveal d2">Advantages &<br>Disadvantages</h2>
-        <p class="reveal d3">Is the database approach always better?</p>
-    </section>
-
-    <!-- ========== SLIDE 35: ADVANTAGES ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">The Good</span>
-        <h2 class="reveal d2">Advantages of Databases</h2>
-        <ul>
-            <li class="step"><strong>Reduced Redundancy:</strong> Data stored once, referenced many times</li>
-            <li class="step"><strong>Data Consistency:</strong> One source of truth</li>
-            <li class="step"><strong>Data Sharing:</strong> Multiple users access the same data</li>
-            <li class="step"><strong>Data Integrity:</strong> Rules enforce correctness</li>
-            <li class="step"><strong>Security:</strong> Fine-grained access control</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 36: MORE ADVANTAGES ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">More Advantages</span>
-        <h2 class="reveal d2">Even More Benefits</h2>
-        <ul>
-            <li class="step"><strong>Backup & Recovery:</strong> Automated data protection</li>
-            <li class="step"><strong>Data Independence:</strong> Change structure without breaking apps</li>
-            <li class="step"><strong>Efficient Querying:</strong> Find data in milliseconds</li>
-            <li class="step"><strong>Standards:</strong> SQL is universal across DBMS platforms</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 37: DISADVANTAGES ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">The Challenges</span>
-        <h2 class="reveal d2">Disadvantages of Databases</h2>
-        <ul>
-            <li class="step"><strong>Cost:</strong> Enterprise DBMS can be expensive (Oracle, SQL Server)</li>
-            <li class="step"><strong>Complexity:</strong> Requires trained personnel to manage</li>
-            <li class="step"><strong>Single Point of Failure:</strong> If the DB crashes, everything stops</li>
-            <li class="step"><strong>Performance Overhead:</strong> DBMS adds processing layers</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 38: WHEN NOT TO USE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">When NOT to Use a Database</span>
-        <h2 class="reveal d2">Skip the Database When:</h2>
-        <ul>
-            <li class="step">The data is very small and simple (use a spreadsheet)</li>
-            <li class="step">Only one person needs to access it</li>
-            <li class="step">The data never changes</li>
-            <li class="step">Budget is extremely limited and data needs are minimal</li>
-        </ul>
-        <p class="step" style="margin-top:20px; font-size:26px; color:var(--accent);"><strong>Rule of thumb:</strong> If it grows, is shared, or needs rules — use a database.</p>
-    </section>
-
-    <!-- ========== SLIDE 39: Q&A PAUSE #3 ========== -->
-    
-
-    <!-- ========== SLIDE 40: FILE VS DATABASE SCENARIO ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Scenario</span>
-        <h2 class="reveal d2">School Enrollment: File vs. DB</h2>
-        <div class="grid-2 reveal d3">
-            <div class="grid-card">
-                <h3>📁 File Approach</h3>
-                <p style="font-size:22px;">Each department keeps its own Excel file. Student name change? Update 5+ files. Student transfers? Copy-paste. Errors everywhere.</p>
-            </div>
-            <div class="grid-card">
-                <h3>💾 Database Approach</h3>
-                <p style="font-size:22px;">One student record, referenced by all departments. Change once, reflected everywhere. Transfer = update one field. Consistent.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 41: THREE-SCHEMA ARCHITECTURE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Architecture</span>
-        <h2 class="reveal d2">Three-Schema Architecture</h2>
-        <p class="reveal d3">Databases separate HOW data is stored from HOW users see it.</p>
-        <div class="pyramid step" style="margin-top:24px;">
-            <div class="pyramid-level" style="width:500px; background:#0D47A1; color:white;">External Schema (User Views)</div>
-            <div class="pyramid-level" style="width:600px; background:#1565C0; color:white;">Conceptual Schema (Logical Structure)</div>
-            <div class="pyramid-level" style="width:700px; background:#1E88E5; color:white;">Internal Schema (Physical Storage)</div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 42: EXTERNAL SCHEMA ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Layer 1</span>
-        <h2 class="reveal d2">External Schema (Views)</h2>
-        <p class="reveal d3">Different users see different parts of the database based on their needs.</p>
-        <div class="grid-3 step">
-            <div class="grid-card">
-                <h3>👨‍🏫 Faculty View</h3>
-                <p>Student name, grades, attendance</p>
-            </div>
-            <div class="grid-card">
-                <h3>💰 Finance View</h3>
-                <p>Student name, tuition, payments, balance</p>
-            </div>
-            <div class="grid-card">
-                <h3>📋 Registrar View</h3>
-                <p>Student name, ID, course, section, status</p>
-            </div>
-        </div>
-        <p class="step" style="margin-top:20px; font-size:24px; color:#666;">Same underlying data, different perspectives for different users.</p>
-    </section>
-
-    <!-- ========== SLIDE 43: CONCEPTUAL SCHEMA ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Layer 2</span>
-        <h2 class="reveal d2">Conceptual Schema</h2>
-        <p class="reveal d3">The complete logical structure of the entire database. Defines ALL tables, relationships, and constraints.</p>
-        <div class="blue-card step" style="margin-top:24px;">
-            <p style="font-size:28px;">This is the "big picture" blueprint:</p>
-            <ul style="margin-top:12px;">
-                <li>All entities (Students, Courses, Faculty, Payments)</li>
-                <li>All relationships (Student enrolls in Course)</li>
-                <li>All constraints (GPA between 1.00 and 5.00)</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 44: INTERNAL SCHEMA ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Layer 3</span>
-        <h2 class="reveal d2">Internal Schema</h2>
-        <p class="reveal d3">How data is physically stored on disk. Indexes, file formats, storage allocation.</p>
-        <div class="grid-2 step">
-            <div class="grid-card">
-                <h3>You Don't Control This</h3>
-                <p>The DBMS handles physical storage automatically. You design the logical structure.</p>
-            </div>
-            <div class="grid-card">
-                <h3>Why It Matters</h3>
-                <p>Data independence: change physical storage without affecting apps or users.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========== SLIDE 45: DATA INDEPENDENCE ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Key Benefit</span>
-        <h2 class="reveal d2">Data Independence</h2>
-        <table class="reveal d3">
-            <thead><tr><th>Type</th><th>Meaning</th><th>Example</th></tr></thead>
-            <tbody>
-                <tr><td><strong>Logical</strong></td><td>Change conceptual schema without affecting external views</td><td>Add a new column; existing apps still work</td></tr>
-                <tr><td><strong>Physical</strong></td><td>Change storage without affecting logical structure</td><td>Move to SSD; no code changes needed</td></tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- ========== SLIDE 46: RECAP EVERYTHING ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Session Recap</span>
-        <h2 class="reveal d2">Today We Covered:</h2>
-        <ul>
-            <li class="step">✅ DIKW Pyramid (Data → Information → Knowledge → Wisdom)</li>
-            <li class="step">✅ 5 Characteristics of good data (Accurate, Complete, Consistent, Timely, Relevant)</li>
-            <li class="step">✅ 5 Components of a DB system (Hardware, Software, Data, Procedures, People)</li>
-            <li class="step">✅ 4 Database roles (DBA, Designer, Developer, End User)</li>
-            <li class="step">✅ Advantages, disadvantages, and Three-Schema Architecture</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 47: NEXT SESSION PREVIEW ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Coming Up</span>
-        <h2 class="reveal d2">Next Session: Week 2</h2>
-        <p class="reveal d3">We go deeper into the database environment:</p>
-        <ul>
-            <li class="step">Database environment and architecture in detail</li>
-            <li class="step">Client-server architecture</li>
-            <li class="step">How MySQL processes your queries</li>
-            <li class="step">First look at phpMyAdmin interface</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 48: ACTIVITY ========== -->
-    
-
-    <!-- ========== SLIDE 49: WAMP REMINDER ========== -->
-    <section class="slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <span class="section-num">05</span>
-        <span class="eyebrow reveal d1">Reminder</span>
-        <h2 class="reveal d2">WAMP Installation Check</h2>
-        <p class="reveal d3">Have you installed WAMP yet? By next session:</p>
-        <ul>
-            <li class="step">✅ WAMP icon should be GREEN in your taskbar</li>
-            <li class="step">✅ Open browser → type "localhost" → WAMP homepage appears</li>
-            <li class="step">✅ Click "phpMyAdmin" → you should see the interface</li>
-            <li class="step">❌ If you see errors, take a screenshot and bring it</li>
-        </ul>
-    </section>
-
-    <!-- ========== SLIDE 50: END SLIDE ========== -->
-    
-
-<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Concept Model</span><h2 class="reveal d2">How Data, Information &amp; Database Concepts fits together</h2><div class="db-concept-grid reveal d3"><div class="db-concept-card"><h3>Data</h3><p>Raw recorded values such as IDs, dates, quantities, and names.</p></div><div class="db-concept-card"><h3>Information</h3><p>Data interpreted in context so it answers a question.</p></div><div class="db-concept-card"><h3>Metadata</h3><p>Definitions that explain fields, types, constraints, and relationships.</p></div></div></section>
-<section class="slide db-explainer-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">System View</span><h2 class="reveal d2">Trace the logic from start to finish</h2><div class="db-flow reveal d3"><div class="db-flow-step">Capture data</div><div class="db-flow-step">Validate meaning</div><div class="db-flow-step">Organize context</div><div class="db-flow-step">Support a decision</div></div><div class="db-compare reveal d4"><div><strong>Common failure</strong><p>Collecting values without definitions produces records that different users interpret differently.</p></div><div><strong>Better approach</strong><p>Define every field, unit, code, and business rule before relying on the result.</p></div></div></section>
-<!-- DB OFFICIAL REFERENCE: W01S02 -->
-<section class="slide db-reference-slide" data-db-reference="w01s02"><span class="db-subject-watermark">Fundamentals of Database Systems</span><span class="eyebrow reveal d1">Official Reference</span><h2 class="reveal d2">Creating and using a database</h2><div class="db-reference-layout reveal d3"><div class="db-reference-copy"><h3>What to notice</h3><ul><li><strong>Data:</strong> Raw recorded values such as IDs, dates, quantities, and names.</li><li><strong>Information:</strong> Data interpreted in context so it answers a question.</li><li><strong>Metadata:</strong> Definitions that explain fields, types, constraints, and relationships.</li></ul><p style="font-size:18px;line-height:1.45;color:var(--muted-foreground,var(--muted));">Use the labels, syntax, and navigation shown here to connect the lesson to the actual database tool or documentation.</p></div><div class="db-reference-frame"><img src="assets/student-visuals/w01s02-reference.png" alt="Official MySQL Documentation reference for Data, Information &amp; Database Concepts"><div class="db-reference-caption">MySQL Documentation · Creating and using a database</div></div></div></section>
-<section class="slide end-slide"><span class="db-subject-watermark">Fundamentals of Database Systems</span>
-        <h1 class="reveal d1">Great Work<br>Today! 💪</h1>
-        <p class="reveal d2">Week 1 · Session 2 Complete<br>See you next week for Database Environment!</p>
-    </section>
-
-    
-
-
-
-
-
-
-
-<div class="image-lightbox" data-image-lightbox aria-hidden="true"><button class="image-lightbox__close" type="button" aria-label="Close fullscreen image">×</button><figure class="image-lightbox__figure"><img class="image-lightbox__image" alt=""><figcaption class="image-lightbox__caption"></figcaption></figure></div>
-<script data-image-lightbox-script>
-(()=>{const box=document.querySelector('[data-image-lightbox]');if(!box)return;const full=box.querySelector('.image-lightbox__image'),cap=box.querySelector('.image-lightbox__caption'),close=box.querySelector('.image-lightbox__close');let previous=null;const hide=()=>{box.classList.remove('is-open');box.setAttribute('aria-hidden','true');document.body.classList.remove('image-lightbox-open');if(previous)previous.focus();};const show=img=>{previous=img;full.src=img.currentSrc||img.src;full.alt=img.alt||'';cap.textContent=img.alt||'';box.classList.add('is-open');box.setAttribute('aria-hidden','false');document.body.classList.add('image-lightbox-open');close.focus();};document.querySelectorAll('.slide img').forEach(img=>{img.setAttribute('data-lightbox-ready','');img.setAttribute('role','button');img.setAttribute('tabindex','0');img.setAttribute('aria-label','Open image fullscreen: '+(img.alt||'presentation image'));img.addEventListener('click',()=>show(img));img.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(img);}});});close.addEventListener('click',hide);box.addEventListener('click',e=>{if(e.target===box)hide();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('is-open'))hide();});})();
-</script>
-
-
-
-<script id="lesson-mobile-accessibility-script">
+<body data-nav="hidden">
+<section class="slide slide-dark">
+<span class="section-number" style="color: rgba(93,180,255,.16);">02</span>
+<span class="eyebrow reveal d1">Fundamentals of Database Systems</span>
+<h1 class="reveal d2" style="font-size:88px;">Setting Up<br/>WAMP and phpMyAdmin</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">Today we prepare the local database environment for the whole course.</p>
+<div class="lesson-badge reveal d4" style="margin-top:26px;">Lesson 2 · Hands-on setup lesson</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">01</span>
+<span class="eyebrow reveal d1">Learning Targets</span>
+<h2 class="reveal d2">By the end, you can...</h2>
+<p class="support-text reveal d3 wide">This lesson is practical. We will not only define tools; we will open them and check if they work.</p>
+<ul>
+<li class="step">Explain what WAMP is used for.</li>
+<li class="step">Start WampServer correctly.</li>
+<li class="step">Open localhost and phpMyAdmin.</li>
+<li class="step">Create a practice database.</li>
+<li class="step">Run a simple SQL command.</li>
+<li class="step">Recognize common beginner setup errors.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">02</span>
+<span class="eyebrow reveal d1">Warm-up Review</span>
+<h2 class="reveal d2">From Lesson 1</h2>
+<div class="big-question reveal d3">A database is an organized collection of related data.</div>
+<p class="support-text reveal d4 wide">Today, we will prepare the tool that lets us create and manage that organized collection on our own computer.</p>
+<ul style="margin-top:20px;">
+<li class="step">What is a table?</li>
+<li class="step">What is a row?</li>
+<li class="step">What is a column?</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">03</span>
+<span class="eyebrow reveal d1">Big Picture</span>
+<h2 class="reveal d2">Why Do We Need WAMP?</h2>
+<p class="reveal d3 wide">A database needs a service running in the background before we can create tables, save records, and run SQL commands.</p>
+<div class="callout reveal d4">WAMP gives us a local database environment on a Windows computer.</div>
+<p class="support-text reveal d5 wide">Instead of paying for an online server while learning, we can practice safely on localhost.</p>
+</section>
+<section class="slide">
+<span class="section-number">04</span>
+<span class="eyebrow reveal d1">Meaning</span>
+<h2 class="reveal d2">What Does WAMP Mean?</h2>
+<div class="mini-grid reveal d3">
+<div class="mini-card"><div class="emoji">🪟</div><strong>W</strong><span>Windows</span></div>
+<div class="mini-card"><div class="emoji">🌐</div><strong>A</strong><span>Apache</span></div>
+<div class="mini-card"><div class="emoji">🗄️</div><strong>M</strong><span>MySQL / MariaDB</span></div>
+<div class="mini-card"><div class="emoji">🐘</div><strong>P</strong><span>PHP</span></div>
+</div>
+<p class="support-text reveal d4 wide">For this database course, our main focus is the database part, but WAMP includes the other services needed for local development.</p>
+</section>
+<section class="slide">
+<span class="section-number">05</span>
+<span class="eyebrow reveal d1">Simple Roles</span>
+<h2 class="reveal d2">What Each Part Does</h2>
+<div class="database-grid reveal d3">
+<div class="db-card"><h3>Windows</h3><p>The operating system students use.</p></div>
+<div class="db-card"><h3>Apache</h3><p>The local web server.</p></div>
+<div class="db-card"><h3>MySQL/MariaDB</h3><p>The database service.</p></div>
+</div>
+<div class="callout reveal d4">Beginner note: In early lessons, we will simply call it the database service.</div>
+</section>
+<section class="slide">
+<span class="section-number">06</span>
+<span class="eyebrow reveal d1">Tool Focus</span>
+<h2 class="reveal d2">What Is phpMyAdmin?</h2>
+<p class="reveal d3 wide">phpMyAdmin is a browser-based tool for managing databases visually.</p>
+<div class="duo reveal d4">
+<div class="tile"><h3>Without phpMyAdmin</h3><p>You need to type database commands directly.</p></div>
+<div class="tile"><h3>With phpMyAdmin</h3><p>You can create databases, tables, and records using a visual interface.</p></div>
+</div>
+</section>
+<section class="slide">
+<span class="section-number">07</span>
+<span class="eyebrow reveal d1">Important Distinction</span>
+<h2 class="reveal d2">phpMyAdmin Is Not the Database</h2>
+<div class="question-card reveal d3">phpMyAdmin is the control panel. MySQL or MariaDB is the database service.</div>
+<p class="support-text reveal d4 wide">If phpMyAdmin is like a dashboard, the database service is the engine that stores and manages the actual data.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">08</span>
+<span class="eyebrow reveal d1">Our Course Setup</span>
+<h2 class="reveal d2">Tools We Will Use</h2>
+<div class="pill-grid reveal d3">
+<div class="label-pill">WampServer</div>
+<div class="label-pill">phpMyAdmin</div>
+<div class="label-pill">MySQL / MariaDB</div>
+<div class="label-pill">SQL Commands</div>
+<div class="label-pill">Java Swing later</div>
+<div class="label-pill">JDBC later</div>
+</div>
+<p class="support-text reveal d4 wide">The first half of the course focuses on database design and SQL. Later, Java will connect to this database.</p>
+</section>
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Hands-on Lesson</span>
+<h1 class="reveal d2" style="font-size:82px;">Open WampServer first.</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">Before opening phpMyAdmin, the WAMP services must be running.</p>
+<div class="callout reveal d4">Order matters: Start WAMP → open localhost → open phpMyAdmin.</div>
+</section>
+<section class="slide">
+<span class="section-number">09</span>
+<span class="eyebrow reveal d1">Step 1</span>
+<h2 class="reveal d2">Start WampServer</h2>
+<ul>
+<li class="step">Click the Windows Start Menu.</li>
+<li class="step">Search for <strong>WampServer</strong>.</li>
+<li class="step">Open the application.</li>
+<li class="step">Wait for the WAMP icon to appear in the system tray.</li>
+</ul>
+<p class="support-text reveal d4 wide">Do not open phpMyAdmin immediately. Wait until the services finish starting.</p>
+</section>
+<section class="slide">
+<span class="section-number">10</span>
+<span class="eyebrow reveal d1">System Tray</span>
+<h2 class="reveal d2">Find the WAMP Icon</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Where?</h3><p>Usually at the lower-right part of Windows, near the clock.</p></div>
+<div class="tile"><h3>Why check?</h3><p>The icon color tells us if the services are ready.</p></div>
+</div>
+<p class="support-text reveal d4 wide">If you do not see it, click the small up arrow in the tray area.</p>
+</section>
+<section class="slide">
+<span class="section-number">11</span>
+<span class="eyebrow reveal d1">Icon Colors</span>
+<h2 class="reveal d2">What the WAMP Colors Mean</h2>
+<div class="database-grid reveal d3">
+<div class="db-card"><h3>Red</h3><p>Services are stopped.</p></div>
+<div class="db-card"><h3>Orange</h3><p>Some services are running, but not all.</p></div>
+<div class="db-card"><h3>Green</h3><p>Services are running properly.</p></div>
+</div>
+<div class="callout reveal d4">Goal: Wait until the WAMP icon becomes green.</div>
+</section>
+<section class="slide">
+<span class="section-number">12</span>
+<span class="eyebrow reveal d1">Important</span>
+<h2 class="reveal d2">Green Means Ready</h2>
+<p class="reveal d3 wide">If the icon is green, Apache and the database service are running.</p>
+<div class="question-card reveal d4">Do not close WAMP while working with databases.</div>
+<p class="support-text reveal d5 wide">If WAMP is closed, localhost and phpMyAdmin may stop working.</p>
+</section>
+<section class="slide">
+<span class="section-number">13</span>
+<span class="eyebrow reveal d1">Step 2</span>
+<h2 class="reveal d2">Open Localhost</h2>
+<p class="reveal d3 wide">Open your browser and type:</p>
+<div class="code-block sql-preview reveal d4"><span class="string">http://localhost/</span></div>
+<p class="support-text reveal d5 wide">Localhost means your own computer is acting as the local server.</p>
+</section>
+<section class="slide">
+<span class="section-number">14</span>
+<span class="eyebrow reveal d1">Localhost</span>
+<h2 class="reveal d2">What Is Localhost?</h2>
+<div class="big-question reveal d3">Localhost means “this computer.”</div>
+<p class="support-text reveal d4 wide">When we open localhost, we are not visiting an internet website. We are opening a local server running on our own machine.</p>
+</section>
+<section class="slide">
+<span class="section-number">15</span>
+<span class="eyebrow reveal d1">Check Output</span>
+<h2 class="reveal d2">What Should Appear?</h2>
+<ul>
+<li class="step">A WampServer start page</li>
+<li class="step">Server information</li>
+<li class="step">Tools section</li>
+<li class="step">A phpMyAdmin link</li>
+</ul>
+<p class="support-text reveal d4 wide">If the page does not open, WAMP may not be fully running yet.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">16</span>
+<span class="eyebrow reveal d1">Step 3</span>
+<h2 class="reveal d2">Open phpMyAdmin</h2>
+<p class="reveal d3 wide">From the localhost page, click <span class="highlight">phpMyAdmin</span>.</p>
+<p class="support-text reveal d4 wide">You can also type the direct address:</p>
+<div class="code-block sql-preview reveal d5"><span class="string">http://localhost/phpmyadmin/</span></div>
+</section>
+<section class="slide">
+<span class="section-number">17</span>
+<span class="eyebrow reveal d1">Login</span>
+<h2 class="reveal d2">phpMyAdmin Login</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Username</h3><p><strong>root</strong></p></div>
+<div class="tile"><h3>Password</h3><p>Usually blank in a fresh local WAMP setup.</p></div>
+</div>
+<p class="support-text reveal d4 wide">If your setup has a password, use the password configured during installation.</p>
+</section>
+<section class="slide">
+<span class="section-number">18</span>
+<span class="eyebrow reveal d1">Interface Tour</span>
+<h2 class="reveal d2">Main Areas of phpMyAdmin</h2>
+<div class="database-grid reveal d3">
+<div class="db-card"><h3>Left Panel</h3><p>Database list</p></div>
+<div class="db-card"><h3>Top Tabs</h3><p>Structure, SQL, Search, Export, Import</p></div>
+<div class="db-card"><h3>Main Area</h3><p>Where tables and query results appear</p></div>
+</div>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">19</span>
+<span class="eyebrow reveal d1">Do Not Panic</span>
+<h2 class="reveal d2">phpMyAdmin Has Many Buttons</h2>
+<p class="reveal d3 wide">For now, we only need a few parts.</p>
+<div class="pill-grid reveal d4">
+<div class="label-pill">Databases</div>
+<div class="label-pill">Create</div>
+<div class="label-pill">SQL</div>
+<div class="label-pill">Browse</div>
+<div class="label-pill">Structure</div>
+<div class="label-pill">Export</div>
+</div>
+</section>
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Hands-on Activity</span>
+<h1 class="reveal d2" style="font-size:86px;">Create your first practice database.</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">We will create a database named <span class="highlight">practice_db</span>.</p>
+</section>
+<section class="slide">
+<span class="section-number">20</span>
+<span class="eyebrow reveal d1">Step 4</span>
+<h2 class="reveal d2">Create a Database</h2>
+<ul>
+<li class="step">Click the <strong>Databases</strong> tab.</li>
+<li class="step">Find the field for database name.</li>
+<li class="step">Type <strong>practice_db</strong>.</li>
+<li class="step">Click <strong>Create</strong>.</li>
+</ul>
+<p class="support-text reveal d4 wide">Use lowercase letters and underscores to avoid naming problems.</p>
+</section>
+<section class="slide">
+<span class="section-number">21</span>
+<span class="eyebrow reveal d1">Naming Rule</span>
+<h2 class="reveal d2">Use Simple Database Names</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Good</h3><p><span class="highlight">practice_db</span><br/>student_information_db</p></div>
+<div class="tile"><h3>Avoid</h3><p>Practice Database<br/>my-database!<br/>database #1</p></div>
+</div>
+<p class="support-text reveal d4 wide">Simple names reduce errors when writing SQL commands later.</p>
+</section>
+<section class="slide">
+<span class="section-number">22</span>
+<span class="eyebrow reveal d1">Database Created</span>
+<h2 class="reveal d2">Where Did It Go?</h2>
+<p class="reveal d3 wide">After creating the database, it should appear in the left panel.</p>
+<div class="callout reveal d4">Click <strong>practice_db</strong> in the left panel before running commands inside it.</div>
+<p class="support-text reveal d5 wide">Selecting the correct database is important. SQL commands run inside the selected database.</p>
+</section>
+<section class="slide">
+<span class="section-number">23</span>
+<span class="eyebrow reveal d1">Step 5</span>
+<h2 class="reveal d2">Open the SQL Tab</h2>
+<ul>
+<li class="step">Click <strong>practice_db</strong>.</li>
+<li class="step">Click the <strong>SQL</strong> tab.</li>
+<li class="step">A text area will appear.</li>
+<li class="step">This is where we can type SQL commands.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">24</span>
+<span class="eyebrow reveal d1">First SQL Command</span>
+<h2 class="reveal d2">Run a Simple Test</h2>
+<p class="reveal d3 wide">Type this in the SQL tab:</p>
+<div class="code-block sql-preview reveal d4"><span class="keyword">SELECT</span> <span class="string">'Hello, Database!'</span>;</div>
+<p class="support-text reveal d5 wide">Then click <strong>Go</strong> or press the run button in phpMyAdmin.</p>
+</section>
+<section class="slide">
+<span class="section-number">25</span>
+<span class="eyebrow reveal d1">What SELECT Does</span>
+<h2 class="reveal d2">SELECT Shows a Result</h2>
+<p class="reveal d3 wide"><span class="highlight">SELECT</span> is used to retrieve or display information.</p>
+<div class="callout reveal d4">For now, we are not retrieving from a table yet. We are only asking the database to display a message.</div>
+<p class="support-text reveal d5 wide">Later, SELECT will become one of the most important SQL commands in the course.</p>
+</section>
+<section class="slide">
+<span class="section-number">26</span>
+<span class="eyebrow reveal d1">Expected Output</span>
+<h2 class="reveal d2">You Should See a Result Table</h2>
+<table class="table-demo compact reveal d3">
+<tr><th>Hello, Database!</th></tr>
+<tr><td>Hello, Database!</td></tr>
+</table>
+<p class="support-text reveal d4 wide">Even a simple SELECT result appears in a table-like format.</p>
+</section>
+<section class="slide">
+<span class="section-number">27</span>
+<span class="eyebrow reveal d1">Change One Thing</span>
+<h2 class="reveal d2">Modify the Message</h2>
+<p class="reveal d3 wide">Change the text inside the quotes.</p>
+<div class="code-block sql-preview reveal d4"><span class="keyword">SELECT</span> <span class="string">'WAMP is working!'</span>;</div>
+<p class="support-text reveal d5 wide">Run it again and check if the output changes.</p>
+</section>
+<section class="slide">
+<span class="section-number">28</span>
+<span class="eyebrow reveal d1">Tiny Syntax Rule</span>
+<h2 class="reveal d2">SQL Statements End with ;</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Correct</h3><p><span class="highlight">SELECT</span> 'Hi';</p></div>
+<div class="tile"><h3>Common Mistake</h3><p><span class="highlight">SELECT</span> 'Hi'</p></div>
+</div>
+<p class="support-text reveal d4 wide">phpMyAdmin can sometimes run without it, but we will practice using semicolons consistently.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">29</span>
+<span class="eyebrow reveal d1">Another Test</span>
+<h2 class="reveal d2">Display Two Columns</h2>
+<div class="code-block sql-preview reveal d3"><span class="keyword">SELECT</span> <span class="string">'Ana Cruz'</span> <span class="keyword">AS</span> <span class="field">student_name</span>,<br/>
+       <span class="string">'BSIS'</span> <span class="keyword">AS</span> <span class="field">course</span>;</div>
+<p class="support-text reveal d4 wide">The word AS gives a temporary column name in the result.</p>
+</section>
+<section class="slide">
+<span class="section-number">30</span>
+<span class="eyebrow reveal d1">Expected Output</span>
+<h2 class="reveal d2">Result with Column Names</h2>
+<table class="table-demo compact reveal d3">
+<tr><th>student_name</th><th>course</th></tr>
+<tr><td>Ana Cruz</td><td>BSIS</td></tr>
+</table>
+<p class="support-text reveal d4 wide">This preview helps students understand how SQL results are displayed before we create actual tables.</p>
+</section>
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Checkpoint</span>
+<h1 class="reveal d2" style="font-size:78px;">At this point, your setup should work.</h1>
+<ul style="margin-top:28px;">
+<li class="step">WAMP icon is green.</li>
+<li class="step">Localhost opens in the browser.</li>
+<li class="step">phpMyAdmin opens.</li>
+<li class="step">practice_db exists.</li>
+<li class="step">The SELECT command shows output.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">31</span>
+<span class="eyebrow reveal d1">Common Problem 1</span>
+<h2 class="reveal d2">WAMP Icon Stays Red</h2>
+<div class="question-card reveal d3">Meaning: Services are not running.</div>
+<ul style="margin-top:24px;">
+<li class="step">Wait a little longer after opening WAMP.</li>
+<li class="step">Run WAMP as administrator.</li>
+<li class="step">Restart WAMP.</li>
+<li class="step">Restart the computer if needed.</li>
+</ul>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">32</span>
+<span class="eyebrow reveal d1">Common Problem 2</span>
+<h2 class="reveal d2">WAMP Icon Stays Orange</h2>
+<div class="question-card reveal d3">Meaning: Some services are running, but one service has a problem.</div>
+<p class="support-text reveal d4 wide">Often, this happens when another application is already using the same port.</p>
+<ul style="margin-top:20px;">
+<li class="step">Close other local servers like XAMPP.</li>
+<li class="step">Check if Skype, IIS, or another service uses port 80.</li>
+<li class="step">Restart WAMP after closing the conflicting app.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">33</span>
+<span class="eyebrow reveal d1">Common Problem 3</span>
+<h2 class="reveal d2">localhost Does Not Open</h2>
+<ul>
+<li class="step">Check if WAMP is running.</li>
+<li class="step">Check if the icon is green.</li>
+<li class="step">Type the address correctly: <strong>http://localhost/</strong></li>
+<li class="step">Try refreshing the browser.</li>
+<li class="step">Restart WAMP if needed.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">34</span>
+<span class="eyebrow reveal d1">Common Problem 4</span>
+<h2 class="reveal d2">phpMyAdmin Login Error</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Check Username</h3><p>Usually <strong>root</strong></p></div>
+<div class="tile"><h3>Check Password</h3><p>Usually blank for local WAMP unless changed.</p></div>
+</div>
+<p class="support-text reveal d4 wide">Do not guess repeatedly. Confirm the configured database username and password.</p>
+</section>
+<section class="slide">
+<span class="section-number">35</span>
+<span class="eyebrow reveal d1">Common Problem 5</span>
+<h2 class="reveal d2">Database Name Already Exists</h2>
+<p class="reveal d3 wide">If <strong>practice_db</strong> already exists, do not panic.</p>
+<div class="callout reveal d4">You can either use the existing database or create a new one like <strong>practice_db2</strong>.</div>
+<p class="support-text reveal d5 wide">In class, follow the instructor’s exact database name unless told otherwise.</p>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">36</span>
+<span class="eyebrow reveal d1">Guided Practice</span>
+<h2 class="reveal d2">Complete the Setup Checklist</h2>
+<div class="pill-grid reveal d3">
+<div class="label-pill step">Open WampServer</div>
+<div class="label-pill step">Wait for green icon</div>
+<div class="label-pill step">Open localhost</div>
+<div class="label-pill step">Open phpMyAdmin</div>
+<div class="label-pill step">Create practice_db</div>
+<div class="label-pill step">Run SELECT test</div>
+</div>
+</section>
+<section class="slide">
+<span class="section-number">37</span>
+<span class="eyebrow reveal d1">Independent Exercise</span>
+<h2 class="reveal d2">Create Your Own Test Database</h2>
+<ul>
+<li class="step">Create a database named <strong>my_first_database</strong>.</li>
+<li class="step">Open its SQL tab.</li>
+<li class="step">Run a SELECT command showing your name.</li>
+<li class="step">Run a SELECT command showing your course.</li>
+<li class="step">Take note of what appears in the result table.</li>
+</ul>
+</section>
+<section class="slide dense-slide">
+<span class="section-number">38</span>
+<span class="eyebrow reveal d1">Sample Exercise Command</span>
+<h2 class="reveal d2">Print Your Name and Course</h2>
+<div class="code-block sql-preview reveal d3"><span class="keyword">SELECT</span> <span class="string">'Your Name'</span> <span class="keyword">AS</span> <span class="field">name</span>,<br/>
+       <span class="string">'Your Course'</span> <span class="keyword">AS</span> <span class="field">course</span>;</div>
+<p class="support-text reveal d4 wide">Replace the text inside the quotes with your actual information.</p>
+</section>
+<section class="slide">
+<span class="section-number">39</span>
+<span class="eyebrow reveal d1">Exit Check</span>
+<h2 class="reveal d2">Answer Before Leaving</h2>
+<ul>
+<li class="step">What does WAMP provide for us?</li>
+<li class="step">What does localhost mean?</li>
+<li class="step">What is phpMyAdmin used for?</li>
+<li class="step">What does the WAMP green icon mean?</li>
+<li class="step">What SQL command did we run today?</li>
+</ul>
+</section>
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Lesson Summary</span>
+<h2 class="reveal d2" style="color: var(--foreground);">What We Learned</h2>
+<ul style="margin-top:18px;">
+<li class="step">WAMP lets us run a local database environment on Windows.</li>
+<li class="step">The green WAMP icon means the required services are running.</li>
+<li class="step">localhost opens the local server on our own computer.</li>
+<li class="step">phpMyAdmin is a visual tool for managing databases.</li>
+<li class="step">We created a practice database and ran our first SELECT command.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">→</span>
+<span class="eyebrow reveal d1">Coming Up Next</span>
+<h2 class="reveal d2">Lesson 3</h2>
+<h3 class="reveal d3" style="color: var(--accent);">Data, Information, and File-Based Systems</h3>
+<p class="reveal d4 wide">We will compare raw data, useful information, spreadsheets, and actual database systems.</p>
+<p class="support-text reveal d5 wide">Now that the tools are ready, future lessons can become more hands-on.</p>
+</section>
+<div aria-label="Presentation controls" class="deck-controls">
+<button aria-label="Previous slide" id="deckPrev" type="button">← Previous</button>
+<span class="deck-count" id="deckCount">1 / 1</span>
+<button aria-label="Next slide" id="deckNext" type="button">Next →</button>
+</div>
+<script>
 (function () {
-    'use strict';
-
-    const MOBILE_QUERY = '(max-width: 1024px), (hover: none), (pointer: coarse)';
-    const REVEAL_SELECTOR = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur, .step';
-    const CANVAS_W = 1920;
-    const CANVAS_H = 1080;
-    let zoomMultiplier = 1;
-    let userAdjustedZoom = false;
-    let deckPatched = false;
-
-    function rgbaParts(value) {
-        if (!value) return null;
-        const match = value.match(/rgba?\(\s*([\d.]+)[, ]+([\d.]+)[, ]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)/i);
-        if (!match) return null;
-        return {
-            r: Number(match[1]), g: Number(match[2]), b: Number(match[3]),
-            a: match[4] == null ? 1 : Number(match[4])
-        };
+  function initDeckControls() {
+    const prev = document.getElementById('deckPrev');
+    const next = document.getElementById('deckNext');
+    const count = document.getElementById('deckCount');
+    function update() {
+      if (!window.slides || !window.slides.slides) return;
+      count.textContent = (window.slides.currentSlide + 1) + ' / ' + window.slides.slides.length;
+      prev.disabled = window.slides.currentSlide <= 0;
+      next.disabled = window.slides.currentSlide >= window.slides.slides.length - 1;
+      prev.style.opacity = prev.disabled ? '.45' : '1';
+      next.style.opacity = next.disabled ? '.45' : '1';
     }
-
-    function luminance(rgb) {
-        const linear = [rgb.r, rgb.g, rgb.b].map((v) => {
-            v /= 255;
-            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-        });
-        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
-    }
-
-    function applyReadableSurfaceClasses() {
-        document.querySelectorAll('.slide *').forEach((el) => {
-            if (!(el instanceof HTMLElement)) return;
-            const cs = getComputedStyle(el);
-            const color = rgbaParts(cs.backgroundColor);
-            if (!color || color.a < 0.62) return;
-            const lum = luminance(color);
-            if (lum > 0.68) {
-                el.classList.add('lesson-light-surface');
-                el.classList.remove('lesson-dark-surface');
-            } else if (lum < 0.20) {
-                el.classList.add('lesson-dark-surface');
-                el.classList.remove('lesson-light-surface');
-            }
-        });
-    }
-
-    function forceSlideContentVisible(slide) {
-        if (!slide) return;
-        slide.classList.add('visible', 'reveals-played');
-        slide.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
-            try { el.getAnimations().forEach((animation) => animation.cancel()); } catch (_) {}
-            if (el.classList.contains('step')) el.classList.add('step-shown');
-            el.style.removeProperty('opacity');
-            el.style.removeProperty('visibility');
-            el.style.removeProperty('transform');
-            el.style.removeProperty('filter');
-        });
-    }
-
-    function forceAllContentVisible() {
-        document.documentElement.classList.add('reveals-ready', 'mobile-show-all-content');
-        document.querySelectorAll('.slide').forEach(forceSlideContentVisible);
-    }
-
-    function patchDeckForMobile() {
-        const deck = window.slides;
-        if (!deck || deckPatched || !window.matchMedia(MOBILE_QUERY).matches) return;
-        deckPatched = true;
-        deck._playSlideReveals = forceSlideContentVisible;
-        deck._resetSlideReveals = forceSlideContentVisible;
-        deck._rewindSlide = forceSlideContentVisible;
-        deck.advance = function () { this.next(); };
-        deck.retreat = function () { this.prev(); };
-        if (Array.isArray(deck.slides)) deck.slides.forEach(forceSlideContentVisible);
-    }
-
-    function currentDeckIndex() {
-        const deck = window.slides;
-        if (deck && Number.isInteger(deck.currentSlide)) return deck.currentSlide;
-        const id = location.hash.replace(/^#/, '');
-        const slides = Array.from(document.querySelectorAll('.slide'));
-        const hashIndex = slides.findIndex((slide) => slide.id === id);
-        return hashIndex >= 0 ? hashIndex : 0;
-    }
-
-    function applyManualZoom() {
-        if (!window.matchMedia(MOBILE_QUERY).matches) return;
-        document.querySelectorAll('.slide-scale').forEach((scaleEl) => {
-            const rawBase = scaleEl.style.getPropertyValue('--slide-scale') || getComputedStyle(scaleEl).getPropertyValue('--slide-scale');
-            const base = parseFloat(rawBase) || Math.max(window.innerWidth / CANVAS_W, 0.46);
-            const effective = Math.max(0.15, Math.min(1.4, base * zoomMultiplier));
-            const width = CANVAS_W * effective;
-            const height = CANVAS_H * effective;
-            scaleEl.style.setProperty('width', width + 'px', 'important');
-            scaleEl.style.setProperty('height', height + 'px', 'important');
-            scaleEl.style.setProperty('margin', `max(16px, calc((100dvh - ${height}px) / 2)) auto`, 'important');
-            const slide = scaleEl.querySelector('.slide');
-            if (slide) slide.style.setProperty('transform', `scale(${effective})`, 'important');
-            const viewport = scaleEl.parentElement;
-            if (viewport) requestAnimationFrame(() => {
-                viewport.scrollLeft = Math.max(0, (viewport.scrollWidth - viewport.clientWidth) / 2);
-            });
-        });
-    }
-
-    function setFitZoom() {
-        const firstScale = document.querySelector('.slide-scale');
-        const rawBase = firstScale?.style.getPropertyValue('--slide-scale') || getComputedStyle(firstScale || document.documentElement).getPropertyValue('--slide-scale');
-        const base = parseFloat(rawBase) || Math.max(window.innerWidth / CANVAS_W, 0.46);
-        const fitScale = Math.min(window.innerWidth / CANVAS_W, window.innerHeight / CANVAS_H);
-        zoomMultiplier = Math.max(0.28, Math.min(1, fitScale / base));
-        applyManualZoom();
-    }
-
-    function buildControls() {
-        if (document.querySelector('.lesson-slide-controls')) return;
-        const slides = Array.from(document.querySelectorAll('.slide'));
-        if (!slides.length) return;
-
-        const controls = document.createElement('div');
-        controls.className = 'lesson-slide-controls';
-        controls.setAttribute('role', 'navigation');
-        controls.setAttribute('aria-label', 'Presentation controls');
-        controls.innerHTML = `
-            <div class="lesson-slide-controls__group">
-                <button type="button" data-action="previous" aria-label="Previous slide">‹ Prev</button>
-                <span class="lesson-slide-controls__count" aria-live="polite">1 / ${slides.length}</span>
-                <button type="button" data-action="next" aria-label="Next slide">Next ›</button>
-            </div>
-            <span class="lesson-slide-controls__divider" aria-hidden="true"></span>
-            <div class="lesson-slide-controls__group" aria-label="Zoom controls">
-                <button type="button" data-action="zoom-out" aria-label="Zoom out">−</button>
-                <button type="button" data-action="fit" aria-label="Fit entire slide">Fit</button>
-                <button type="button" data-action="zoom-in" aria-label="Zoom in">+</button>
-            </div>`;
-        document.body.appendChild(controls);
-
-        const count = controls.querySelector('.lesson-slide-controls__count');
-        const previous = controls.querySelector('[data-action="previous"]');
-        const next = controls.querySelector('[data-action="next"]');
-
-        function update() {
-            const index = Math.max(0, Math.min(slides.length - 1, currentDeckIndex()));
-            count.textContent = `${index + 1} / ${slides.length}`;
-            previous.disabled = index <= 0;
-            next.disabled = index >= slides.length - 1;
-        }
-
-        controls.addEventListener('click', (event) => {
-            const button = event.target.closest('button[data-action]');
-            if (!button) return;
-            const deck = window.slides;
-            switch (button.dataset.action) {
-                case 'previous':
-                    if (deck?.prev) deck.prev();
-                    else slides[Math.max(0, currentDeckIndex() - 1)]?.scrollIntoView({behavior:'smooth'});
-                    break;
-                case 'next':
-                    if (deck?.next) deck.next();
-                    else slides[Math.min(slides.length - 1, currentDeckIndex() + 1)]?.scrollIntoView({behavior:'smooth'});
-                    break;
-                case 'zoom-in':
-                    userAdjustedZoom = true;
-                    zoomMultiplier = Math.min(2.2, zoomMultiplier + 0.15);
-                    applyManualZoom();
-                    break;
-                case 'zoom-out':
-                    userAdjustedZoom = true;
-                    zoomMultiplier = Math.max(0.28, zoomMultiplier - 0.15);
-                    applyManualZoom();
-                    break;
-                case 'fit':
-                    userAdjustedZoom = false;
-                    setFitZoom();
-                    break;
-            }
-            setTimeout(update, 120);
-            setTimeout(forceAllContentVisible, 180);
-        });
-
-        window.addEventListener('hashchange', update);
-        document.addEventListener('scroll', () => requestAnimationFrame(update), {passive:true});
-        setInterval(update, 700);
-        update();
-    }
-
-    function initialize() {
-        applyReadableSurfaceClasses();
-        buildControls();
-        if (window.matchMedia(MOBILE_QUERY).matches) {
-            forceAllContentVisible();
-            patchDeckForMobile();
-            setTimeout(() => {
-                forceAllContentVisible();
-                patchDeckForMobile();
-                setFitZoom();
-            }, 120);
-            setTimeout(forceAllContentVisible, 600);
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize, {once:true});
-    } else {
-        initialize();
-    }
-
-    window.addEventListener('load', () => {
-        applyReadableSurfaceClasses();
-        if (window.matchMedia(MOBILE_QUERY).matches) {
-            forceAllContentVisible();
-            patchDeckForMobile();
-            if (userAdjustedZoom) applyManualZoom(); else setFitZoom();
-        }
+    prev.addEventListener('click', function () {
+      if (window.slides) window.slides.retreat();
+      setTimeout(update, 550);
     });
-    window.addEventListener('resize', () => setTimeout(() => {
-        applyReadableSurfaceClasses();
-        if (window.matchMedia(MOBILE_QUERY).matches) {
-            forceAllContentVisible();
-            patchDeckForMobile();
-            if (userAdjustedZoom) applyManualZoom(); else setFitZoom();
-        }
-    }, 180));
-    window.addEventListener('orientationchange', () => setTimeout(() => location.reload(), 250));
+    next.addEventListener('click', function () {
+      if (window.slides) window.slides.advance();
+      setTimeout(update, 550);
+    });
+    document.addEventListener('keydown', function () { setTimeout(update, 50); });
+    window.addEventListener('wheel', function () { setTimeout(update, 600); }, { passive: true });
+    window.addEventListener('touchend', function () { setTimeout(update, 650); }, { passive: true });
+    window.addEventListener('hashchange', function () { setTimeout(update, 100); });
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    setTimeout(update, 150);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDeckControls);
+  } else {
+    initDeckControls();
+  }
 })();
 </script>
-
 </body>
 </html>

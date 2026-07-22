@@ -1080,7 +1080,7 @@ body[data-no-chrome] .artifact-editor-toggle { display: none; }
 <!-- /skill:chassis -->
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Lesson 8 – Database Relationship Types</title>
+<title>FDB Lesson 1 – What Is a Database?</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
 <style>
     :root {
@@ -1926,572 +1926,472 @@ p, li,
 .deck-controls { opacity:.6; }
 @media (max-width:900px), (max-height:560px){ .deck-controls{opacity:1;} }
 </style>
-
-<style>
-.lesson3-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:32px; width:100%; max-width:1320px; margin-top:22px; }
-.lesson3-grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; width:100%; max-width:1320px; margin-top:22px; }
-.lesson3-card { background:rgba(255,255,255,.075); border:2px solid rgba(115,177,255,.22); border-radius:24px; padding:30px; min-height:230px; box-shadow:0 16px 42px rgba(0,0,0,.16); }
-.lesson3-card h3 { font-size:34px; margin-bottom:12px; color:var(--foreground)!important; }
-.lesson3-card p { font-size:27px; line-height:1.38; color:rgba(248,251,255,.75)!important; margin:0; max-width:100%; }
-.lesson3-card .emoji { font-size:58px; line-height:1; margin-bottom:14px; }
-.compact-list { gap:14px!important; }
-.compact-list li { font-size:31px!important; line-height:1.35!important; padding-top:8px!important; padding-bottom:8px!important; }
-.badge-row { display:flex; flex-wrap:wrap; gap:14px; max-width:1320px; margin-top:18px; }
-.badge-row .label-pill { margin:0; font-size:25px; padding:14px 20px; }
-.process-strip { display:flex; align-items:center; gap:18px; width:100%; max-width:1320px; margin-top:26px; }
-.process-strip .box { flex:1; padding:28px; min-height:170px; border-radius:22px; background:rgba(255,255,255,.08); border:2px solid rgba(115,177,255,.22); text-align:center; }
-.process-strip .box strong { display:block; font-size:32px; color:var(--foreground); margin-bottom:8px; }
-.process-strip .box span { font-size:24px; color:rgba(248,251,255,.68); }
-.process-strip .arrow { color:var(--accent); font-family:var(--font-display); font-size:50px; }
-.table-demo.small th { font-size:20px!important; padding:14px 16px!important; }
-.table-demo.small td { font-size:22px!important; padding:14px 16px!important; }
-@media (max-width: 1100px) { .lesson3-grid-2, .lesson3-grid-3 { grid-template-columns:1fr; } }
-</style>
-
-<style>
-/* Lesson 6 key-specific additions */
-.key-visual {
-  width: 100%;
-  max-width: 1240px;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 24px;
-  align-items: center;
-  margin-top: 22px;
-}
-.key-box {
-  min-height: 230px;
-  padding: 34px;
-  border-radius: 26px;
-  background: rgba(255,255,255,.075);
-  border: 2px solid rgba(115,177,255,.24);
-  box-shadow: 0 18px 46px rgba(0,0,0,.14);
-}
-.key-box strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 40px;
-  color: var(--foreground);
-  margin-bottom: 12px;
-}
-.key-box span, .key-box p {
-  font-size: 27px;
-  color: rgba(248,251,255,.72);
-  line-height: 1.42;
-}
-.key-arrow {
-  font-family: var(--font-display);
-  font-size: 68px;
-  color: var(--accent);
-}
-.rule-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  max-width: 1260px;
-  width: 100%;
-  margin-top: 8px;
-}
-.rule-card {
-  padding: 22px 26px;
-  border-radius: 20px;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(115,177,255,.20);
-}
-.rule-card strong {
-  display: block;
-  font-size: 28px;
-  color: var(--foreground);
-  margin-bottom: 6px;
-}
-.rule-card span {
-  display: block;
-  font-size: 23px;
-  line-height: 1.34;
-  color: rgba(248,251,255,.68);
-}
-.badge-row.compact { gap: 12px; align-items: flex-start; }
-.badge-row.compact .label-pill { font-size: 24px; padding: 12px 18px; }
-.table-demo.keys th { font-size: 21px; padding: 14px 16px; }
-.table-demo.keys td { font-size: 22px; padding: 14px 16px; }
-@media (max-width: 1100px) {
-  .key-visual { grid-template-columns: 1fr; }
-  .key-arrow { transform: rotate(90deg); text-align: center; }
-  .rule-list { grid-template-columns: 1fr; }
-}
-</style>
-
-
-<style>
-/* Lesson 8 relationship visuals */
-.rel-diagram { display:flex; align-items:center; justify-content:center; gap:26px; width:100%; max-width:1360px; margin-top:24px; }
-.rel-node { min-width:320px; min-height:170px; padding:28px; border-radius:24px; background:rgba(255,255,255,.085); border:2px solid rgba(115,177,255,.26); text-align:center; box-shadow:0 16px 42px rgba(0,0,0,.16); }
-.rel-node strong { display:block; font-size:36px; color:var(--foreground); font-family:var(--font-display); }
-.rel-node span { display:block; margin-top:10px; font-size:24px; color:rgba(248,251,255,.68); }
-.rel-cardinal { color:var(--accent); font-family:var(--font-display); font-size:52px; white-space:nowrap; }
-.matrix { display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; width:100%; max-width:1340px; margin-top:22px; }
-.matrix .lesson3-card { min-height:210px; }
-.matrix .lesson3-card h3 { font-size:32px; }
-.matrix .lesson3-card p { font-size:25px; }
-.big-symbol { font-family:var(--font-display); font-size:120px; color:var(--accent); line-height:1; }
-.relationship-table { max-width:1260px!important; }
-.relationship-table th, .relationship-table td { font-size:22px!important; padding:14px 16px!important; }
-.safe-list li { font-size:29px!important; line-height:1.32!important; padding-top:7px!important; padding-bottom:7px!important; }
-</style>
-
 </head>
 <body data-nav="hidden">
 <section class="slide slide-dark">
-<span class="section-number" style="color: rgba(93,180,255,.16);">08</span>
+<span class="section-number" style="color: rgba(93,180,255,.16);">01</span>
 <span class="eyebrow reveal d1">Fundamentals of Database Systems</span>
-<h1 class="reveal d2" style="font-size:88px;">Database<br/>Relationship Types</h1>
-<p class="support-text reveal d3 wide" style="margin-top:28px;">Learn how tables are connected using one-to-one, one-to-many, and many-to-many relationships.</p>
-<div class="lesson-badge reveal d4" style="margin-top:26px;">Lesson 8 · Tables, keys, and relationships</div>
+<h1 class="reveal d2" style="font-size:92px;">What Is a<br/>Database?</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">A beginner-friendly introduction to organized information.</p><p class="support-text reveal d5 wide" data-added="more-content">This lesson sets the foundation for every topic later: keys, relationships, SQL commands, and the Java CRUD application will all depend on this basic idea.</p>
+<div class="lesson-badge reveal d4" style="margin-top:26px;">Lesson 1 · WAMP + phpMyAdmin course path</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">01</span>
 <span class="eyebrow reveal d1">Learning Targets</span>
-<h2 class="reveal d2">By the end, you can...</h2>
-<ul class="safe-list">
-<li class="step">Explain why relationships are needed in relational databases.</li>
-<li class="step">Identify one-to-one, one-to-many, and many-to-many relationships.</li>
-<li class="step">Choose where a foreign key should be placed.</li>
-<li class="step">Explain why many-to-many relationships need a junction table.</li>
-<li class="step">Apply relationship ideas to the future Student Information CRUD app.</li>
+<h2 class="reveal d2">By the end, you can...</h2><p class="support-text reveal d5 wide" data-added="more-content">Focus on understanding the words first. You do not need to memorize advanced terms yet; you only need to describe them clearly using examples.</p>
+<ul>
+<li class="step">Explain what a database is using simple words.</li>
+<li class="step">Differentiate data from information.</li>
+<li class="step">Identify tables, rows, columns, and records.</li>
+<li class="step">Explain why databases are useful in real systems.</li>
+<li class="step">Connect today’s topic to our future Student Information CRUD app.</li>
 </ul>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">02</span>
-<span class="eyebrow reveal d1">Warm-up Review</span>
-<h2 class="reveal d2">Before We Start</h2>
-<p class="support-text reveal d3 wide">Answer these quickly from Lesson 7. These ideas are needed before we discuss relationship types.</p>
-<ul class="safe-list">
-<li class="step">What is a primary key?</li>
-<li class="step">What is a foreign key?</li>
-<li class="step">Which table is usually called the parent table?</li>
-<li class="step">Which table stores the foreign key?</li>
-</ul>
+<span class="eyebrow reveal d1">Warm-up</span>
+<h2 class="reveal d2">Think About This</h2>
+<div class="big-question reveal d3">Where does your school store student names, courses, grades, and contact details?</div>
+<p class="reveal d4 wide" style="margin-top:26px;">Possible answer: in a database, not just in one random document.</p><p class="support-text reveal d5 wide" data-added="more-content">Think of enrollment, library borrowing, cashiering, or grades submission. All of these become difficult if information is scattered in different files.</p>
 </section>
 <section class="slide slide-dark">
 <span class="eyebrow reveal d1">Big Idea</span>
-<h1 class="reveal d2" style="font-size:78px;">A relationship explains how records in one table connect to records in another table.</h1>
-<p class="support-text reveal d3 wide" style="margin-top:28px;">Without relationships, tables become isolated lists. With relationships, a database becomes a connected system.</p>
+<h1 class="reveal d2" style="font-size:86px;">A database keeps information organized.</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">Not just stored — organized, searchable, and easier to update.</p><p class="support-text reveal d5 wide" data-added="more-content">When information is organized, we can avoid confusion, find records faster, and reduce repeated manual work.</p>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">03</span>
-<span class="eyebrow reveal d1">Simple Example</span>
-<h2 class="reveal d2">Students and Courses</h2>
-<p class="support-text reveal d3 wide">In a school database, a student usually belongs to a course. This means the students table and courses table should be connected.</p>
-<div class="rel-diagram reveal d4">
-<div class="rel-node"><strong>courses</strong><span>approved course list</span></div>
-<div class="rel-cardinal">1 → many</div>
-<div class="rel-node"><strong>students</strong><span>student profile records</span></div>
+<span class="eyebrow reveal d1">First Vocabulary</span>
+<h2 class="reveal d2">Data vs Information</h2>
+<div class="duo reveal d3">
+<div class="tile"><div class="icon">🔢</div><h3>Data</h3><p>Raw facts. They may not be meaningful yet.</p><p class="support-text reveal d5 wide" data-added="more-content">Raw data is like ingredients. Information is the finished dish after the data has been arranged, calculated, or explained.</p></div>
+<div class="tile"><div class="icon">💡</div><h3>Information</h3><p>Processed or organized data that becomes useful.</p></div>
 </div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">04</span>
-<span class="eyebrow reveal d1">Why Not One Big Table?</span>
-<h2 class="reveal d2">The Messy Table Problem</h2>
-<table class="table-demo small relationship-table reveal d3">
-<tr><th>student_no</th><th>name</th><th>course_code</th><th>course_name</th></tr>
-<tr><td>2026-001</td><td>Ana Cruz</td><td>BSIS</td><td>Bachelor of Science in Information Systems</td></tr>
-<tr><td>2026-002</td><td>Ben Santos</td><td>BSIS</td><td>B.S. Information Systems</td></tr>
-<tr><td>2026-003</td><td>Cara Lim</td><td>BSAIS</td><td>BS Accounting Info Systems</td></tr>
-</table>
-<div class="callout reveal d4">Repeated course names can become inconsistent. Separate tables help keep data clean.</div>
+<span class="eyebrow reveal d1">Example</span>
+<h2 class="reveal d2">Raw Data Becomes Useful</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Raw data</h3><p class="wide">Maria, 89, BSIS, 1st Year</p><p class="support-text reveal d5 wide" data-added="more-content">A single fact may be useful, but a group of connected facts becomes more powerful when the system can search, sort, and summarize them.</p></div>
+<div class="tile"><h3>Information</h3><p class="wide">Maria is a 1st-year BSIS student with a grade of 89.</p></div>
+</div>
+<div class="callout reveal d4">A database helps us turn many raw facts into organized information.</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">05</span>
-<span class="eyebrow reveal d1">Better Design</span>
-<h2 class="reveal d2">Separate the Related Data</h2>
-<div class="lesson3-grid-2 reveal d3">
-<div class="lesson3-card"><div class="emoji">🎓</div><h3>courses</h3><p>Stores each course once: course_id, course_code, course_name.</p></div>
-<div class="lesson3-card"><div class="emoji">👩‍🎓</div><h3>students</h3><p>Stores student details and saves course_id as the link to courses.</p></div>
-</div>
-<p class="support-text reveal d4 wide">This design avoids repeatedly typing the full course name for every student.</p>
+<span class="eyebrow reveal d1">Simple Definition</span>
+<h2 class="reveal d2">What Is a Database?</h2>
+<div class="question-card reveal d3">A database is an organized collection of related data.</div>
+<p class="reveal d4 wide" style="margin-top:28px;">The important words are <span class="highlight">organized</span> and <span class="highlight">related</span>.</p><p class="support-text reveal d5 wide" data-added="more-content">The word related is important because the data should belong to one system or topic, such as students, courses, grades, or transactions.</p>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">06</span>
-<span class="eyebrow reveal d1">Core Question</span>
-<h2 class="reveal d2">How Many Records Connect?</h2>
-<p class="support-text reveal d3 wide">Relationship type is decided by asking how many records from one table can connect to how many records in another table.</p>
-<div class="matrix reveal d4">
-<div class="lesson3-card"><h3>One-to-One</h3><p>One record connects to only one record.</p></div>
-<div class="lesson3-card"><h3>One-to-Many</h3><p>One record connects to many records.</p></div>
-<div class="lesson3-card"><h3>Many-to-Many</h3><p>Many records connect to many records.</p></div>
+<span class="eyebrow reveal d1">Analogy</span>
+<h2 class="reveal d2">Database = Filing Cabinet</h2><p class="support-text reveal d5 wide" data-added="more-content">In a filing cabinet, documents are separated by category. In a database, tables also separate records so they do not become mixed and confusing.</p>
+<div class="database-grid reveal d3">
+<div class="db-card"><div class="icon">🗄️</div><h3>Cabinet</h3><p>The whole database</p></div>
+<div class="db-card"><div class="icon">📁</div><h3>Drawer</h3><p>One table or category</p></div>
+<div class="db-card"><div class="icon">📄</div><h3>Document</h3><p>One record inside the table</p></div>
 </div>
 </section>
-<section class="slide slide-dark">
-<span class="eyebrow reveal d1">Type 1</span>
-<h1 class="reveal d2" style="font-size:92px;">One-to-One<br/>Relationship</h1>
-<p class="support-text reveal d3 wide" style="margin-top:28px;">One record in Table A connects to one record in Table B.</p>
-</section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">07</span>
-<span class="eyebrow reveal d1">One-to-One</span>
-<h2 class="reveal d2">Simple Meaning</h2>
-<div class="rel-diagram reveal d3">
-<div class="rel-node"><strong>person</strong><span>one person record</span></div>
-<div class="rel-cardinal">1 ↔ 1</div>
-<div class="rel-node"><strong>passport</strong><span>one passport record</span></div>
-</div>
-<p class="support-text reveal d4 wide">A person may have one passport record, and a passport belongs to one person.</p>
+<span class="eyebrow reveal d1">Another Analogy</span>
+<h2 class="reveal d2">Database = Organized School Records</h2><p class="support-text reveal d5 wide" data-added="more-content">School records are a good example because one student can have profile information, course information, enrollment records, and grades.</p>
+<ul>
+<li class="step">Student information is grouped together.</li>
+<li class="step">Course information is grouped together.</li>
+<li class="step">Grades are stored in a proper place.</li>
+<li class="step">Records can be searched and updated quickly.</li>
+</ul>
 </section>
-<section class="slide dense-slide">
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Important</span>
+<h1 class="reveal d2" style="font-size:82px;">A database is not just a storage box.</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">It also helps maintain accuracy and structure.</p><p class="support-text reveal d5 wide" data-added="more-content">A storage box only keeps things. A database also gives rules so records can be checked, connected, and updated properly.</p>
+</section>
+<section class="slide">
 <span class="section-number">08</span>
-<span class="eyebrow reveal d1">One-to-One</span>
-<h2 class="reveal d2">School Example</h2>
-<div class="rel-diagram reveal d3">
-<div class="rel-node"><strong>students</strong><span>student profile</span></div>
-<div class="rel-cardinal">1 ↔ 1</div>
-<div class="rel-node"><strong>student_accounts</strong><span>portal account</span></div>
+<span class="eyebrow reveal d1">Messy List Problem</span>
+<h2 class="reveal d2">What Can Go Wrong?</h2><p class="support-text reveal d5 wide" data-added="more-content">This kind of inconsistency creates reporting problems. A database design tries to make entries consistent before the data becomes too large.</p>
+<div class="table-demo compact reveal d3" role="table">
+<table class="table-demo compact" style="margin-top:0;">
+<tr><th>Name</th><th>Course</th><th>Phone</th></tr>
+<tr><td>Ana Cruz</td><td>BSIS</td><td>0917-111-2222</td></tr>
+<tr><td>Ana M. Cruz</td><td>B.S.I.S.</td><td>09171112222</td></tr>
+<tr><td>Ben Santos</td><td>BS Info System</td><td>none</td></tr>
+</table>
 </div>
-<ul class="safe-list" style="margin-top:22px;">
-<li class="step">One student has one portal account.</li>
-<li class="step">One portal account belongs to one student.</li>
-<li class="step">This is possible, but less common than one-to-many.</li>
-</ul>
+<div class="callout reveal d4">Same student? Same course? Different format? This is why structure matters.</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">09</span>
-<span class="eyebrow reveal d1">One-to-One</span>
-<h2 class="reveal d2">Why Separate the Table?</h2>
-<p class="support-text reveal d3 wide">Sometimes data is separated for security, privacy, or organization.</p>
-<ul class="safe-list">
-<li class="step">Login details can be stored separately from personal information.</li>
-<li class="step">Sensitive records can have stricter access rules.</li>
-<li class="step">Optional information can be separated from required information.</li>
-<li class="step">Large rarely used details can be moved to another table.</li>
-</ul>
+<span class="eyebrow reveal d1">Core Parts</span>
+<h2 class="reveal d2">A Database Uses Tables</h2><p class="support-text reveal d5 wide" data-added="more-content">Each table should have a clear purpose. If a table stores too many unrelated things, it becomes harder to maintain.</p>
+<p class="reveal d3 wide">A table stores one type of information.</p>
+<div class="mini-grid reveal d4">
+<div class="mini-card"><div class="emoji">👩‍🎓</div><strong>students</strong><span>student records</span></div>
+<div class="mini-card"><div class="emoji">🎓</div><strong>courses</strong><span>course records</span></div>
+<div class="mini-card"><div class="emoji">📚</div><strong>subjects</strong><span>subject records</span></div>
+<div class="mini-card"><div class="emoji">📝</div><strong>grades</strong><span>grade records</span></div>
+</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">10</span>
-<span class="eyebrow reveal d1">One-to-One</span>
-<h2 class="reveal d2">Possible Table Design</h2>
-<div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">student_accounts</span> (<br>&nbsp;&nbsp;<span class="field">account_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">student_id</span> <span class="keyword">INT NOT NULL UNIQUE</span>,<br>&nbsp;&nbsp;<span class="field">username</span> <span class="keyword">VARCHAR</span>(<span class="num">50</span>) <span class="keyword">NOT NULL UNIQUE</span>,<br>&nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (<span class="field">student_id</span>)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">REFERENCES</span> <span class="table-name">students</span>(<span class="field">student_id</span>)<br>);</div>
-<p class="support-text reveal d4 wide">The UNIQUE rule on student_id helps ensure that one student has only one account.</p>
+<span class="eyebrow reveal d1">Table Example</span>
+<h2 class="reveal d2">Students Table</h2>
+<table class="table-demo compact reveal d3">
+<tr><th>student_id</th><th>student_number</th><th>last_name</th><th>first_name</th><th>course_id</th></tr>
+<tr><td>1</td><td>2026-001</td><td>Cruz</td><td>Ana</td><td>1</td></tr>
+<tr><td>2</td><td>2026-002</td><td>Santos</td><td>Ben</td><td>1</td></tr>
+<tr><td>3</td><td>2026-003</td><td>Reyes</td><td>Cara</td><td>2</td></tr>
+</table>
+<p class="reveal d4 wide" style="margin-top:24px;">This table stores student-related records.</p><p class="support-text reveal d5 wide" data-added="more-content">Notice that every row follows the same column structure. This makes the data predictable and easier for the computer to process.</p>
 </section>
-<section class="slide slide-dark">
-<span class="eyebrow reveal d1">Type 2</span>
-<h1 class="reveal d2" style="font-size:92px;">One-to-Many<br/>Relationship</h1>
-<p class="support-text reveal d3 wide" style="margin-top:28px;">One record in Table A can connect to many records in Table B.</p>
-</section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">11</span>
-<span class="eyebrow reveal d1">One-to-Many</span>
-<h2 class="reveal d2">The Most Common Relationship</h2>
-<div class="rel-diagram reveal d3">
-<div class="rel-node"><strong>courses</strong><span>one course</span></div>
-<div class="rel-cardinal">1 → many</div>
-<div class="rel-node"><strong>students</strong><span>many students</span></div>
-</div>
-<p class="support-text reveal d4 wide">One course can have many students, but each student belongs to one course in this simple example.</p>
+<span class="eyebrow reveal d1">Columns</span>
+<h2 class="reveal d2">Columns Describe Details</h2>
+<p class="reveal d3 wide">A column is one type of detail stored for every record.</p><p class="support-text reveal d5 wide" data-added="more-content">Columns are planned before the data is entered. Good column names help future users understand what each value means.</p>
+<div class="label-pill reveal d4">student_number</div>
+<div class="label-pill reveal d5">last_name</div>
+<div class="label-pill reveal d6">first_name</div>
+<div class="label-pill reveal d7">course_id</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">12</span>
-<span class="eyebrow reveal d1">One-to-Many</span>
-<h2 class="reveal d2">More Examples</h2>
-<div class="matrix reveal d3">
-<div class="lesson3-card"><h3>department → employees</h3><p>One department can have many employees.</p></div>
-<div class="lesson3-card"><h3>customer → orders</h3><p>One customer can place many orders.</p></div>
-<div class="lesson3-card"><h3>teacher → classes</h3><p>One teacher can handle many classes.</p></div>
-</div>
-<p class="support-text reveal d4 wide">In each example, the “many side” usually stores the foreign key.</p>
+<span class="eyebrow reveal d1">Rows</span>
+<h2 class="reveal d2">Rows Are Complete Records</h2>
+<table class="table-demo compact reveal d3">
+<tr><th>student_id</th><th>student_number</th><th>last_name</th><th>first_name</th><th>course_id</th></tr>
+<tr style="outline:4px solid var(--accent);"><td>1</td><td>2026-001</td><td>Cruz</td><td>Ana</td><td>1</td></tr>
+<tr><td>2</td><td>2026-002</td><td>Santos</td><td>Ben</td><td>1</td></tr>
+</table>
+<p class="reveal d4 wide" style="margin-top:24px;">One row = one student record.</p><p class="support-text reveal d5 wide" data-added="more-content">A row should describe one complete item only. In this example, the highlighted row describes one student.</p>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">13</span>
-<span class="eyebrow reveal d1">One-to-Many</span>
-<h2 class="reveal d2">Where Does the Foreign Key Go?</h2>
-<div class="big-question reveal d3">The foreign key goes on the <span class="highlight">many side</span>.</div>
-<div class="rel-diagram reveal d4">
-<div class="rel-node"><strong>courses</strong><span>parent table</span></div>
-<div class="rel-cardinal">course_id</div>
-<div class="rel-node"><strong>students</strong><span>child table stores course_id</span></div>
+<span class="eyebrow reveal d1">Cells</span>
+<h2 class="reveal d2">A Cell Is One Value</h2>
+<p class="reveal d3 wide">A cell is the value found at the meeting point of a row and a column.</p><p class="support-text reveal d5 wide" data-added="more-content">Cells should contain one clear value. Later, this idea will help us understand First Normal Form.</p>
+<div class="question-card reveal d4">Example: Ana’s <span class="highlight">last_name</span> value is <span class="highlight">Cruz</span>.</div>
+</section>
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Quick Summary</span>
+<h1 class="reveal d2" style="font-size:78px;">Table → Row → Column → Cell</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">These are the building blocks we will use again and again.</p><p class="support-text reveal d5 wide" data-added="more-content">Whenever you are confused, return to this simple pattern: a table contains rows, a row contains values, and columns describe those values.</p>
+</section>
+<section class="slide">
+<span class="section-number">14</span>
+<span class="eyebrow reveal d1">Real Database</span>
+<h2 class="reveal d2">A Database Usually Has Many Tables</h2><p class="support-text reveal d5 wide" data-added="more-content">Real systems separate information into several tables so one table does not become too wide, repetitive, or hard to update.</p>
+<div class="relationship reveal d3">
+<div class="rel-box"><strong>courses</strong><span>course list</span></div>
+<div class="rel-line">1 → many</div>
+<div class="rel-box"><strong>students</strong><span>student list</span></div>
+</div>
+<div class="callout reveal d4">One course can have many students. This is called a relationship.</div>
+</section>
+<section class="slide">
+<span class="section-number">15</span>
+<span class="eyebrow reveal d1">Preview</span>
+<h2 class="reveal d2">Our Tutorial App Will Use This</h2>
+<table class="table-demo compact reveal d3">
+<tr><th>courses</th><th>students</th></tr>
+<tr><td>course_id</td><td>student_id</td></tr>
+<tr><td>course_code</td><td>student_number</td></tr>
+<tr><td>course_name</td><td>last_name, first_name</td></tr>
+</table>
+<p class="reveal d4 wide" style="margin-top:24px;">Later, students will select a course from a dropdown, not type it manually.</p><p class="support-text reveal d5 wide" data-added="more-content">This preview shows why we need relationships. The students table can refer to the courses table instead of repeatedly typing the full course name.</p>
+</section>
+<section class="slide">
+<span class="section-number">16</span>
+<span class="eyebrow reveal d1">Why Relationships?</span>
+<h2 class="reveal d2">Avoid Repeating Long Text</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Without relation</h3><p>Bachelor of Science in Information Systems is typed again and again.</p><p class="support-text reveal d5 wide" data-added="more-content">Repeating long text wastes space and can create spelling differences. A separate course table keeps the official course list in one place.</p></div>
+<div class="tile"><h3>With relation</h3><p>The student stores only the course ID, and the full course name is stored once.</p></div>
 </div>
 </section>
-<section class="slide dense-slide">
-<span class="section-number">14</span>
-<span class="eyebrow reveal d1">One-to-Many</span>
-<h2 class="reveal d2">Students Table Example</h2>
-<div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">students</span> (<br>&nbsp;&nbsp;<span class="field">student_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">student_number</span> <span class="keyword">VARCHAR</span>(<span class="num">20</span>) <span class="keyword">NOT NULL UNIQUE</span>,<br>&nbsp;&nbsp;<span class="field">last_name</span> <span class="keyword">VARCHAR</span>(<span class="num">50</span>) <span class="keyword">NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">first_name</span> <span class="keyword">VARCHAR</span>(<span class="num">50</span>) <span class="keyword">NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">course_id</span> <span class="keyword">INT NOT NULL</span>,<br>&nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (<span class="field">course_id</span>) <span class="keyword">REFERENCES</span> <span class="table-name">courses</span>(<span class="field">course_id</span>)<br>);</div>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">15</span>
-<span class="eyebrow reveal d1">One-to-Many</span>
-<h2 class="reveal d2">Read the Records</h2>
-<table class="table-demo small relationship-table reveal d3">
-<tr><th>course_id</th><th>course_code</th><th>course_name</th></tr>
-<tr><td>1</td><td>BSIS</td><td>Information Systems</td></tr>
-<tr><td>2</td><td>BSAIS</td><td>Accounting Information Systems</td></tr>
-</table>
-<table class="table-demo small relationship-table reveal d4" style="margin-top:20px;">
-<tr><th>student_id</th><th>student_name</th><th>course_id</th></tr>
-<tr><td>1</td><td>Ana Cruz</td><td>1</td></tr>
-<tr><td>2</td><td>Ben Santos</td><td>1</td></tr>
-<tr><td>3</td><td>Cara Lim</td><td>2</td></tr>
-</table>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">16</span>
-<span class="eyebrow reveal d1">Check Understanding</span>
-<h2 class="reveal d2">What Type Is This?</h2>
-<div class="big-question reveal d3">One course has many students. Each student belongs to one course.</div>
-<ul class="safe-list" style="margin-top:24px;">
-<li class="step">What is the relationship type?</li>
-<li class="step">Which table is the parent?</li>
-<li class="step">Which table stores the foreign key?</li>
+<section class="slide">
+<span class="section-number">17</span>
+<span class="eyebrow reveal d1">DBMS</span>
+<h2 class="reveal d2">What Is a DBMS?</h2>
+<div class="question-card reveal d3">A Database Management System is software used to create, manage, and access databases.</div>
+<p class="reveal d4 wide" style="margin-top:26px;">In our course, WAMP provides the database service and phpMyAdmin helps us manage it.</p><p class="support-text reveal d5 wide" data-added="more-content">The DBMS is the software layer between the user and the stored data. It receives commands, checks rules, and returns results.</p>
+<div class="explain-strip reveal d6" data-added="more-content">Simple phrase to remember: The database stores the data; the DBMS manages the data.</div></section>
+<section class="slide">
+<span class="section-number">18</span>
+<span class="eyebrow reveal d1">DBMS Tasks</span>
+<h2 class="reveal d2">What Can a DBMS Do?</h2><p class="support-text reveal d5 wide" data-added="more-content">These tasks are the reason databases are used in real applications instead of saving everything in a single document.</p>
+<ul>
+<li class="step">Create databases and tables.</li>
+<li class="step">Store records safely.</li>
+<li class="step">Search records quickly.</li>
+<li class="step">Update and delete records.</li>
+<li class="step">Control access and protect data.</li>
 </ul>
 </section>
 <section class="slide slide-dark">
-<span class="eyebrow reveal d1">Type 3</span>
-<h1 class="reveal d2" style="font-size:92px;">Many-to-Many<br/>Relationship</h1>
-<p class="support-text reveal d3 wide" style="margin-top:28px;">Many records in Table A can connect to many records in Table B.</p>
+<span class="eyebrow reveal d1">Course Tool</span>
+<h1 class="reveal d2" style="font-size:86px;">We will use WAMP.</h1><p class="support-text reveal d5 wide" data-added="more-content">WAMP will give us a local database environment. That means students can practice database work even without uploading anything online.</p>
+<p class="reveal d3 wide" style="margin-top:28px;">WAMP gives us a local database environment on Windows for practice.</p>
 </section>
-<section class="slide dense-slide">
-<span class="section-number">17</span>
-<span class="eyebrow reveal d1">Many-to-Many</span>
-<h2 class="reveal d2">Simple Meaning</h2>
-<div class="rel-diagram reveal d3">
-<div class="rel-node"><strong>students</strong><span>many students</span></div>
-<div class="rel-cardinal">many ↔ many</div>
-<div class="rel-node"><strong>subjects</strong><span>many subjects</span></div>
-</div>
-<p class="support-text reveal d4 wide">One student can enroll in many subjects. One subject can also have many students.</p>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">18</span>
-<span class="eyebrow reveal d1">Many-to-Many</span>
-<h2 class="reveal d2">Real-Life Examples</h2>
-<div class="matrix reveal d3">
-<div class="lesson3-card"><h3>students ↔ subjects</h3><p>Students take many subjects; subjects have many students.</p></div>
-<div class="lesson3-card"><h3>orders ↔ products</h3><p>Orders contain many products; products appear in many orders.</p></div>
-<div class="lesson3-card"><h3>books ↔ authors</h3><p>Books can have multiple authors; authors can write many books.</p></div>
-</div>
-</section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">19</span>
-<span class="eyebrow reveal d1">Many-to-Many</span>
-<h2 class="reveal d2">The Important Rule</h2>
-<div class="big-question reveal d3">Do not connect many-to-many tables directly.</div>
-<p class="support-text reveal d4 wide">A relational database handles many-to-many relationships using a third table called a junction table, bridge table, or associative table.</p>
-<div class="badge-row reveal d5"><div class="label-pill">junction table</div><div class="label-pill">bridge table</div><div class="label-pill">associative table</div></div>
+<span class="eyebrow reveal d1">Daily Life</span>
+<h2 class="reveal d2">Databases Are Everywhere</h2><p class="support-text reveal d5 wide" data-added="more-content">Any app that remembers your account, orders, grades, or messages is probably using a database behind the scenes.</p>
+<div class="mini-grid reveal d3">
+<div class="mini-card"><div class="emoji">🏫</div><strong>School</strong><span>students, grades</span></div>
+<div class="mini-card"><div class="emoji">🏦</div><strong>Bank</strong><span>accounts, transactions</span></div>
+<div class="mini-card"><div class="emoji">🛒</div><strong>Store</strong><span>products, orders</span></div>
+<div class="mini-card"><div class="emoji">📱</div><strong>App</strong><span>users, messages</span></div>
+</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">20</span>
-<span class="eyebrow reveal d1">Many-to-Many</span>
-<h2 class="reveal d2">Use a Junction Table</h2>
-<div class="rel-diagram reveal d3">
-<div class="rel-node"><strong>students</strong><span>student_id</span></div>
-<div class="rel-cardinal">1 → many</div>
-<div class="rel-node"><strong>enrollments</strong><span>student_id + subject_id</span></div>
-<div class="rel-cardinal">many ← 1</div>
-<div class="rel-node"><strong>subjects</strong><span>subject_id</span></div>
-</div>
-<p class="support-text reveal d4 wide">The junction table stores the connection between student records and subject records.</p>
+<span class="eyebrow reveal d1">School Example</span>
+<h2 class="reveal d2">Database in a School</h2><p class="support-text reveal d5 wide" data-added="more-content">A school database can support enrollment, student profiles, schedules, grades, billing, and reports using connected records.</p>
+<ul>
+<li class="step">Student profiles</li>
+<li class="step">Enrollment records</li>
+<li class="step">Courses and subjects</li>
+<li class="step">Grades and reports</li>
+<li class="step">Payments and balances</li>
+</ul>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">21</span>
-<span class="eyebrow reveal d1">Junction Table</span>
-<h2 class="reveal d2">What Does It Store?</h2>
-<table class="table-demo small relationship-table reveal d3">
-<tr><th>enrollment_id</th><th>student_id</th><th>subject_id</th><th>semester</th></tr>
-<tr><td>1</td><td>1</td><td>101</td><td>1st Sem</td></tr>
-<tr><td>2</td><td>1</td><td>102</td><td>1st Sem</td></tr>
-<tr><td>3</td><td>2</td><td>101</td><td>1st Sem</td></tr>
-</table>
-<p class="support-text reveal d4 wide">This table answers: Which student is connected to which subject?</p>
+<span class="eyebrow reveal d1">Banking Example</span>
+<h2 class="reveal d2">Database in a Bank</h2><p class="support-text reveal d5 wide" data-added="more-content">Banking systems need accurate databases because every transaction must be recorded, checked, and traceable.</p>
+<div class="flow-row reveal d3">
+<div class="flow-box"><div class="emoji">👤</div><strong>Customer</strong><span>personal details</span></div>
+<div class="flow-arrow">→</div>
+<div class="flow-box"><div class="emoji">💳</div><strong>Account</strong><span>balance details</span></div>
+<div class="flow-arrow">→</div>
+<div class="flow-box"><div class="emoji">🧾</div><strong>Transaction</strong><span>money movement</span></div>
+</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">22</span>
-<span class="eyebrow reveal d1">Junction Table</span>
-<h2 class="reveal d2">Table Design Example</h2>
-<div class="code-block code-small reveal d3"><span class="keyword">CREATE TABLE</span> <span class="table-name">enrollments</span> (<br>&nbsp;&nbsp;<span class="field">enrollment_id</span> <span class="keyword">INT PRIMARY KEY AUTO_INCREMENT</span>,<br>&nbsp;&nbsp;<span class="field">student_id</span> <span class="keyword">INT NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">subject_id</span> <span class="keyword">INT NOT NULL</span>,<br>&nbsp;&nbsp;<span class="field">semester</span> <span class="keyword">VARCHAR</span>(<span class="num">20</span>),<br>&nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (<span class="field">student_id</span>) <span class="keyword">REFERENCES</span> <span class="table-name">students</span>(<span class="field">student_id</span>),<br>&nbsp;&nbsp;<span class="keyword">FOREIGN KEY</span> (<span class="field">subject_id</span>) <span class="keyword">REFERENCES</span> <span class="table-name">subjects</span>(<span class="field">subject_id</span>)<br>);</div>
+<span class="eyebrow reveal d1">Shopping Example</span>
+<h2 class="reveal d2">Database in Online Shopping</h2>
+<div class="database-grid reveal d3">
+<div class="db-card"><div class="icon">📦</div><h3>Products</h3><p>Name, price, stock</p><p class="support-text reveal d5 wide" data-added="more-content">Online shopping systems use databases to track products, customers, carts, payments, delivery addresses, and order history.</p></div>
+<div class="db-card"><div class="icon">🧑</div><h3>Customers</h3><p>Name, address, contact</p></div>
+<div class="db-card"><div class="icon">🛍️</div><h3>Orders</h3><p>Items bought and status</p></div>
+</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">23</span>
-<span class="eyebrow reveal d1">Compare the Three</span>
-<h2 class="reveal d2">Relationship Summary Table</h2>
-<table class="table-demo small relationship-table reveal d3">
-<tr><th>Type</th><th>Meaning</th><th>Example</th><th>Common Design</th></tr>
-<tr><td>One-to-One</td><td>1 record to 1 record</td><td>student ↔ account</td><td>foreign key with UNIQUE</td></tr>
-<tr><td>One-to-Many</td><td>1 record to many records</td><td>course → students</td><td>foreign key on many side</td></tr>
-<tr><td>Many-to-Many</td><td>many records to many records</td><td>students ↔ subjects</td><td>junction table</td></tr>
-</table>
-</section>
-<section class="slide dense-slide">
+<span class="eyebrow reveal d1">Why Not Just Excel?</span>
+<h2 class="reveal d2">Spreadsheets Are Useful, But...</h2><p class="support-text reveal d5 wide" data-added="more-content">Spreadsheets are good for small manual lists, but databases are better when many users, relationships, and rules are involved.</p>
+<div class="duo reveal d3">
+<div class="tile"><h3>Spreadsheet</h3><ul><li>Good for small lists</li><li>Easy to edit manually</li><li>Can become messy</li></ul></div>
+<div class="tile"><h3>Database</h3><ul><li>Better for related data</li><li>Supports rules and relationships</li><li>Works well with applications</li></ul></div>
+</div>
+<div class="explain-strip reveal d6" data-added="more-content">Important distinction: Excel can list data, but a DBMS is designed to control data rules, relationships, and multi-user access.</div></section>
+<section class="slide">
 <span class="section-number">24</span>
-<span class="eyebrow reveal d1">Decision Guide</span>
-<h2 class="reveal d2">How to Identify the Relationship</h2>
-<ul class="safe-list">
-<li class="step">Ask: Can one A connect to only one B?</li>
-<li class="step">Ask: Can one A connect to many B records?</li>
-<li class="step">Ask: Can many A records connect to many B records?</li>
-<li class="step">If both sides can have many, create a junction table.</li>
-<li class="step">Write the relationship in a sentence before designing tables.</li>
-</ul>
+<span class="eyebrow reveal d1">Database System</span>
+<h2 class="reveal d2">The Complete Picture</h2><p class="support-text reveal d5 wide" data-added="more-content">The database is only one part of the system. Users, applications, tools, and the DBMS all work together.</p>
+<div class="flow-row reveal d3">
+<div class="flow-box"><div class="emoji">👨‍💻</div><strong>User</strong><span>uses the system</span></div>
+<div class="flow-arrow">→</div>
+<div class="flow-box"><div class="emoji">🖥️</div><strong>Application</strong><span>screen or program</span></div>
+<div class="flow-arrow">→</div>
+<div class="flow-box"><div class="emoji">🗄️</div><strong>Database</strong><span>stores the data</span></div>
+</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">25</span>
-<span class="eyebrow reveal d1">Sentence Pattern</span>
-<h2 class="reveal d2">Use This Format</h2>
-<div class="question-card reveal d3">One [A] can have many [B], but one [B] belongs to one [A].</div>
-<p class="support-text reveal d4 wide">Example: One course can have many students, but one student belongs to one course.</p>
-<div class="callout reveal d5">That sentence describes a one-to-many relationship.</div>
-</section>
-<section class="slide dense-slide">
+<span class="eyebrow reveal d1">CRUD Preview</span>
+<h2 class="reveal d2">Most Apps Need CRUD</h2><p class="support-text reveal d5 wide" data-added="more-content">CRUD is the basic pattern of most information systems. If students understand CRUD, they can understand many real applications.</p>
+<div class="mini-grid reveal d3">
+<div class="mini-card"><div class="emoji">➕</div><strong>Create</strong><span>add record</span></div>
+<div class="mini-card"><div class="emoji">🔎</div><strong>Read</strong><span>view/search</span></div>
+<div class="mini-card"><div class="emoji">✏️</div><strong>Update</strong><span>edit record</span></div>
+<div class="mini-card"><div class="emoji">🗑️</div><strong>Delete</strong><span>remove record</span></div>
+</div>
+<div class="explain-strip reveal d6" data-added="more-content">CRUD will become our bridge between database theory and Java application development.</div></section>
+<section class="slide">
 <span class="section-number">26</span>
-<span class="eyebrow reveal d1">Practice 1</span>
-<h2 class="reveal d2">Identify the Relationship</h2>
-<div class="lesson3-grid-2 reveal d3">
-<div class="lesson3-card"><h3>Question</h3><p>One department can have many employees. One employee belongs to one department.</p></div>
-<div class="lesson3-card"><h3>Your Answer</h3><p>What relationship type is this? Where should the foreign key go?</p></div>
-</div>
-<div class="callout step">Answer: One-to-many. The employees table should store department_id.</div>
+<span class="eyebrow reveal d1">Create</span>
+<h2 class="reveal d2">Create Means Add Data</h2>
+<div class="code-block sql-preview reveal d3"><span class="keyword">INSERT INTO</span> <span class="table-name">students</span> (<span class="field">student_number</span>, <span class="field">last_name</span>, <span class="field">first_name</span>)
+<span class="keyword">VALUES</span> (<span class="string">'2026-001'</span>, <span class="string">'Cruz'</span>, <span class="string">'Ana'</span>);</div>
+<p class="reveal d4 wide" style="margin-top:22px;">Do not worry about SQL yet. This is only a preview.</p><p class="support-text reveal d5 wide" data-added="more-content">Create is used whenever a new record is saved, such as registering a new student or adding a new course.</p>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">27</span>
-<span class="eyebrow reveal d1">Practice 2</span>
-<h2 class="reveal d2">Identify the Relationship</h2>
-<div class="lesson3-grid-2 reveal d3">
-<div class="lesson3-card"><h3>Question</h3><p>A student can join many clubs. A club can have many students.</p></div>
-<div class="lesson3-card"><h3>Your Answer</h3><p>What relationship type is this? What extra table is needed?</p></div>
-</div>
-<div class="callout step">Answer: Many-to-many. Use a junction table such as student_clubs.</div>
+<span class="eyebrow reveal d1">Read</span>
+<h2 class="reveal d2">Read Means View Data</h2><p class="support-text reveal d5 wide" data-added="more-content">Read is used whenever records are displayed, searched, filtered, or printed in a report.</p>
+<div class="code-block sql-preview reveal d3"><span class="keyword">SELECT</span> <span class="field">student_number</span>, <span class="field">last_name</span>, <span class="field">first_name</span>
+<span class="keyword">FROM</span> <span class="table-name">students</span>;</div>
+<div class="callout reveal d4">Later, this is how our Java table will load student records.</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">28</span>
-<span class="eyebrow reveal d1">Practice 3</span>
-<h2 class="reveal d2">Identify the Relationship</h2>
-<div class="lesson3-grid-2 reveal d3">
-<div class="lesson3-card"><h3>Question</h3><p>One user account belongs to one employee. One employee has one user account.</p></div>
-<div class="lesson3-card"><h3>Your Answer</h3><p>What relationship type is this? What rule can prevent duplicates?</p></div>
-</div>
-<div class="callout step">Answer: One-to-one. Use a UNIQUE foreign key to avoid multiple accounts for one employee.</div>
+<span class="eyebrow reveal d1">Update</span>
+<h2 class="reveal d2">Update Means Change Data</h2><p class="support-text reveal d5 wide" data-added="more-content">Update changes an existing record. It should be done carefully because wrong updates can affect reports and future records.</p>
+<div class="code-block sql-preview reveal d3"><span class="keyword">UPDATE</span> <span class="table-name">students</span>
+<span class="keyword">SET</span> <span class="field">last_name</span> = <span class="string">'Cruz-David'</span>
+<span class="keyword">WHERE</span> <span class="field">student_id</span> = <span class="num">1</span>;</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
 <span class="section-number">29</span>
-<span class="eyebrow reveal d1">Common Mistake</span>
-<h2 class="reveal d2">Repeating the Same Data</h2>
-<p class="support-text reveal d3 wide">Beginners often place the same descriptive data in many rows. This causes spelling differences and update problems.</p>
-<table class="table-demo small relationship-table reveal d4">
-<tr><th>student</th><th>course_code</th><th>course_name</th></tr>
-<tr><td>Ana</td><td>BSIS</td><td>Information Systems</td></tr>
-<tr><td>Ben</td><td>BSIS</td><td>Info System</td></tr>
-</table>
-<div class="callout reveal d5">Better: store the course once in courses, then link students using course_id.</div>
+<span class="eyebrow reveal d1">Delete</span>
+<h2 class="reveal d2">Delete Means Remove Data</h2><p class="support-text reveal d5 wide" data-added="more-content">Delete removes a record, so real systems usually ask for confirmation before continuing.</p>
+<div class="code-block sql-preview reveal d3"><span class="keyword">DELETE FROM</span> <span class="table-name">students</span>
+<span class="keyword">WHERE</span> <span class="field">student_id</span> = <span class="num">1</span>;</div>
+<div class="callout reveal d4">In real systems, deleting usually needs confirmation.</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Future Tutorial</span>
+<h1 class="reveal d2" style="font-size:78px;">We will build a Student Information CRUD app.</h1>
+<p class="reveal d3 wide" style="margin-top:28px;">It will use Java Swing, JDBC, WAMP, phpMyAdmin, and two related tables.</p><p class="support-text reveal d5 wide" data-added="more-content">This application is not meant to be complicated. It will simply show how database concepts appear in a working Java program.</p>
+</section>
+<section class="slide">
 <span class="section-number">30</span>
-<span class="eyebrow reveal d1">Common Mistake</span>
-<h2 class="reveal d2">Putting the Foreign Key on the Wrong Side</h2>
-<p class="support-text reveal d3 wide">For one-to-many relationships, the foreign key normally belongs to the many side.</p>
-<div class="rel-diagram reveal d4">
-<div class="rel-node"><strong>courses</strong><span>one course</span></div>
-<div class="rel-cardinal">1 → many</div>
-<div class="rel-node"><strong>students</strong><span>many students store course_id</span></div>
+<span class="eyebrow reveal d1">Tutorial Database</span>
+<h2 class="reveal d2">Two Tables Later</h2><p class="support-text reveal d5 wide" data-added="more-content">The relationship is simple: one course can have many students, but each student selects one course from the official course list.</p>
+<div class="relationship reveal d3">
+<div class="rel-box"><strong>courses</strong><span>BSIS, BSAIS, BSCRIM...</span></div>
+<div class="rel-line">→</div>
+<div class="rel-box"><strong>students</strong><span>Ana, Ben, Cara...</span></div>
 </div>
-<div class="callout reveal d5">Do not put a list of student IDs inside the courses table.</div>
-</section>
-<section class="slide dense-slide">
+<p class="reveal d4 wide" style="margin-top:24px;">This gives us a simple real relationship to practice.</p>
+<div class="explain-strip reveal d6" data-added="more-content">This relationship will later appear in the Java app as a course dropdown. Students choose a course name, but the database saves the course ID.</div></section>
+<section class="slide">
 <span class="section-number">31</span>
-<span class="eyebrow reveal d1">Application Connection</span>
-<h2 class="reveal d2">Our Future CRUD App</h2>
-<p class="support-text reveal d3 wide">In the guided Java application, the course list will come from the courses table.</p>
-<div class="lesson3-grid-2 reveal d4">
-<div class="lesson3-card"><h3>Course Dropdown</h3><p>The user sees course codes and names in a combo box.</p></div>
-<div class="lesson3-card"><h3>Saved Value</h3><p>The database saves course_id in the students table.</p></div>
-</div>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">32</span>
-<span class="eyebrow reveal d1">Application Connection</span>
-<h2 class="reveal d2">Why This Matters in Java</h2>
-<ul class="safe-list">
-<li class="step">The Java form should not allow random course names.</li>
-<li class="step">The course dropdown reduces spelling errors.</li>
-<li class="step">The students table stays smaller and cleaner.</li>
-<li class="step">A join can display the readable course code later.</li>
-<li class="step">This is how relational design supports application design.</li>
+<span class="eyebrow reveal d1">Check Understanding</span>
+<h2 class="reveal d2">Tell Me the Part</h2><p class="support-text reveal d5 wide" data-added="more-content">Do not rush the answer. Point to the table first, then identify the row, column, and cell value one by one.</p>
+<table class="table-demo compact reveal d3">
+<tr><th>student_id</th><th>student_number</th><th>last_name</th><th>first_name</th></tr>
+<tr><td>1</td><td>2026-001</td><td>Cruz</td><td>Ana</td></tr>
+</table>
+<ul style="margin-top:26px;">
+<li class="step">Which one is a column?</li>
+<li class="step">Which one is a row?</li>
+<li class="step">Which one is a cell value?</li>
 </ul>
+</section>
+<section class="slide">
+<span class="section-number">32</span>
+<span class="eyebrow reveal d1">Mini Activity</span>
+<h2 class="reveal d2">Data or Information?</h2>
+<div class="duo reveal d3">
+<div class="tile"><h3>Example A</h3><p>89, 92, 75, 88</p><p class="support-text reveal d5 wide" data-added="more-content">A good test is this: if the value is just a set of facts, it is data; if it already answers a question, it is information.</p></div>
+<div class="tile"><h3>Example B</h3><p>The class average is 86.</p></div>
+</div>
+<p class="reveal d4 wide" style="margin-top:26px;">Which one is raw data? Which one is information?</p>
 </section>
 <section class="slide dense-slide">
 <span class="section-number">33</span>
-<span class="eyebrow reveal d1">Mini SQL Preview</span>
-<h2 class="reveal d2">Display Student With Course</h2>
-<div class="code-block code-small reveal d3"><span class="keyword">SELECT</span><br>&nbsp;&nbsp;<span class="table-name">students</span>.<span class="field">student_number</span>,<br>&nbsp;&nbsp;<span class="table-name">students</span>.<span class="field">last_name</span>,<br>&nbsp;&nbsp;<span class="table-name">students</span>.<span class="field">first_name</span>,<br>&nbsp;&nbsp;<span class="table-name">courses</span>.<span class="field">course_code</span><br><span class="keyword">FROM</span> <span class="table-name">students</span><br><span class="keyword">INNER JOIN</span> <span class="table-name">courses</span><br>&nbsp;&nbsp;<span class="keyword">ON</span> <span class="table-name">students</span>.<span class="field">course_id</span> = <span class="table-name">courses</span>.<span class="field">course_id</span>;</div>
-<p class="support-text reveal d4 wide">You do not need to master joins yet. For now, notice that the relationship makes this query possible.</p>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">34</span>
 <span class="eyebrow reveal d1">Mini Activity</span>
-<h2 class="reveal d2">Draw the Relationship</h2>
-<p class="support-text reveal d3 wide">Draw boxes for the tables, then draw a line showing how they connect.</p>
-<div class="badge-row reveal d4"><div class="label-pill">customers</div><div class="label-pill">orders</div><div class="label-pill">students</div><div class="label-pill">subjects</div><div class="label-pill">courses</div><div class="label-pill">students</div></div>
-<ul class="safe-list" style="margin-top:22px;">
-<li class="step">Which pair is one-to-many?</li>
-<li class="step">Which pair is many-to-many?</li>
-<li class="step">Which pair needs a junction table?</li>
-</ul>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">35</span>
-<span class="eyebrow reveal d1">Mini Activity</span>
-<h2 class="reveal d2">Choose the Correct Design</h2>
-<div class="lesson3-grid-2 reveal d3">
-<div class="lesson3-card"><h3>Design A</h3><p>students table stores: subject1, subject2, subject3, subject4.</p></div>
-<div class="lesson3-card"><h3>Design B</h3><p>students, subjects, and enrollments tables are separated.</p></div>
+<h2 class="reveal d2">Design a Simple Table</h2>
+<p class="reveal d3 wide">Create a table for student contacts. What columns should it have?</p><p class="support-text reveal d5 wide" data-added="more-content">When designing a table, choose columns that describe the same kind of record. Avoid adding unrelated columns just because they are convenient.</p>
+<div class="pill-grid">
+<div class="label-pill step">student_number</div>
+<div class="label-pill step">last_name</div>
+<div class="label-pill step">first_name</div>
+<div class="label-pill step">contact_number</div>
+<div class="label-pill step">email</div>
 </div>
-<div class="callout reveal d4">For many-to-many relationships, Design B is better because it uses a junction table.</div>
 </section>
-<section class="slide dense-slide">
+<section class="slide">
+<span class="section-number">34</span>
+<span class="eyebrow reveal d1">Common Misunderstanding</span>
+<h2 class="reveal d2">A Database Is Not Only phpMyAdmin</h2><p class="support-text reveal d5 wide" data-added="more-content">phpMyAdmin is like a control panel. The database still exists in the database service even though phpMyAdmin is the tool we use to view it.</p>
+<div class="duo reveal d3">
+<div class="tile"><h3>phpMyAdmin</h3><p>A tool we use to manage the database visually.</p></div>
+<div class="tile"><h3>Database</h3><p>The actual organized data stored and managed by the database service.</p></div>
+</div>
+</section>
+<section class="slide">
+<span class="section-number">35</span>
+<span class="eyebrow reveal d1">Common Misunderstanding</span>
+<h2 class="reveal d2">A Database Is Not Only One Table</h2><p class="support-text reveal d5 wide" data-added="more-content">Multiple tables make the database cleaner because each table can focus on one type of record.</p>
+<p class="reveal d3 wide">A real database can contain many related tables.</p>
+<div class="database-grid reveal d4">
+<div class="db-card"><h3>courses</h3><p>approved course list</p></div>
+<div class="db-card"><h3>students</h3><p>student profile list</p></div>
+<div class="db-card"><h3>grades</h3><p>student grade records</p></div>
+</div>
+</section>
+<section class="slide">
 <span class="section-number">36</span>
-<span class="eyebrow reveal d1">Guided Exercise</span>
-<h2 class="reveal d2">Classify These Relationships</h2>
-<table class="table-demo small relationship-table reveal d3">
-<tr><th>Scenario</th><th>Relationship Type</th><th>Design Hint</th></tr>
-<tr><td>One adviser handles many students</td><td>?</td><td>foreign key on students</td></tr>
-<tr><td>Students enroll in many subjects</td><td>?</td><td>use enrollments table</td></tr>
-<tr><td>One employee has one payroll account</td><td>?</td><td>unique foreign key</td></tr>
-</table>
-<p class="support-text reveal d4 wide">Fill in the missing relationship type for each scenario.</p>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">37</span>
-<span class="eyebrow reveal d1">Independent Practice</span>
-<h2 class="reveal d2">Design a Small Database</h2>
-<p class="support-text reveal d3 wide">Design the relationship for a simple library system.</p>
-<ul class="safe-list">
-<li class="step">A borrower can borrow many books.</li>
-<li class="step">A book can be borrowed many times over different dates.</li>
-<li class="step">What tables do you need?</li>
-<li class="step">Where will the foreign keys go?</li>
-<li class="step">Do you need a junction table?</li>
+<span class="eyebrow reveal d1">Why Learn This?</span>
+<h2 class="reveal d2">Databases Power Applications</h2><p class="support-text reveal d5 wide" data-added="more-content">Learning databases helps you understand how real systems save, retrieve, and protect information.</p>
+<ul>
+<li class="step">Login systems need user records.</li>
+<li class="step">Enrollment systems need student records.</li>
+<li class="step">Inventory systems need product records.</li>
+<li class="step">Booking systems need reservation records.</li>
+<li class="step">Reports need clean and reliable data.</li>
 </ul>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">38</span>
-<span class="eyebrow reveal d1">Key Reminders</span>
-<h2 class="reveal d2">Relationship Rules</h2>
-<ul class="safe-list">
-<li class="step">One-to-one means one record connects to one record.</li>
-<li class="step">One-to-many means one record connects to many records.</li>
-<li class="step">Many-to-many means both sides can have many connected records.</li>
-<li class="step">The foreign key usually goes on the many side.</li>
-<li class="step">Many-to-many relationships need a junction table.</li>
-</ul>
-</section>
-<section class="slide dense-slide">
-<span class="section-number">39</span>
-<span class="eyebrow reveal d1">Exit Check</span>
-<h2 class="reveal d2">Answer in One or Two Sentences</h2>
-<div class="big-question reveal d3">Why do students and subjects need an enrollments table instead of directly storing many subject IDs inside the students table?</div>
-<p class="support-text reveal d4 wide">Use the words many-to-many, junction table, and foreign key in your answer.</p>
 </section>
 <section class="slide slide-dark">
+<span class="eyebrow reveal d1">Key Message</span>
+<h1 class="reveal d2" style="font-size:86px;">Good data organization makes good systems possible.</h1><p class="support-text reveal d5 wide" data-added="more-content">This is why database design matters before coding. If the data is messy, the application will also become difficult to maintain.</p>
+</section>
+<section class="slide">
+<span class="section-number">37</span>
+<span class="eyebrow reveal d1">Class Discussion</span>
+<h2 class="reveal d2">Give One Example</h2>
+<div class="question-card reveal d3">Name one app or school process that probably uses a database.</div>
+<p class="reveal d4 wide" style="margin-top:26px;">Then explain what kind of records it stores.</p><p class="support-text reveal d5 wide" data-added="more-content">Examples can include Google Classroom, Facebook, banking apps, online shopping, enrollment systems, or attendance systems.</p>
+</section>
+<section class="slide">
+<span class="section-number">38</span>
+<span class="eyebrow reveal d1">Guided Practice</span>
+<h2 class="reveal d2">Identify the Tables</h2>
+<p class="reveal d3 wide">For a library system, what tables might we need?</p><p class="support-text reveal d5 wide" data-added="more-content">Tables usually come from important nouns in the system: books, borrowers, transactions, staff, categories, and similar objects.</p>
+<div class="label-pill step">books</div>
+<div class="label-pill step">borrowers</div>
+<div class="label-pill step">borrowed_books</div>
+<div class="label-pill step">staff</div>
+</section>
+<section class="slide">
+<span class="section-number">39</span>
+<span class="eyebrow reveal d1">Independent Exercise</span>
+<h2 class="reveal d2">Create Your Own Example</h2><p class="support-text reveal d5 wide" data-added="more-content">This exercise prepares you for ER diagrams. You are already practicing how to identify possible tables and columns.</p>
+<ul>
+<li class="step">Choose one simple system: clinic, store, library, or school.</li>
+<li class="step">List at least three possible tables.</li>
+<li class="step">Choose one table and list at least five columns.</li>
+<li class="step">Write one sample row.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">40</span>
+<span class="eyebrow reveal d1">Exit Check</span>
+<h2 class="reveal d2">Answer in 1–2 Sentences</h2><p class="support-text reveal d5 wide" data-added="more-content">Answer using your own words. The goal is not perfect wording, but clear understanding.</p>
+<ul>
+<li class="step">What is a database?</li>
+<li class="step">What is the difference between a row and a column?</li>
+<li class="step">Why do we separate courses and students into two tables?</li>
+<li class="step">What is one example of a DBMS task?</li>
+</ul>
+</section>
+<section class="slide slide-dark">
+<span class="eyebrow reveal d1">Lesson Summary</span>
+<h2 class="reveal d2" style="color: var(--foreground);">What We Learned</h2><p class="support-text reveal d5 wide" data-added="more-content">Keep these terms in mind because the next lesson will move from concepts into the actual WAMP and phpMyAdmin environment.</p>
+<ul style="margin-top:18px;">
+<li class="step">A database is an organized collection of related data.</li>
+<li class="step">Tables store one type of record.</li>
+<li class="step">Rows are complete records; columns are details.</li>
+<li class="step">A DBMS helps create, manage, search, and protect databases.</li>
+<li class="step">Our course will use WAMP, phpMyAdmin, and a guided Java CRUD application.</li>
+</ul>
+</section>
+<section class="slide">
+<span class="section-number">→</span>
 <span class="eyebrow reveal d1">Coming Up Next</span>
-<h2 class="reveal d2">Lesson 9</h2>
-<h3 class="reveal d3" style="color:var(--accent);">ER Diagrams, Cardinality, and Optionality</h3>
-<p class="support-text reveal d4 wide">Next, we will learn how to draw database relationships using simple ERD symbols and Crow’s Foot notation.</p>
+<h2 class="reveal d2">Lesson 2</h2>
+<h3 class="reveal d3" style="color: var(--accent);">Setting Up WAMP and phpMyAdmin</h3>
+<p class="reveal d4 wide">We will start WAMP, open localhost, access phpMyAdmin, create a practice database, and run our first SQL command.</p><p class="support-text reveal d5 wide" data-added="more-content">Next lesson is hands-on. Students should bring a laptop if possible and be ready to start WAMP and open phpMyAdmin.</p>
 </section>
 <div aria-label="Presentation controls" class="deck-controls">
 <button aria-label="Previous slide" id="deckPrev" type="button">← Previous</button>
